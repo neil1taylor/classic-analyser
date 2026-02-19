@@ -1,0 +1,209 @@
+{
+    "allowed_simultaneous_actions": [],
+    "byol_instance": false,
+    "clusters": [
+        {
+            "advanced_config": false,
+            "cluster_id": "0",
+            "cluster_name": "vcs-mgmt",
+            "cluster_type": "management",
+            "is_initial_edge_cluster": false,
+            "is_initial_workload_cluster": false,
+            "location": "lon06",
+            "num_hosts": 4,
+            "org_vsphere_version": "8.0",
+            "private_only": false,
+            "sl_pod_name": "bcr01a.lon06",
+            "state": "ReadyToUse",
+            "storage_type": "vsan",
+            "uplink_speed": "25GB",
+            "vlans": [
+                {
+                    "id": "private_vlan",
+                    "number": 823
+                },
+                {
+                    "id": "additional_private_vlan",
+                    "number": 839
+                },
+                {
+                    "id": "public_vlan",
+                    "number": 803
+                }
+            ],
+            "vsan_compression": false,
+            "vsan_type": "esa",
+            "vsphere_version": "8.0u3"
+        }
+    ],
+    "created_time": 1749152902,
+    "creator": "318902_neiltaylor@uk.ibm.com",
+    "crn": "crn:v1:bluemix:public:vmware-solutions:global:a/1b0834ebce7f4b94983d856f532ebfe2:7468b57e-d61d-4d2f-b94c-7111b0cb7639::",
+    "current_version": "6.4",
+    "deploy_type": "vcs",
+    "domain_type": "primary",
+    "endpoints": [
+        {
+            "credentials": [
+                {
+                    "password": "REDACTED",
+                    "type": "ADMIN",
+                    "user": "Administrator@vsphere.local"
+                },
+                {
+                    "password": "REDACTED",
+                    "type": "SSH",
+                    "user": "root"
+                }
+            ],
+            "customer": true,
+            "fqdn": "vcs8test-vc.lontest.ibmcloud.priv",
+            "ip": "10.72.198.131",
+            "location": "https://10.72.198.131",
+            "type": "vCenter/PSC",
+            "version": "8.0"
+        },
+        {
+            "credentials": [
+                {
+                    "password": "REDACTED",
+                    "type": "HTTP",
+                    "user": "admin"
+                }
+            ],
+            "customer": true,
+            "edition": "dc_enterprise_plus",
+            "fqdn": "vcs8test-nsx.lontest.ibmcloud.priv",
+            "ip": "10.72.198.132",
+            "location": "10.72.198.132",
+            "type": "NSX",
+            "version": "4.2.1.2.0.24476729"
+        },
+        {
+            "credentials": [
+                {
+                    "password": "REDACTED",
+                    "type": "SSH",
+                    "user": "admin"
+                }
+            ],
+            "customer": true,
+            "ip": [
+                "10.72.198.136",
+                "10.72.198.137"
+            ],
+            "type": "SERVICE_EDGE_VM"
+        },
+        {
+            "credentials": [
+                {
+                    "password": "REDACTED",
+                    "type": "SSH",
+                    "user": "admin"
+                }
+            ],
+            "customer": true,
+            "ip": [
+                "10.72.45.2",
+                "10.72.45.3"
+            ],
+            "type": "CUST_EDGE_VM"
+        },
+        {
+            "credentials": [
+                {
+                    "password": "REDACTED",
+                    "type": "SSH",
+                    "user": "root"
+                }
+            ],
+            "customer": true,
+            "ip": [
+                "10.72.198.133",
+                "10.72.198.134",
+                "10.72.198.135"
+            ],
+            "type": "NSX_NODE_VM"
+        },
+        {
+            "customer": true,
+            "edition": "enterprise",
+            "type": "VSAN"
+        },
+        {
+            "credentials": [
+                {
+                    "password": "REDACTED",
+                    "type": "ADMIN",
+                    "user": "usagemeter"
+                },
+                {
+                    "password": "REDACTED",
+                    "type": "SSH",
+                    "user": "root"
+                }
+            ],
+            "customer": true,
+            "fqdn": "vcs8-test-usage-meter.lontest.ibmcloud.priv",
+            "ip": "10.72.198.141",
+            "type": "USAGE_METER"
+        },
+        {
+            "credentials": [
+                {
+                    "password": "REDACTED",
+                    "type": "Remote Desktop",
+                    "user": "Administrator"
+                }
+            ],
+            "customer": true,
+            "deployment_type": "VSI",
+            "fqdn": "ADNSvcs8-test.lontest.ibmcloud.priv",
+            "ip": "10.72.158.29",
+            "location": "ADNSvcs8-test.lontest.ibmcloud.priv",
+            "type": "AD_DNS",
+            "version": 1.0
+        }
+    ],
+    "host_prefixes": [
+        "host"
+    ],
+    "hourly": false,
+    "ibm_id": "bryan.buckland@ibm.com",
+    "initial_version": "6.3",
+    "instance_type": "vcs",
+    "instance_version": "6.4",
+    "is_legacy": false,
+    "is_secured": false,
+    "license_keys": {
+        "nsx": {
+            "byol": false,
+            "key": "KH6QL-8DE04-P87N9-LC0RL-RW7L8",
+            "license_type": "dc_enterprise_plus"
+        },
+        "vcenter": {
+            "byol": false,
+            "key": "P10N0-4DW4L-28NN9-LC8RQ-UW939"
+        },
+        "vsan": {
+            "byol": false,
+            "dedupcompress": false,
+            "key": "6508A-4GD45-28N71-LA1RQ-HRC17",
+            "license_type": "enterprise"
+        }
+    },
+    "location": "lon06",
+    "name": "vcs8-test",
+    "plan_id": "24727b6f-d293-4a44-801d-1eed5433df7c",
+    "rc_resource_status": "synced",
+    "resource_group_id": "28b0e7d18da9417ea85b2ba308088657",
+    "root_domain": "lontest.ibmcloud.priv",
+    "secondary_instances": [],
+    "status": "ReadyToUse",
+    "test_hardware": false,
+    "upgrade_in_place_v7": false,
+    "uuid": "7468b57e-d61d-4d2f-b94c-7111b0cb7639",
+    "vcenter_version": "8.0",
+    "vcs_type": "vcs_nsx_t",
+    "vsphere_version": "8.0"
+}

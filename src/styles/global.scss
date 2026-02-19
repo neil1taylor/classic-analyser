@@ -1,0 +1,192 @@
+@use '@carbon/react';
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--cds-background, #161616);
+}
+
+body {
+  font-family: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  background-color: var(--cds-background);
+  color: var(--cds-text-primary);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.app-layout {
+  display: flex;
+  height: calc(100vh - 48px);
+  margin-top: 48px;
+}
+
+.app-layout__side-nav {
+  flex-shrink: 0;
+}
+
+.app-layout__content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: var(--cds-background);
+}
+
+// When side nav is not present (auth page, help page)
+.app-layout--no-nav {
+  display: flex;
+  min-height: calc(100vh - 48px);
+  margin-top: 48px;
+}
+
+// Scrollbar styling
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--cds-layer);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--cds-border-strong);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--cds-text-secondary);
+}
+
+// Allow long menu item text to wrap instead of truncating with ellipsis
+.cds--side-nav__menu-item .cds--side-nav__link-text {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+// Carbon overrides for side nav to not overlay content
+.cds--side-nav {
+  position: fixed !important;
+  top: 48px;
+  bottom: 0;
+  z-index: 6000;
+  inline-size: 300px !important;
+  max-inline-size: 300px !important;
+}
+
+.cds--side-nav ~ .app-layout__content {
+  margin-inline-start: 300px;
+}
+
+.cds--side-nav--collapsed ~ .app-layout__content {
+  margin-left: 48px;
+}
+
+// Responsive
+@media (max-width: 671px) {
+  .cds--side-nav ~ .app-layout__content {
+    margin-left: 0;
+  }
+}
+
+// Skeleton shimmer animation
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--cds-skeleton-background, #e0e0e0) 25%,
+    var(--cds-skeleton-element, #c6c6c6) 50%,
+    var(--cds-skeleton-background, #e0e0e0) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+
+  &--text {
+    height: 14px;
+    width: 60%;
+  }
+
+  &--heading {
+    height: 32px;
+    width: 40%;
+    margin-top: 0.5rem;
+  }
+
+  &--sub {
+    height: 12px;
+    width: 70%;
+    margin-top: 0.5rem;
+  }
+}
+
+// Metric card hover
+.metric-card {
+  transition: transform 200ms ease-out, box-shadow 200ms ease-out, border-color 200ms ease-out;
+
+  &:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: var(--cds-link-primary, #0f62fe);
+  }
+}
+
+// Stepper spin animation
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.step-icon--spinning svg {
+  animation: spin 1s linear infinite;
+}
+
+// Button hover micro-interaction
+.cds--btn--primary:hover {
+  transform: translateY(-1px);
+}
+
+// Carbon Charts CSS hardcodes white theme tokens on .cds--chart-holder.
+// In dark mode (g100), the JS runtime overrides these, but the CSS
+// fallback bleeds through on filled/fullscreen variants and on any
+// Carbon component (Grid, etc.) rendered inside the chart holder scope.
+// Force the chart holders to use the theme-aware CSS custom property
+// instead of the hardcoded #ffffff.
+.cds--chart-holder {
+  --cds-background: var(--cds-layer, var(--cds-ui-01, transparent));
+}
+.cds--chart-holder.filled,
+.cds--chart-holder.fullscreen {
+  background-color: var(--cds-layer, transparent) !important;
+}
+
+// ReactFlow controls — match dark theme
+.react-flow__controls {
+  background: var(--cds-layer, #262626);
+  border: 1px solid var(--cds-border-subtle, #393939);
+  border-radius: 4px;
+
+  button {
+    background: var(--cds-layer, #262626);
+    border-bottom: 1px solid var(--cds-border-subtle, #393939);
+    color: var(--cds-text-primary, #f4f4f4);
+    fill: var(--cds-text-primary, #f4f4f4);
+
+    &:hover {
+      background: var(--cds-layer-hover, #353535);
+    }
+  }
+}
+
+// ReactFlow minimap — match dark theme
+.react-flow__minimap {
+  background: var(--cds-layer, #262626) !important;
+  border: 1px solid var(--cds-border-subtle, #393939);
+  border-radius: 4px;
+}

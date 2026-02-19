@@ -1,0 +1,99 @@
+import React from 'react';
+import {
+  sectionStyle,
+  headingStyle,
+  subHeadingStyle,
+  paragraphStyle,
+  listStyle,
+} from '../docsStyles';
+
+const ImportExportSection: React.FC = () => (
+  <div>
+    <h2 style={{ ...headingStyle, borderBottom: 'none', fontSize: '1.5rem', marginBottom: '0.5rem' }}>
+      Import &amp; Export
+    </h2>
+    <p style={{ fontSize: '0.875rem', color: 'var(--cds-text-secondary)', marginBottom: '2rem' }}>
+      XLSX import/export, DOCX reports, draw.io diagrams, and Terraform configuration
+    </p>
+
+    <section style={sectionStyle}>
+      <h3 style={headingStyle}>XLSX Export</h3>
+      <p style={paragraphStyle}>
+        Data can be exported to XLSX format in several ways:
+      </p>
+      <ul style={listStyle}>
+        <li><strong>Export All:</strong> From the dashboard, exports all resource types to a single XLSX file with one worksheet per type.</li>
+        <li><strong>Export Table:</strong> From a resource page, exports only the current resource type.</li>
+        <li><strong>Export Selected:</strong> From a resource page, exports only the selected rows.</li>
+      </ul>
+      <p style={paragraphStyle}>
+        Worksheets are named with a &quot;v&quot; prefix (e.g., &quot;vVirtualServers&quot;, &quot;vVLANs&quot;)
+        for compatibility with spreadsheet applications. Both Classic and VPC data use this naming convention.
+      </p>
+    </section>
+
+    <section style={sectionStyle}>
+      <h3 style={headingStyle}>XLSX Import</h3>
+      <p style={paragraphStyle}>
+        Import previously exported XLSX files to view data without connecting to the IBM Cloud API:
+      </p>
+      <ol style={listStyle}>
+        <li>On the login page, click the <strong>Import XLSX</strong> button.</li>
+        <li>Select an XLSX file that was previously exported from this application.</li>
+        <li>The application will parse the worksheets and populate the data tables.</li>
+        <li>An info banner at the top of the dashboard indicates you are viewing imported data.</li>
+      </ol>
+      <p style={paragraphStyle}>
+        The import feature recognises worksheets by their standard &quot;v&quot;-prefixed names.
+        Worksheets with unrecognised names are skipped. Both Classic and VPC worksheets can be
+        imported from the same file.
+      </p>
+    </section>
+
+    <section style={sectionStyle}>
+      <h3 style={headingStyle}>DOCX Reports</h3>
+      <p style={paragraphStyle}>
+        Generate comprehensive migration assessment reports in Microsoft Word (DOCX) format:
+      </p>
+      <ul style={listStyle}>
+        <li><strong>Executive summary:</strong> High-level overview of migration readiness.</li>
+        <li><strong>Readiness scores:</strong> Per-resource scores across all assessment dimensions.</li>
+        <li><strong>Cost projections:</strong> Classic vs VPC cost comparison with break-even analysis.</li>
+        <li><strong>Wave plans:</strong> Recommended migration waves with resource groupings.</li>
+        <li><strong>Remediation items:</strong> Blockers and warnings with recommended actions.</li>
+      </ul>
+      <p style={paragraphStyle}>
+        Report branding (client name, company name, author) can be configured in Settings.
+        If AI features are enabled, the report can include AI-generated narrative sections.
+      </p>
+    </section>
+
+    <section style={sectionStyle}>
+      <h3 style={headingStyle}>draw.io Export</h3>
+      <p style={paragraphStyle}>
+        Export topology diagrams in draw.io (diagrams.net) XML format for further editing in
+        the draw.io application. The export preserves the node positions, labels, and connection
+        lines from the topology view.
+      </p>
+    </section>
+
+    <section style={sectionStyle}>
+      <h3 style={headingStyle}>Terraform Export</h3>
+      <p style={paragraphStyle}>
+        The migration view can generate Terraform HCL configuration files based on your Classic
+        infrastructure. The generated configuration maps Classic resources to their VPC equivalents,
+        providing a starting point for infrastructure-as-code migration.
+      </p>
+
+      <h4 style={subHeadingStyle}>What Gets Generated</h4>
+      <ul style={listStyle}>
+        <li>VPC instance resources mapped from Classic VSIs</li>
+        <li>VPC subnet definitions from Classic subnet configurations</li>
+        <li>Security group rules from Classic firewall and security group settings</li>
+        <li>Block storage volumes from Classic storage configurations</li>
+      </ul>
+    </section>
+  </div>
+);
+
+export default ImportExportSection;

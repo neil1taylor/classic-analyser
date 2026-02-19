@@ -1,0 +1,55 @@
+name: Deploy to Code Engine
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Install IBM Cloud CLI
+        run: |
+          curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
+          ibmcloud plugin install container-registry
+          ibmcloud plugin install code-engine
+
+      - name: Login to IBM Cloud
+        run: ibmcloud login --apikey ${{ secrets.IBM_CLOUD_API_KEY }} -r us-south
+
+      - name: Build and push container image
+        run: |
+          ibmcloud cr login
+          docker build -t icr.io/${{ secrets.ICR_NAMESPACE }}/infrastructure-explorer:${{ github.sha }} .
+          docker push icr.io/${{ secrets.ICR_NAMESPACE }}/infrastructure-explorer:${{ github.sha }}
+
+      - name: Deploy to Code Engine
+        run: |
+          ibmcloud ce project select --name ${{ secrets.CE_PROJECT }}
+          ibmcloud ce app update \
+            --name infrastructure-explorer \
+            --image icr.io/${{ secrets.ICR_NAMESPACE }}/infrastructure-explorer:${{ github.sha }}

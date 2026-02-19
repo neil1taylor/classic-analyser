@@ -1,0 +1,1159 @@
+{
+    "array_vlans": [
+        {
+            "id": "private_vlan",
+            "link": "https://cloud.ibm.com/networking/vlans/3496377",
+            "location": "London 6",
+            "name": "Private VLAN",
+            "number": 823,
+            "primary_router": "bcr01a.lon06",
+            "purpose": "Private management VLAN",
+            "subnets": [
+                {
+                    "gateway": "10.242.54.1",
+                    "ips": [
+                        {
+                            "desc": "SoftLayer Reserved",
+                            "ip_address": "10.242.54.0",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "SoftLayer Reserved",
+                            "ip_address": "10.242.54.1",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "SoftLayer Reserved",
+                            "ip_address": "10.242.54.127",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.2",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.3",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.4",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.5",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.6",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.7",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.8",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.9",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.10",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.11",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.12",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.13",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.14",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.15",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.16",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.17",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.18",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.19",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.20",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.21",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.22",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.23",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.24",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.25",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.26",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.27",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.28",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.29",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.30",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.31",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.32",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.33",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.34",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.35",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.36",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.37",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.38",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.39",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.40",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.41",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.42",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.43",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.44",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.45",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.46",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.47",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.48",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.49",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.50",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.51",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.52",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.53",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.54",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.55",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.56",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.57",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.58",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.59",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.60",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.61",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.62",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.63",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.64",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.65",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.66",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.67",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.68",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.69",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.70",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.71",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.72",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.73",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.74",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.75",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.76",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.77",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.78",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.79",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.80",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.81",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.82",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.83",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.84",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.85",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.86",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.87",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.88",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.89",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.90",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.91",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.92",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.93",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.94",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.95",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.96",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.97",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.98",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.99",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.100",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.101",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.102",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.103",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.104",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.105",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.106",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.107",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.108",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.109",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.110",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.111",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.112",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.113",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.114",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.115",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.116",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.117",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.118",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.119",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.120",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.121",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.122",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.123",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX T VTEPs for Edges",
+                            "ip_address": "10.242.54.124",
+                            "status": "Reserved"
+                        }
+                    ],
+                    "link": "https://cloud.ibm.com/networking/subnets/2621520",
+                    "network_identifier": "10.242.54.0/25",
+                    "purpose": "Portable subnet for NSX traffic",
+                    "subnet_type": "Portable",
+                    "type_id": "portable"
+                },
+                {
+                    "gateway": "10.72.198.129",
+                    "ips": [
+                        {
+                            "desc": "SoftLayer Reserved",
+                            "ip_address": "10.72.198.128",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "SoftLayer Reserved",
+                            "ip_address": "10.72.198.129",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "SoftLayer Reserved",
+                            "ip_address": "10.72.198.191",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "clouddriver",
+                            "ip_address": "10.72.198.130",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "vCenter Server",
+                            "ip_address": "10.72.198.131",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSXT Virtual IP",
+                            "ip_address": "10.72.198.132",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX Node0",
+                            "ip_address": "10.72.198.133",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX Node1",
+                            "ip_address": "10.72.198.134",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "NSX Node2",
+                            "ip_address": "10.72.198.135",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "Service edge 01",
+                            "ip_address": "10.72.198.136",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "Service edge 02",
+                            "ip_address": "10.72.198.137",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "Service T0 uplink1 address",
+                            "ip_address": "10.72.198.138",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "Service T0 uplink1 Virtual IP address",
+                            "ip_address": "10.72.198.139",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "Service T0 uplink3 address",
+                            "ip_address": "10.72.198.140",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "UMA Virtual IP",
+                            "ip_address": "10.72.198.141",
+                            "status": "Reserved"
+                        }
+                    ],
+                    "link": "https://cloud.ibm.com/networking/subnets/2103169",
+                    "network_identifier": "10.72.198.128/26",
+                    "purpose": "Portable subnet for instance management",
+                    "subnet_type": "Portable",
+                    "type_id": "portable"
+                },
+                {
+                    "gateway": "10.72.45.1",
+                    "ips": [
+                        {
+                            "desc": "SoftLayer Reserved",
+                            "ip_address": "10.72.45.0",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "SoftLayer Reserved",
+                            "ip_address": "10.72.45.1",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "SoftLayer Reserved",
+                            "ip_address": "10.72.45.63",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "Customer NSX edge0",
+                            "ip_address": "10.72.45.2",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "Customer NSX edge1",
+                            "ip_address": "10.72.45.3",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "T0 uplink1 address",
+                            "ip_address": "10.72.45.4",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "T0 uplink1 Virtual IP address",
+                            "ip_address": "10.72.45.5",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "T0 uplink3 address",
+                            "ip_address": "10.72.45.6",
+                            "status": "Reserved"
+                        }
+                    ],
+                    "link": "https://cloud.ibm.com/networking/subnets/1605379",
+                    "network_identifier": "10.72.45.0/26",
+                    "purpose": "Portable private subnet for customer workload edge",
+                    "subnet_type": "Portable",
+                    "type_id": "portable"
+                },
+                {
+                    "availableIpAddressCount": "52",
+                    "gateway": "10.72.158.1",
+                    "ips": [
+                        {
+                            "desc": "Network",
+                            "ip_address": "10.72.158.0",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "Gateway",
+                            "ip_address": "10.72.158.1",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "esxi000.lontest.ibmcloud.priv",
+                            "ip_address": "10.72.158.5",
+                            "status": "Active"
+                        },
+                        {
+                            "desc": "esxi001.lontest.ibmcloud.priv",
+                            "ip_address": "10.72.158.7",
+                            "status": "Active"
+                        },
+                        {
+                            "desc": "esxi000.lontest.ibmcloud.priv",
+                            "ip_address": "10.72.158.14",
+                            "status": "Active"
+                        },
+                        {
+                            "desc": "esxi001.lontest.ibmcloud.priv",
+                            "ip_address": "10.72.158.17",
+                            "status": "Active"
+                        },
+                        {
+                            "desc": "ADNSvcs8-test.lontest.ibmcloud.priv",
+                            "ip_address": "10.72.158.29",
+                            "status": "Active"
+                        },
+                        {
+                            "desc": "esxi003.lontest.ibmcloud.priv",
+                            "ip_address": "10.72.158.37",
+                            "status": "Active"
+                        },
+                        {
+                            "desc": "esxi003.lontest.ibmcloud.priv",
+                            "ip_address": "10.72.158.50",
+                            "status": "Active"
+                        },
+                        {
+                            "desc": "esxi002.lontest.ibmcloud.priv",
+                            "ip_address": "10.72.158.55",
+                            "status": "Active"
+                        },
+                        {
+                            "desc": "esxi002.lontest.ibmcloud.priv",
+                            "ip_address": "10.72.158.61",
+                            "status": "Active"
+                        },
+                        {
+                            "desc": "Broadcast",
+                            "ip_address": "10.72.158.63",
+                            "status": "Reserved"
+                        }
+                    ],
+                    "link": "https://cloud.ibm.com/networking/subnets/1894161",
+                    "network_identifier": "10.72.158.0/26",
+                    "purpose": "Primary subnet for hosts and virtual server instances",
+                    "subnet_type": "Primary",
+                    "type_id": "primary"
+                }
+            ]
+        },
+        {
+            "id": "additional_private_vlan",
+            "link": "https://cloud.ibm.com/networking/vlans/3496379",
+            "location": "London 6",
+            "name": "Secondary Private VLAN",
+            "number": 839,
+            "primary_router": "bcr01a.lon06",
+            "purpose": "Private storage and vMotion VLAN",
+            "subnets": [
+                {
+                    "gateway": "10.72.111.65",
+                    "ips": [
+                        {
+                            "desc": "SoftLayer Reserved",
+                            "ip_address": "10.72.111.64",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "SoftLayer Reserved",
+                            "ip_address": "10.72.111.65",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "SoftLayer Reserved",
+                            "ip_address": "10.72.111.127",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "esxi000.lontest.ibmcloud.priv",
+                            "ip_address": "10.72.111.66",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "esxi001.lontest.ibmcloud.priv",
+                            "ip_address": "10.72.111.67",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "esxi002.lontest.ibmcloud.priv",
+                            "ip_address": "10.72.111.68",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "esxi003.lontest.ibmcloud.priv",
+                            "ip_address": "10.72.111.69",
+                            "status": "Reserved"
+                        }
+                    ],
+                    "link": "https://cloud.ibm.com/networking/subnets/1959697",
+                    "network_identifier": "10.72.111.64/26",
+                    "purpose": "Portable subnet for NAS",
+                    "subnet_type": "Portable",
+                    "type_id": "portable"
+                },
+                {
+                    "gateway": "10.72.250.1",
+                    "ips": [
+                        {
+                            "desc": "SoftLayer Reserved",
+                            "ip_address": "10.72.250.0",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "SoftLayer Reserved",
+                            "ip_address": "10.72.250.1",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "SoftLayer Reserved",
+                            "ip_address": "10.72.250.127",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "esxi000.lontest.ibmcloud.priv",
+                            "ip_address": "10.72.250.2",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "esxi001.lontest.ibmcloud.priv",
+                            "ip_address": "10.72.250.3",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "esxi002.lontest.ibmcloud.priv",
+                            "ip_address": "10.72.250.4",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "esxi003.lontest.ibmcloud.priv",
+                            "ip_address": "10.72.250.5",
+                            "status": "Reserved"
+                        }
+                    ],
+                    "link": "https://cloud.ibm.com/networking/subnets/2427610",
+                    "network_identifier": "10.72.250.0/25",
+                    "purpose": "Portable subnet for vMotion traffic",
+                    "subnet_type": "Portable",
+                    "type_id": "portable"
+                },
+                {
+                    "gateway": "10.72.227.193",
+                    "ips": [
+                        {
+                            "desc": "SoftLayer Reserved",
+                            "ip_address": "10.72.227.192",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "SoftLayer Reserved",
+                            "ip_address": "10.72.227.193",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "SoftLayer Reserved",
+                            "ip_address": "10.72.227.255",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "esxi000.lontest.ibmcloud.priv",
+                            "ip_address": "10.72.227.194",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "esxi001.lontest.ibmcloud.priv",
+                            "ip_address": "10.72.227.195",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "esxi002.lontest.ibmcloud.priv",
+                            "ip_address": "10.72.227.196",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "esxi003.lontest.ibmcloud.priv",
+                            "ip_address": "10.72.227.197",
+                            "status": "Reserved"
+                        }
+                    ],
+                    "link": "https://cloud.ibm.com/networking/subnets/2237610",
+                    "network_identifier": "10.72.227.192/26",
+                    "purpose": "Portable subnet for vSAN",
+                    "subnet_type": "Portable",
+                    "type_id": "portable"
+                }
+            ]
+        },
+        {
+            "id": "public_vlan",
+            "link": "https://cloud.ibm.com/networking/vlans/3496381",
+            "location": "London 6",
+            "name": "Public VLAN",
+            "number": 803,
+            "primary_router": "fcr01a.lon06",
+            "purpose": "Public VLAN",
+            "subnets": [
+                {
+                    "gateway": "158.176.64.209",
+                    "ips": [
+                        {
+                            "desc": "SoftLayer Reserved",
+                            "ip_address": "158.176.64.208",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "SoftLayer Reserved",
+                            "ip_address": "158.176.64.209",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "SoftLayer Reserved",
+                            "ip_address": "158.176.64.223",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "Service T0 uplink2 address",
+                            "ip_address": "158.176.64.210",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "Service T0 uplink2 Virtual IP address",
+                            "ip_address": "158.176.64.211",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "Service T0 uplink4 address",
+                            "ip_address": "158.176.64.212",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "Service T0 SNAT address",
+                            "ip_address": "158.176.64.213",
+                            "status": "Reserved"
+                        }
+                    ],
+                    "link": "https://cloud.ibm.com/networking/subnets/1565717",
+                    "network_identifier": "158.176.64.208/28",
+                    "purpose": "Portable public subnet for management edge",
+                    "subnet_type": "Portable",
+                    "type_id": "portable"
+                },
+                {
+                    "gateway": "158.176.111.225",
+                    "ips": [
+                        {
+                            "desc": "SoftLayer Reserved",
+                            "ip_address": "158.176.111.224",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "SoftLayer Reserved",
+                            "ip_address": "158.176.111.225",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "SoftLayer Reserved",
+                            "ip_address": "158.176.111.239",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "T0 uplink2 address",
+                            "ip_address": "158.176.111.226",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "T0 uplink2 Virtual IP address",
+                            "ip_address": "158.176.111.227",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "T0 uplink4 address",
+                            "ip_address": "158.176.111.228",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "T0 SNAT address",
+                            "ip_address": "158.176.111.229",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "T1 SNAT address",
+                            "ip_address": "158.176.111.230",
+                            "status": "Reserved"
+                        }
+                    ],
+                    "link": "https://cloud.ibm.com/networking/subnets/1975079",
+                    "network_identifier": "158.176.111.224/28",
+                    "purpose": "Portable public subnet for customer workload edge",
+                    "subnet_type": "Portable",
+                    "type_id": "portable"
+                },
+                {
+                    "availableIpAddressCount": "9",
+                    "gateway": "158.176.129.129",
+                    "ips": [
+                        {
+                            "desc": "Network",
+                            "ip_address": "158.176.129.128",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "Gateway",
+                            "ip_address": "158.176.129.129",
+                            "status": "Reserved"
+                        },
+                        {
+                            "desc": "esxi002.lontest.ibmcloud.priv",
+                            "ip_address": "158.176.129.130",
+                            "status": "Active"
+                        },
+                        {
+                            "desc": "esxi003.lontest.ibmcloud.priv",
+                            "ip_address": "158.176.129.135",
+                            "status": "Active"
+                        },
+                        {
+                            "desc": "esxi001.lontest.ibmcloud.priv",
+                            "ip_address": "158.176.129.137",
+                            "status": "Active"
+                        },
+                        {
+                            "desc": "esxi000.lontest.ibmcloud.priv",
+                            "ip_address": "158.176.129.138",
+                            "status": "Active"
+                        },
+                        {
+                            "desc": "Broadcast",
+                            "ip_address": "158.176.129.143",
+                            "status": "Reserved"
+                        }
+                    ],
+                    "link": "https://cloud.ibm.com/networking/subnets/2104201",
+                    "network_identifier": "158.176.129.128/28",
+                    "purpose": "Primary subnet for hosts and virtual server instances",
+                    "subnet_type": "Primary",
+                    "type_id": "primary"
+                }
+            ]
+        }
+    ]
+}

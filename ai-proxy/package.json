@@ -1,0 +1,23 @@
+{
+  "name": "ai-proxy",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "helmet": "^8.0.0",
+    "compression": "^1.7.5",
+    "winston": "^3.17.0",
+    "ibm-cloud-sdk-core": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/compression": "^1.7.5",
+    "typescript": "^5.7.3",
+    "tsx": "^4.19.2"
+  }
+}

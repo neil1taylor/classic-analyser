@@ -1,0 +1,258 @@
+{
+    "account_id": "1b0834ebce7f4b94983d856f532ebfe2",
+    "account_name": "1b0834ebce7f4b94983d856f532ebfe2",
+    "advanced_config": false,
+    "cluster_id": "0",
+    "cluster_name": "vcs-mgmt",
+    "cluster_type": "management",
+    "hosts": [
+        {
+            "customized_hardware": {
+                "disks": {
+                    "quantity": 4,
+                    "size": 3200
+                },
+                "ram": "512_GB_RAM_DDR5",
+                "server": "INTEL_INTEL_XEON_6416_UEFI_BOOT_MODE_2_20",
+                "vsan_compression": false
+            },
+            "deploy_done": 1749245660.0,
+            "fqdn": "esxi000.lontest.ibmcloud.priv",
+            "gid": "8f31b18d-e2c0-4429-abf0-3ab8a8395007",
+            "group_id": 1,
+            "hourly": false,
+            "id": "3563099",
+            "initial": true,
+            "name": {
+                "domain": "lontest.ibmcloud.priv",
+                "hostname": "esxi000"
+            },
+            "package_id": 3156,
+            "password": "eX7y_v4WTtQZPw",
+            "private_network": {
+                "ip_address": "10.72.158.5"
+            },
+            "provision_date": 1749168586.0,
+            "public_network": {
+                "ip_address": "158.176.129.138"
+            },
+            "state": "ACTIVE",
+            "system": {
+                "cpu_GHz": 2.2,
+                "cpu_count": 2,
+                "memory": 512,
+                "os": "vSphere",
+                "processor": 16,
+                "uplink_count": 4
+            },
+            "template_id": "1",
+            "user": "root",
+            "version": "8.0u3"
+        },
+        {
+            "customized_hardware": {
+                "disks": {
+                    "quantity": 4,
+                    "size": 3200
+                },
+                "ram": "512_GB_RAM_DDR5",
+                "server": "INTEL_INTEL_XEON_6416_UEFI_BOOT_MODE_2_20",
+                "vsan_compression": false
+            },
+            "deploy_done": 1749245660.0,
+            "fqdn": "esxi001.lontest.ibmcloud.priv",
+            "gid": "acb7d4e3-bb89-487c-aa9c-b6f955f5fa07",
+            "group_id": 2,
+            "hourly": false,
+            "id": "3581948",
+            "initial": true,
+            "name": {
+                "domain": "lontest.ibmcloud.priv",
+                "hostname": "esxi001"
+            },
+            "package_id": 3156,
+            "password": "sJL643s=4Wz%gZ",
+            "private_network": {
+                "ip_address": "10.72.158.7"
+            },
+            "provision_date": 1749204959.0,
+            "public_network": {
+                "ip_address": "158.176.129.137"
+            },
+            "state": "ACTIVE",
+            "system": {
+                "cpu_GHz": 2.2,
+                "cpu_count": 2,
+                "memory": 512,
+                "os": "vSphere",
+                "processor": 16,
+                "uplink_count": 4
+            },
+            "template_id": "1",
+            "user": "root",
+            "version": "8.0u3"
+        },
+        {
+            "customized_hardware": {
+                "disks": {
+                    "quantity": 4,
+                    "size": 3200
+                },
+                "ram": "512_GB_RAM_DDR5",
+                "server": "INTEL_INTEL_XEON_6416_UEFI_BOOT_MODE_2_20",
+                "vsan_compression": false
+            },
+            "deploy_done": 1749245660.0,
+            "fqdn": "esxi002.lontest.ibmcloud.priv",
+            "gid": "c31fee63-bba7-4868-aae1-37d03ea48146",
+            "group_id": 3,
+            "hourly": false,
+            "id": "3581946",
+            "initial": true,
+            "name": {
+                "domain": "lontest.ibmcloud.priv",
+                "hostname": "esxi002"
+            },
+            "package_id": 3156,
+            "password": "a8kLwNlvyW(p_+",
+            "private_network": {
+                "ip_address": "10.72.158.55"
+            },
+            "provision_date": 1749205107.0,
+            "public_network": {
+                "ip_address": "158.176.129.130"
+            },
+            "state": "ACTIVE",
+            "system": {
+                "cpu_GHz": 2.2,
+                "cpu_count": 2,
+                "memory": 512,
+                "os": "vSphere",
+                "processor": 16,
+                "uplink_count": 4
+            },
+            "template_id": "1",
+            "user": "root",
+            "version": "8.0u3"
+        },
+        {
+            "customized_hardware": {
+                "disks": {
+                    "quantity": 4,
+                    "size": 3200
+                },
+                "ram": "512_GB_RAM_DDR5",
+                "server": "INTEL_INTEL_XEON_6416_UEFI_BOOT_MODE_2_20",
+                "vsan_compression": false
+            },
+            "deploy_done": 1749245661.0,
+            "fqdn": "esxi003.lontest.ibmcloud.priv",
+            "gid": "6a97384e-01b7-4b04-a08f-e97240da45b7",
+            "group_id": 4,
+            "hourly": false,
+            "id": "3581960",
+            "initial": true,
+            "name": {
+                "domain": "lontest.ibmcloud.priv",
+                "hostname": "esxi003"
+            },
+            "package_id": 3156,
+            "password": "sY6XrAR.dg9qz:",
+            "private_network": {
+                "ip_address": "10.72.158.37"
+            },
+            "provision_date": 1749233778.0,
+            "public_network": {
+                "ip_address": "158.176.129.135"
+            },
+            "state": "ACTIVE",
+            "system": {
+                "cpu_GHz": 2.2,
+                "cpu_count": 2,
+                "memory": 512,
+                "os": "vSphere",
+                "processor": 16,
+                "uplink_count": 4
+            },
+            "template_id": "1",
+            "user": "root",
+            "version": "8.0u3"
+        }
+    ],
+    "ibm_id": "bryan.buckland@ibm.com",
+    "is_initial_edge_cluster": false,
+    "is_initial_workload_cluster": false,
+    "license_keys": {
+        "nsx": {
+            "byol": false,
+            "key": "KH6QL-8DE04-P87N9-LC0RL-RW7L8",
+            "license_type": "dc_enterprise_plus"
+        },
+        "vcenter": {
+            "byol": false,
+            "key": "P10N0-4DW4L-28NN9-LC8RQ-UW939"
+        },
+        "vsan": {
+            "byol": false,
+            "dedupcompress": false,
+            "key": "6508A-4GD45-28N71-LA1RQ-HRC17",
+            "license_type": "enterprise"
+        }
+    },
+    "location": "lon06",
+    "nfs_storage_ids": [
+        718929835
+    ],
+    "num_hosts": 4,
+    "org_vsphere_version": "8.0",
+    "package_id": 3156,
+    "preset_id": "",
+    "private_only": false,
+    "server_ids": "3563099,3581948,3581946,3581960",
+    "services": [],
+    "shared_storage": [
+        {
+            "datastore_name": "workload_share_24GuO",
+            "iops": "READHEAVY_TIER",
+            "mountpoint": "fsf-lon0601a-fz.adn.networklayer.com:/DSW02SEV318902_3/data01",
+            "size": "STORAGE_SPACE_FOR_2_IOPS_PER_GB",
+            "status": "Added",
+            "storage_id": "718929835",
+            "volume": 1000
+        }
+    ],
+    "sku_pool": {
+        "Zerto": {
+            "available_billing_ids": {},
+            "expiration_date": 0
+        }
+    },
+    "sl_pod_name": "bcr01a.lon06",
+    "state": "ReadyToUse",
+    "storage_type": "vsan",
+    "system_edge_license_ids": [
+        1224985789,
+        1224985787
+    ],
+    "test_hardware": false,
+    "uplink_speed": "25GB",
+    "user_name": "318902_neiltaylor@uk.ibm.com",
+    "vlans": [
+        {
+            "id": "private_vlan",
+            "number": 823
+        },
+        {
+            "id": "additional_private_vlan",
+            "number": 839
+        },
+        {
+            "id": "public_vlan",
+            "number": 803
+        }
+    ],
+    "vsan_compression": false,
+    "vsan_type": "esa",
+    "vsphere_version": "8.0u3",
+    "winvsi_id": 151175721
+}

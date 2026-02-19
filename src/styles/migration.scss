@@ -1,0 +1,295 @@
+.migration-dashboard {
+  max-width: 1400px;
+}
+
+.migration-preferences {
+  background: var(--cds-layer);
+  padding: 1.25rem;
+  border-radius: 4px;
+  border: 1px solid var(--cds-border-subtle);
+}
+
+.readiness-score-card {
+  background: var(--cds-layer);
+  padding: 1.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--cds-border-subtle);
+}
+
+.compute-assessment-panel,
+.network-assessment-panel,
+.storage-assessment-panel,
+.security-assessment-panel,
+.feature-gap-panel,
+.cost-comparison-panel,
+.migration-waves-panel {
+  padding: 1rem 0;
+}
+
+// ── Custom Tabs (replaces Carbon Tabs) ──────────────────────────────────
+
+.migration-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  border-bottom: 2px solid var(--cds-border-subtle, #393939);
+
+  &__tab {
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: var(--cds-text-secondary, #c6c6c6);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.15s, border-color 0.15s;
+    font-family: inherit;
+
+    &:hover {
+      color: var(--cds-text-primary, #f4f4f4);
+      background: var(--cds-layer-hover, #353535);
+    }
+
+    &--selected {
+      color: var(--cds-text-primary, #f4f4f4);
+      font-weight: 600;
+      border-bottom-color: var(--cds-link-primary, #0f62fe);
+    }
+  }
+
+  &__panel {
+    padding: 1rem 0;
+  }
+}
+
+// Fix Carbon DataTable within tabs
+.migration-dashboard .cds--data-table-container {
+  margin-bottom: 1rem;
+}
+
+.migration-dashboard .cds--data-table {
+  width: 100%;
+}
+
+// Wave timeline bar
+.migration-waves-panel .cds--accordion__content {
+  padding: 0.5rem 0;
+}
+
+// Dependency graph
+.migration-dashboard .react-flow {
+  background: var(--cds-layer);
+}
+
+// ── Remediation Checklist ───────────────────────────────────────────────
+
+.remediation-checklist {
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--cds-border-subtle);
+  padding-top: 1rem;
+
+  &__title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+
+  &__summary {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+
+  &__row-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  &__check-name {
+    font-weight: 500;
+    font-size: 0.875rem;
+  }
+
+  &__detail {
+    padding: 0.5rem 0;
+  }
+
+  &__description {
+    font-size: 0.875rem;
+    color: var(--cds-text-secondary);
+    margin-bottom: 0.75rem;
+  }
+
+  &__threshold {
+    font-size: 0.8125rem;
+    color: var(--cds-text-helper);
+    margin-bottom: 0.75rem;
+    font-style: italic;
+  }
+
+  &__steps {
+    background: var(--cds-field);
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  &__steps-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--cds-text-primary);
+  }
+
+  &__steps-list {
+    padding-left: 1.25rem;
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--cds-text-secondary);
+
+    li {
+      margin-bottom: 0.25rem;
+    }
+  }
+
+  &__docs {
+    margin-bottom: 0.75rem;
+  }
+}
+
+.remediation-icon {
+  flex-shrink: 0;
+
+  &--blocker {
+    fill: var(--cds-support-error, #da1e28);
+  }
+  &--warning {
+    fill: var(--cds-support-warning, #f1c21b);
+  }
+  &--info {
+    fill: var(--cds-support-info, #4589ff);
+  }
+  &--unknown {
+    fill: var(--cds-support-info, #4589ff);
+  }
+  &--passed {
+    fill: var(--cds-support-success, #24a148);
+  }
+}
+
+// ── Migration Table (grouped columns, search, pagination) ────────────
+
+.migration-table {
+  margin-bottom: 1.5rem;
+
+  &__title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  &__search {
+    margin-bottom: 0.5rem;
+    max-width: 320px;
+  }
+
+  &__empty {
+    color: var(--cds-text-helper);
+    font-size: 0.875rem;
+    padding: 1rem 0;
+  }
+
+  &__table {
+    width: 100%;
+  }
+
+  &__group-row {
+    // Override Carbon default header background
+    .cds--table-header-label {
+      text-transform: uppercase;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-align: center;
+    }
+  }
+
+  &__group-header {
+    text-align: center !important;
+    border-bottom: 2px solid var(--cds-border-subtle);
+  }
+
+  &__pagination {
+    border-top: 1px solid var(--cds-border-subtle);
+  }
+}
+
+// Column group background tints
+.migration-table__group--classic {
+  // Neutral — default layer, no extra tint
+  background: var(--cds-layer-accent);
+}
+
+.migration-table__group--vpc {
+  // Green tint
+  background: rgba(36, 161, 72, 0.12);
+}
+
+.migration-table__group--migration {
+  // Blue tint
+  background: rgba(15, 98, 254, 0.10);
+}
+
+.migration-table__group--impact {
+  // Yellow tint
+  background: rgba(241, 194, 27, 0.10);
+}
+
+// Cell-level tints (subtler for data rows)
+.cds--data-table tbody td.migration-table__group--classic {
+  background: transparent;
+}
+
+.cds--data-table tbody td.migration-table__group--vpc {
+  background: rgba(36, 161, 72, 0.04);
+}
+
+.cds--data-table tbody td.migration-table__group--migration {
+  background: rgba(15, 98, 254, 0.04);
+}
+
+.cds--data-table tbody td.migration-table__group--impact {
+  background: rgba(241, 194, 27, 0.04);
+}
+
+.remediation-resources {
+  margin-top: 0.5rem;
+
+  &__label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--cds-text-primary);
+  }
+
+  &__hostname {
+    font-weight: 500;
+  }
+
+  &__detail {
+    color: var(--cds-text-helper);
+    font-size: 0.8125rem;
+  }
+
+  &__more {
+    margin-top: 0.25rem;
+    padding: 0;
+    font-size: 0.8125rem;
+  }
+}

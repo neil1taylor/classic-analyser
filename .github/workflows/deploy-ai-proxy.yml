@@ -1,0 +1,59 @@
+name: Deploy AI Proxy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ai-proxy/**'
+  workflow_dispatch:
+
+env:
+  REGISTRY: us.icr.io
+  NAMESPACE: infra-explorer
+  APP_NAME: ai-proxy
+  CE_PROJECT: infrastructure-explorer
+  CE_REGION: us-south
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install IBM Cloud CLI
+        run: |
+          curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
+          ibmcloud plugin install container-registry
+          ibmcloud plugin install code-engine
+
+      - name: Login to IBM Cloud
+        run: |
+          ibmcloud login --apikey "${{ secrets.IBM_CLOUD_API_KEY }}" -r ${{ env.CE_REGION }}
+          ibmcloud cr login --client docker
+
+      - name: Build and push image
+        working-directory: ai-proxy
+        run: |
+          docker build -t ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/${{ env.APP_NAME }}:${{ github.sha }} .
+          docker tag ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/${{ env.APP_NAME }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/${{ env.APP_NAME }}:latest
+          docker push ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/${{ env.APP_NAME }}:${{ github.sha }}
+          docker push ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/${{ env.APP_NAME }}:latest
+
+      - name: Deploy to Code Engine
+        run: |
+          ibmcloud ce project select --name ${{ env.CE_PROJECT }}
+          ibmcloud ce app update \
+            --name ${{ env.APP_NAME }} \
+            --image ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/${{ env.APP_NAME }}:${{ github.sha }} \
+            --env WATSONX_API_KEY="${{ secrets.WATSONX_API_KEY }}" \
+            --env WATSONX_PROJECT_ID="${{ secrets.WATSONX_PROJECT_ID }}" \
+            --env WATSONX_URL="${{ secrets.WATSONX_URL }}" \
+            --env AI_PROXY_SECRET="${{ secrets.AI_PROXY_SECRET }}" \
+            --env NODE_ENV=production \
+            --env PORT=8080
+
+      - name: Verify deployment
+        run: |
+          URL=$(ibmcloud ce app get --name ${{ env.APP_NAME }} --output url)
+          echo "Deployed to: ${URL}"
+          curl -sf "${URL}/health" || echo "Health check pending..."

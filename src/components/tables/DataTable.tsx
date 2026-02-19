@@ -1,0 +1,365 @@
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import { Pagination, Tooltip } from '@carbon/react';
+import { ArrowUp, ArrowDown, ArrowsVertical, ChevronRight } from '@carbon/icons-react';
+import type { ColumnDefinition } from '@/types/resources';
+import { get, formatValue } from '@/utils/formatters';
+import { useTableState } from '@/hooks/useTableState';
+import { useExport } from '@/hooks/useExport';
+import { useData } from '@/contexts/DataContext';
+import TableToolbar from '@/components/tables/TableToolbar';
+import ColumnFilter from '@/components/tables/ColumnFilter';
+import ColumnResizer from '@/components/tables/ColumnResizer';
+import RowDetailPanel from '@/components/tables/RowDetailPanel';
+import ExportDialog from '@/components/common/ExportDialog';
+import type { ExportScope } from '@/components/common/ExportDialog';
+
+interface DataTableProps {
+  resourceKey: string;
+  columns: ColumnDefinition[];
+  data: Record<string, unknown>[];
+}
+
+const ROW_HEIGHT = 40;
+
+const AppDataTable: React.FC<DataTableProps> = ({ resourceKey, columns, data }) => {
+  const {
+    sortColumn,
+    sortDirection,
+    filters,
+    visibleColumns,
+    selectedRows,
+    globalSearch,
+    filteredAndSortedData,
+    paginatedData,
+    currentPage,
+    pageSize,
+    setPage,
+    setPageSize,
+    setSort,
+    setFilter,
+    toggleColumn,
+    setVisibleColumns,
+    toggleRow,
+    toggleAllRows,
+    setGlobalSearch,
+  } = useTableState(columns, data);
+
+  const { collectedData } = useData();
+  const { exportTable, exportSelected, isExporting } = useExport();
+  const [exportDialogOpen, setExportDialogOpen] = useState(false);
+  const [expandedRow, setExpandedRow] = useState<number | null>(null);
+
+  // Reset expanded row on page change
+  useEffect(() => {
+    setExpandedRow(null);
+  }, [currentPage]);
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
+    const widths: Record<string, number> = {};
+    columns.forEach((col) => {
+      widths[col.field] = 150;
+    });
+    return widths;
+  });
+
+  const handleResize = useCallback((field: string, delta: number) => {
+    setColumnWidths((prev) => ({
+      ...prev,
+      [field]: Math.max(60, (prev[field] || 150) + delta),
+    }));
+  }, []);
+
+  const filteredColumns = useMemo(
+    () => columns.filter((col) => visibleColumns.includes(col.field)),
+    [columns, visibleColumns]
+  );
+
+  const pageOffset = (currentPage - 1) * pageSize;
+
+  const allSelected = filteredAndSortedData.length > 0 && selectedRows.size === filteredAndSortedData.length;
+
+  const getSortIcon = (field: string) => {
+    if (sortColumn !== field || sortDirection === 'none') return ArrowsVertical;
+    return sortDirection === 'asc' ? ArrowUp : ArrowDown;
+  };
+
+  const handleExport = async (scope: ExportScope, _filteredOnly: boolean) => {
+    switch (scope) {
+      case 'all':
+      case 'currentTable':
+        await exportTable(resourceKey, filteredAndSortedData);
+        break;
+      case 'selectedRows': {
+        const selected = filteredAndSortedData.filter((_, i) => selectedRows.has(i));
+        await exportSelected(resourceKey, selected);
+        break;
+      }
+    }
+  };
+
+  return (
+    <div>
+      <TableToolbar
+        columns={columns}
+        visibleColumns={visibleColumns}
+        globalSearch={globalSearch}
+        onSearchChange={setGlobalSearch}
+        onColumnsChange={setVisibleColumns}
+        onExport={() => setExportDialogOpen(true)}
+        totalRows={data.length}
+        filteredRows={filteredAndSortedData.length}
+        selectedCount={selectedRows.size}
+        isExporting={isExporting}
+      />
+
+      <div style={{ overflowX: 'auto', border: '1px solid var(--cds-border-subtle)' }}>
+        {/* Header */}
+        <div style={{ display: 'flex', borderBottom: '2px solid var(--cds-border-strong)', background: 'var(--cds-layer-accent)', width: 'fit-content', minWidth: '100%' }}>
+          <div style={{ width: '36px', minWidth: '36px' }} />
+          <div
+            style={{
+              width: '48px',
+              minWidth: '48px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '0.5rem 0',
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={allSelected}
+              onChange={toggleAllRows}
+              aria-label="Select all rows"
+            />
+          </div>
+          {filteredColumns.map((col) => {
+            const SortIcon = getSortIcon(col.field);
+            const width = columnWidths[col.field] || 150;
+
+            return (
+              <div
+                key={col.field}
+                style={{
+                  position: 'relative',
+                  width: `${width}px`,
+                  minWidth: `${width}px`,
+                  padding: '0.5rem 0.75rem',
+                  fontWeight: 600,
+                  fontSize: '0.875rem',
+                  cursor: col.sortable ? 'pointer' : 'default',
+                  userSelect: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.25rem',
+                }}
+                onClick={col.sortable ? () => setSort(col.field) : undefined}
+              >
+                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {col.header}
+                </span>
+                {col.sortable && <SortIcon size={14} />}
+                <ColumnResizer columnField={col.field} onResize={handleResize} />
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Filter row */}
+        <div style={{ display: 'flex', borderBottom: '1px solid var(--cds-border-subtle)', background: 'var(--cds-layer)', width: 'fit-content', minWidth: '100%' }}>
+          <div style={{ width: '36px', minWidth: '36px' }} />
+          <div style={{ width: '48px', minWidth: '48px' }} />
+          {filteredColumns.map((col) => {
+            const width = columnWidths[col.field] || 150;
+            return (
+              <div
+                key={col.field}
+                style={{
+                  width: `${width}px`,
+                  minWidth: `${width}px`,
+                  padding: '0.25rem',
+                }}
+              >
+                <ColumnFilter
+                  field={col.field}
+                  header={col.header}
+                  value={filters[col.field] || ''}
+                  onChange={setFilter}
+                />
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Body */}
+        {filteredAndSortedData.length === 0 ? (
+          <div
+            style={{
+              padding: '3rem',
+              textAlign: 'center',
+              color: 'var(--cds-text-secondary)',
+              fontSize: '0.875rem',
+            }}
+          >
+            {data.length === 0 ? 'No data collected for this resource type.' : 'No rows match the current filters.'}
+          </div>
+        ) : (
+          <div>
+            {paginatedData.map((row, localIndex) => {
+              const globalIndex = pageOffset + localIndex;
+              const isSelected = selectedRows.has(globalIndex);
+              const isExpanded = expandedRow === globalIndex;
+              return (
+                <React.Fragment key={globalIndex}>
+                  <div
+                    role="row"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      borderBottom: '1px solid var(--cds-border-subtle)',
+                      backgroundColor: isSelected
+                        ? 'var(--cds-layer-selected)'
+                        : localIndex % 2 === 0
+                          ? 'var(--cds-layer)'
+                          : 'var(--cds-layer-accent)',
+                      height: `${ROW_HEIGHT}px`,
+                      cursor: 'pointer',
+                      width: 'fit-content',
+                      minWidth: '100%',
+                    }}
+                    onClick={() => toggleRow(globalIndex)}
+                    aria-selected={isSelected}
+                  >
+                    <div
+                      style={{
+                        width: '36px',
+                        minWidth: '36px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setExpandedRow(isExpanded ? null : globalIndex);
+                      }}
+                      aria-label={isExpanded ? 'Collapse row' : 'Expand row'}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          setExpandedRow(isExpanded ? null : globalIndex);
+                        }
+                      }}
+                    >
+                      <ChevronRight
+                        size={16}
+                        style={{
+                          transition: 'transform 150ms',
+                          transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+                        }}
+                      />
+                    </div>
+                    <div
+                      style={{
+                        width: '48px',
+                        minWidth: '48px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => toggleRow(globalIndex)}
+                        aria-label={`Select row ${globalIndex + 1}`}
+                      />
+                    </div>
+                    {filteredColumns.map((col) => {
+                      const value = get(row, col.field);
+                      const formatted = formatValue(value, col.dataType, col.field);
+                      const isEstimated = col.field === 'recurringFee' && get(row, 'estimatedCost') === true;
+                      const isNoBilling = col.field === 'recurringFee' && get(row, 'noBillingItem') === true;
+                      const width = columnWidths[col.field] || 150;
+
+                      return (
+                        <div
+                          key={col.field}
+                          role="cell"
+                          style={{
+                            width: `${width}px`,
+                            minWidth: `${width}px`,
+                            padding: '0 0.75rem',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                            fontSize: '0.875rem',
+                          }}
+                          title={isEstimated ? undefined : isNoBilling ? 'Hourly VSI with no active billing item' : formatted}
+                        >
+                          {isNoBilling ? (
+                            <span style={{ fontSize: '0.75rem', color: 'var(--cds-text-helper)', fontStyle: 'italic' }}>
+                              No billing item
+                            </span>
+                          ) : (
+                            <>
+                              {formatted}
+                              {isEstimated && (
+                                <Tooltip label="Estimated from hourly rate — actual cost may differ" align="bottom">
+                                  <span style={{ fontSize: '0.75rem', color: 'var(--cds-text-helper)', marginLeft: '0.25rem' }}>
+                                    (est.)
+                                  </span>
+                                </Tooltip>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {isExpanded && (
+                    <RowDetailPanel
+                      row={row}
+                      resourceKey={resourceKey}
+                      columns={columns}
+                      collectedData={collectedData}
+                    />
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {filteredAndSortedData.length > 0 && (
+        <Pagination
+          totalItems={filteredAndSortedData.length}
+          pageSize={pageSize}
+          pageSizes={[10, 25, 50, 100]}
+          page={currentPage}
+          onChange={({ page, pageSize: newPageSize }: { page: number; pageSize: number }) => {
+            if (newPageSize !== pageSize) {
+              setPageSize(newPageSize);
+            } else {
+              setPage(page);
+            }
+          }}
+        />
+      )}
+
+      <ExportDialog
+        open={exportDialogOpen}
+        onClose={() => setExportDialogOpen(false)}
+        onExport={handleExport}
+        hasSelectedRows={selectedRows.size > 0}
+        hasCurrentTable
+        isExporting={isExporting}
+      />
+    </div>
+  );
+};
+
+export default AppDataTable;
