@@ -853,6 +853,5 @@ export function useTopologyData(
         directLinks: directLinks.length,
       },
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collectedData, datacenterFilter, visibleLayers]);
 }
