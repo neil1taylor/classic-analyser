@@ -158,7 +158,28 @@ const ApiKeyForm: React.FC = () => {
           <div style={{ flex: 1, height: '1px', background: 'var(--cds-border-subtle)' }} />
         </div>
 
-        <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+        <p
+          style={{
+            marginTop: '1rem',
+            fontSize: '0.75rem',
+            color: 'var(--cds-text-secondary)',
+            textAlign: 'center',
+          }}
+        >
+          Don&apos;t have an XLSX file? Use{' '}
+          <Link
+            href="https://github.com/neil1taylor/cloud-harvester"
+            target="_blank"
+            rel="noopener noreferrer"
+            inline
+            size="sm"
+          >
+            cloud-harvester
+          </Link>{' '}
+          to generate one.
+        </p>
+
+        <div style={{ marginTop: '0.5rem', textAlign: 'center' }}>
           <ImportButton />
         </div>
 
