@@ -2,7 +2,7 @@
 
 export type MigrationStatus = 'ready' | 'needs-work' | 'blocked' | 'not-applicable';
 export type ComplexityCategory = 'Low' | 'Medium' | 'High' | 'Very High';
-export type ProfileFamily = 'balanced' | 'compute' | 'memory' | 'very-high-memory' | 'ultra-high-memory';
+export type ProfileFamily = 'balanced' | 'compute' | 'memory' | 'very-high-memory' | 'ultra-high-memory' | 'gpu';
 export type OSEffort = 'none' | 'minimal' | 'moderate' | 'significant';
 export type StorageMigrationStrategy = 'snapshot' | 'replication' | 'application-level';
 export type NetworkComplexity = 'low' | 'medium' | 'high' | 'very-high';
@@ -29,6 +29,7 @@ export interface VPCProfile {
   memory: number;       // GB
   bandwidth: number;    // Gbps
   estimatedCost: number; // $/month
+  hourlyRate?: number;   // $/hour
 }
 
 // ── OS Compatibility ─────────────────────────────────────────────────────
@@ -387,12 +388,14 @@ export type MigrationAnalysisStatus = 'idle' | 'running' | 'complete' | 'error';
 
 // ── Dynamic VPC Pricing ─────────────────────────────────────────────────
 
-export interface VPCPricingData {
-  generatedAt: string;
-  region: string;
-  source?: 'live-catalog' | 'fallback-file';
-  profiles: Record<string, { monthlyCost: number }>;
-  bareMetalProfiles?: Record<string, { monthlyCost: number }>;
+export interface VPCPricingEntry {
+  monthlyCost: number;
+  hourlyRate?: number;
+}
+
+export interface VPCRegionalPricingData {
+  profiles: Record<string, VPCPricingEntry>;
+  bareMetalProfiles?: Record<string, VPCPricingEntry>;
   storage: {
     'block-general': number;
     'block-5iops': number;
@@ -404,6 +407,26 @@ export interface VPCPricingData {
     'vpn-gateway': number;
     'load-balancer': number;
   };
+}
+
+export interface VPCPricingData {
+  generatedAt: string;
+  region: string;
+  source?: 'live-catalog' | 'fallback-file';
+  profiles: Record<string, VPCPricingEntry>;
+  bareMetalProfiles?: Record<string, VPCPricingEntry>;
+  storage: {
+    'block-general': number;
+    'block-5iops': number;
+    'block-10iops': number;
+    file: number;
+  };
+  network: {
+    'floating-ip': number;
+    'vpn-gateway': number;
+    'load-balancer': number;
+  };
+  regionalPricing?: Record<string, VPCRegionalPricingData>;
 }
 
 // ── Pre-Requisite Checks ────────────────────────────────────────────────

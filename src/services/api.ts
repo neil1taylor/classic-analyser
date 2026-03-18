@@ -174,10 +174,11 @@ function processSSEEvent(
   }
 }
 
-export async function fetchVPCPricing(): Promise<import('@/types/migration').VPCPricingData> {
-  log.info('Fetching VPC pricing');
-  const response = await apiClient.get<import('@/types/migration').VPCPricingData>('/migration/pricing');
-  log.info('VPC pricing loaded', response.data.generatedAt);
+export async function fetchVPCPricing(region?: string): Promise<import('@/types/migration').VPCPricingData> {
+  log.info('Fetching VPC pricing', region ? `for ${region}` : '');
+  const params = region ? { region } : {};
+  const response = await apiClient.get<import('@/types/migration').VPCPricingData>('/migration/pricing', { params });
+  log.info('VPC pricing loaded', response.data.generatedAt, `region=${response.data.region}`);
   return response.data;
 }
 

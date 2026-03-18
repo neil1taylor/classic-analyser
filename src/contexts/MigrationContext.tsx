@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
 import type {
   MigrationPreferences,
   MigrationAnalysisOutput,
@@ -41,25 +41,33 @@ export function MigrationProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [pricing, setPricing] = useState<VPCPricingData | null>(null);
   const [pricingLoaded, setPricingLoaded] = useState(false);
+  const lastFetchedRegion = useRef<string | null>(null);
 
-  // Fetch VPC pricing on mount
+  // Fetch VPC pricing on mount and when target region changes
   useEffect(() => {
+    const region = preferences.targetRegion;
+    // Skip if we already fetched for this region
+    if (lastFetchedRegion.current === region) return;
+
     let cancelled = false;
-    fetchVPCPricing()
+    setPricingLoaded(false);
+    fetchVPCPricing(region)
       .then((data) => {
         if (!cancelled) {
           setPricing(data);
           setPricingLoaded(true);
+          lastFetchedRegion.current = region;
         }
       })
       .catch(() => {
         // Fallback: pricing remains null, static defaults in cost functions will be used
         if (!cancelled) {
           setPricingLoaded(true);
+          lastFetchedRegion.current = region;
         }
       });
     return () => { cancelled = true; };
-  }, []);
+  }, [preferences.targetRegion]);
 
   const setPreferences = useCallback((prefs: MigrationPreferences) => {
     setPreferencesState(prefs);
@@ -72,8 +80,9 @@ export function MigrationProvider({ children }: { children: React.ReactNode }) {
     // Use requestAnimationFrame to avoid blocking the UI
     requestAnimationFrame(() => {
       try {
-        const pricedProfiles = applyPricing(VPC_PROFILES, pricing);
-        const pricedBareMetalProfiles = applyBareMetalPricing(VPC_BARE_METAL_PROFILES, pricing);
+        const targetRegion = preferences.targetRegion;
+        const pricedProfiles = applyPricing(VPC_PROFILES, pricing, targetRegion);
+        const pricedBareMetalProfiles = applyBareMetalPricing(VPC_BARE_METAL_PROFILES, pricing, targetRegion);
         const result = runMigrationAnalysis(collectedData, preferences, pricedProfiles, pricing, pricedBareMetalProfiles);
         setAnalysisResult(result);
         setStatus('complete');
