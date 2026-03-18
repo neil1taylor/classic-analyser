@@ -13,6 +13,7 @@ import TopologyPage from '@/pages/TopologyPage';
 import CostsPage from '@/pages/CostsPage';
 import GeographyPage from '@/pages/GeographyPage';
 import MigrationPage from '@/pages/MigrationPage';
+import VSIProfileGuidePage from '@/pages/VSIProfileGuidePage';
 import RoutesPage from '@/pages/RoutesPage';
 import DocsHub from '@/components/docs/DocsHub';
 import VpcDashboardPage from '@/pages/VpcDashboardPage';
@@ -198,6 +199,16 @@ const App: React.FC = () => {
             <ProtectedRoute requiredMode="classic">
               <AuthenticatedLayout>
                 <MigrationPage />
+              </AuthenticatedLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/migration/vsi-profile-guide"
+          element={
+            <ProtectedRoute requiredMode="classic">
+              <AuthenticatedLayout>
+                <VSIProfileGuidePage />
               </AuthenticatedLayout>
             </ProtectedRoute>
           }

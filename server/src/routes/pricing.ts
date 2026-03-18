@@ -17,12 +17,6 @@ const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 const CATALOG_BASE = 'https://globalcatalog.cloud.ibm.com/api/v1';
 const HOURS_PER_MONTH = 730;
 
-// All VPC regions to fetch pricing for
-const VPC_REGIONS = [
-  'au-syd', 'br-sao', 'ca-mon', 'ca-tor', 'eu-de', 'eu-es',
-  'eu-gb', 'in-che', 'in-mum', 'jp-osa', 'jp-tok', 'us-east', 'us-south',
-];
-
 interface CatalogResource {
   id: string;
   name: string;
