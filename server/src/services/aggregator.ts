@@ -230,18 +230,25 @@ async function runPhase(
   return results;
 }
 
+export interface AuthConfig {
+  apiKey?: string;
+  iamToken?: string;
+}
+
 export interface CollectOptions {
   skipBilling?: boolean;
 }
 
 export async function collectAllData(
-  apiKey: string,
+  auth: AuthConfig,
   res: Response,
   abortSignal?: { aborted: boolean },
   options?: CollectOptions,
 ): Promise<void> {
   const startTime = Date.now();
-  const client = new SoftLayerClient(apiKey);
+  const client = auth.iamToken
+    ? SoftLayerClient.fromIamToken(auth.iamToken)
+    : new SoftLayerClient(auth.apiKey!);
   const errors: CollectionError[] = [];
   let currentPhaseName = '';
 
@@ -443,11 +450,14 @@ export async function collectAllData(
     if (abortSignal?.aborted) return;
 
     // Start VMware IAM token exchange in parallel with deep scan setup
-    const vmwareClient = new VMwareClient(apiKey);
+    const vmwareClient = auth.iamToken
+      ? VMwareClient.fromIamToken(auth.iamToken)
+      : new VMwareClient(auth.apiKey!);
     const vmwareAvailablePromise = vmwareClient.isAvailable();
 
-    // Start IAM client for Transit Gateways + Direct Link (reuses same token exchange)
-    const iamClient = new VpcClient(apiKey);
+    const iamClient = auth.iamToken
+      ? VpcClient.fromIamToken(auth.iamToken)
+      : new VpcClient(auth.apiKey!);
     const iamAvailablePromise = iamClient.isAvailable();
 
     currentPhaseName = 'Deep Scan';

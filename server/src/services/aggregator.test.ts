@@ -93,7 +93,7 @@ describe('collectAllData', () => {
   });
 
   it('sends SSE progress events during collection', async () => {
-    await collectAllData('test-key', mockRes as unknown as Response);
+    await collectAllData({ apiKey: 'test-key' }, mockRes as unknown as Response);
 
     expect(mockRes.write).toHaveBeenCalled();
     const progressEvents = written.filter((w) => w.includes('event: progress'));
@@ -101,7 +101,7 @@ describe('collectAllData', () => {
   });
 
   it('sends complete event at end', async () => {
-    await collectAllData('test-key', mockRes as unknown as Response);
+    await collectAllData({ apiKey: 'test-key' }, mockRes as unknown as Response);
 
     const completeEvents = written.filter((w) => w.includes('event: complete'));
     expect(completeEvents.length).toBe(1);
@@ -109,21 +109,21 @@ describe('collectAllData', () => {
 
   it('respects abort signal', async () => {
     const abortSignal = { aborted: true };
-    await collectAllData('test-key', mockRes as unknown as Response, abortSignal);
+    await collectAllData({ apiKey: 'test-key' }, mockRes as unknown as Response, abortSignal);
 
     const completeEvents = written.filter((w) => w.includes('event: complete'));
     expect(completeEvents.length).toBe(0);
   });
 
   it('sends data events for resources', async () => {
-    await collectAllData('test-key', mockRes as unknown as Response);
+    await collectAllData({ apiKey: 'test-key' }, mockRes as unknown as Response);
 
     const dataEvents = written.filter((w) => w.includes('event: data'));
     expect(dataEvents.length).toBeGreaterThan(0);
   });
 
   it('uses two-phase collection (shallow + deep)', async () => {
-    await collectAllData('test-key', mockRes as unknown as Response);
+    await collectAllData({ apiKey: 'test-key' }, mockRes as unknown as Response);
 
     const dataLines = written
       .filter((w) => w.startsWith('data:'))

@@ -23,12 +23,14 @@ interface CollectorTask {
 }
 
 export async function collectAllPowerVsData(
-  apiKey: string,
+  auth: { apiKey?: string; iamToken?: string },
   res: Response,
   abortSignal: { aborted: boolean },
 ): Promise<void> {
   const startTime = Date.now();
-  const client = new PowerVsClient(apiKey);
+  const client = auth.iamToken
+    ? PowerVsClient.fromIamToken(auth.iamToken)
+    : new PowerVsClient(auth.apiKey!);
   const errors: PowerVsCollectionError[] = [];
   let completedResources = 0;
 
@@ -189,7 +191,9 @@ export async function collectAllPowerVsData(
     // ── Phase 3: Transit Gateways (global, via VPC API) ─────────────
     // TGWs connect to PowerVS workspaces; collect them so the topology
     // diagram can show the TGW → Connection → Workspace hierarchy.
-    const vpcClient = new VpcClient(apiKey);
+    const vpcClient = auth.iamToken
+      ? VpcClient.fromIamToken(auth.iamToken)
+      : new VpcClient(auth.apiKey!);
     let collectedTransitGateways: Awaited<ReturnType<typeof getTransitGateways>> = [];
 
     try {

@@ -23,6 +23,12 @@ export class SoftLayerClient {
     this.authHeader = `Basic ${credentials}`;
   }
 
+  static fromIamToken(token: string): SoftLayerClient {
+    const client = Object.create(SoftLayerClient.prototype) as SoftLayerClient;
+    client.authHeader = `Bearer ${token}`;
+    return client;
+  }
+
   private buildUrl(options: SoftLayerRequestOptions): string {
     const { service, method, objectMask, resultLimit, offset, additionalParams } = options;
 

@@ -12,6 +12,7 @@ export type LogCategory =
   | 'Import'
   | 'Export'
   | 'Auth'
+  | 'OAuth'
   | 'UI';
 
 const API_KEY_PATTERN = /[A-Za-z0-9_-]{32,}/g;

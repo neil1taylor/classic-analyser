@@ -18,7 +18,7 @@ interface UseDataCollectionReturn {
 }
 
 export function useDataCollection(): UseDataCollectionReturn {
-  const { apiKey } = useAuth();
+  const { apiKey, iamToken, authMode } = useAuth();
   const {
     collectionStatus,
     setResourceData,
@@ -33,13 +33,13 @@ export function useDataCollection(): UseDataCollectionReturn {
   const isCollecting = collectionStatus === 'collecting';
 
   const startCollection = useCallback((options?: CollectionOptions) => {
-    if (!apiKey) return;
+    if (!apiKey && !iamToken) return;
 
     log.info('Starting data collection', options);
     clearData();
     setStatus('collecting');
 
-    const controller = collectDataStream(apiKey, {
+    const controller = collectDataStream(apiKey || '', {
       onProgress: (progress) => {
         setProgress(progress);
       },
@@ -57,10 +57,10 @@ export function useDataCollection(): UseDataCollectionReturn {
         setStatus('complete');
         abortControllerRef.current = null;
       },
-    }, options);
+    }, options, { authMode: authMode || undefined, iamToken: iamToken || undefined });
 
     abortControllerRef.current = controller;
-  }, [apiKey, clearData, setStatus, setProgress, setResourceData, addError, setCollectionDuration]);
+  }, [apiKey, iamToken, authMode, clearData, setStatus, setProgress, setResourceData, addError, setCollectionDuration]);
 
   const cancelCollection = useCallback(() => {
     log.warn('Collection cancelled by user');

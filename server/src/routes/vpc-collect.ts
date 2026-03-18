@@ -7,8 +7,6 @@ import logger from '../utils/logger.js';
 const router = Router();
 
 router.get('/stream', apiKeyMiddleware, async (req: Request, res: Response): Promise<void> => {
-  const apiKey = req.apiKey!;
-
   // Set SSE headers
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
@@ -29,7 +27,10 @@ router.get('/stream', apiKeyMiddleware, async (req: Request, res: Response): Pro
   });
 
   try {
-    await collectAllVpcData(apiKey, res, abortSignal);
+    const auth = req.authMode === 'iam'
+      ? { iamToken: req.iamToken! }
+      : { apiKey: req.apiKey! };
+    await collectAllVpcData(auth, res, abortSignal);
   } catch (err) {
     const error = err as Error;
     logger.error('VPC collection stream error', { message: error.message });

@@ -9,6 +9,7 @@ const DIRECT_LINK_API_BASE = 'https://directlink.cloud.ibm.com';
 const DIRECT_LINK_API_VERSION = '2024-06-01';
 const MAX_RETRIES = 3;
 const RETRY_DELAYS = [1000, 2000, 4000];
+const REQUEST_TIMEOUT_MS = 30000; // 30 second timeout per request
 
 export class VpcClient {
   private apiKey: string;
@@ -17,6 +18,14 @@ export class VpcClient {
 
   constructor(apiKey: string) {
     this.apiKey = apiKey;
+  }
+
+  static fromIamToken(token: string): VpcClient {
+    const client = Object.create(VpcClient.prototype) as VpcClient;
+    client.apiKey = '';
+    client.accessToken = token;
+    client.tokenExpiry = Date.now() / 1000 + 3600;
+    return client;
   }
 
   /**
@@ -52,6 +61,7 @@ export class VpcClient {
         'Accept': 'application/json',
       },
       body: body.toString(),
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
 
     if (!response.ok) {
@@ -92,6 +102,7 @@ export class VpcClient {
             'Authorization': `Bearer ${token}`,
             'Accept': 'application/json',
           },
+          signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
         });
 
         if (!response.ok) {
@@ -197,6 +208,7 @@ export class VpcClient {
             'Authorization': `Bearer ${token}`,
             'Accept': 'application/json',
           },
+          signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
         });
 
         if (!response.ok) {
@@ -272,6 +284,7 @@ export class VpcClient {
             'Content-Type': 'application/json',
           },
           body: body ? JSON.stringify(body) : undefined,
+          signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
         });
 
         if (!response.ok) {
@@ -375,6 +388,7 @@ export class VpcClient {
             'Authorization': `Bearer ${token}`,
             'Accept': 'application/json',
           },
+          signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
         });
 
         if (!response.ok) {
@@ -459,6 +473,35 @@ export class VpcClient {
     }
 
     return allItems;
+  }
+
+  /**
+   * Make a DELETE request to the Transit Gateway API.
+   */
+  async deleteTransitGateway(path: string): Promise<void> {
+    const separator = path.includes('?') ? '&' : '?';
+    const url = `${TRANSIT_GW_API_BASE}/v1/${path}${separator}version=${TRANSIT_GW_API_VERSION}`;
+
+    try {
+      const token = await this.exchangeToken();
+
+      const response = await fetch(url, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
+        },
+        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+      });
+
+      // 204 No Content is the expected success response; 404 means already gone
+      if (!response.ok && response.status !== 204 && response.status !== 404) {
+        logger.warn(`Transit GW DELETE failed: ${response.status} ${response.statusText}`, { path });
+      }
+    } catch (err) {
+      const error = err as Error;
+      logger.warn('Transit GW DELETE error', { path, message: error.message });
+    }
   }
 
   private sleep(ms: number): Promise<void> {

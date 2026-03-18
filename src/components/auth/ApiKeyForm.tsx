@@ -13,12 +13,33 @@ import { useAuth } from '@/contexts/AuthContext';
 import ImportButton from '@/components/auth/ImportButton';
 
 const ApiKeyForm: React.FC = () => {
-  const { login } = useAuth();
+  const { login, loginWithOAuth } = useAuth();
   const navigate = useNavigate();
   const [apiKey, setApiKey] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isOAuthLoading, setIsOAuthLoading] = useState(false);
+  const [oauthAvailable, setOauthAvailable] = useState<boolean | null>(null);
+
+  React.useEffect(() => {
+    fetch('/api/auth/oauth/config')
+      .then((r) => {
+        setOauthAvailable(r.ok);
+      })
+      .catch(() => setOauthAvailable(false));
+  }, []);
+
+  const handleOAuthLogin = async () => {
+    setError(null);
+    setIsOAuthLoading(true);
+    try {
+      await loginWithOAuth();
+    } catch (err) {
+      setIsOAuthLoading(false);
+      setError(err instanceof Error ? err.message : 'Failed to initiate IBMid login.');
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -144,6 +165,38 @@ const ApiKeyForm: React.FC = () => {
             </Button>
           )}
         </form>
+
+        {oauthAvailable && (
+          <>
+            <div
+              style={{
+                marginTop: '1.5rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+              }}
+            >
+              <div style={{ flex: 1, height: '1px', background: 'var(--cds-border-subtle)' }} />
+              <span style={{ fontSize: '0.75rem', color: 'var(--cds-text-secondary)' }}>or</span>
+              <div style={{ flex: 1, height: '1px', background: 'var(--cds-border-subtle)' }} />
+            </div>
+
+            <div style={{ marginTop: '1rem' }}>
+              {isOAuthLoading ? (
+                <InlineLoading description="Redirecting to IBMid..." status="active" />
+              ) : (
+                <Button
+                  kind="tertiary"
+                  onClick={handleOAuthLogin}
+                  disabled={isValidating}
+                  style={{ width: '100%' }}
+                >
+                  Login with IBMid
+                </Button>
+              )}
+            </div>
+          </>
+        )}
 
         <div
           style={{

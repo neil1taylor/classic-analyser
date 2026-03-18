@@ -46,6 +46,14 @@ export class PowerVsClient {
     this.apiKey = apiKey;
   }
 
+  static fromIamToken(token: string): PowerVsClient {
+    const client = Object.create(PowerVsClient.prototype) as PowerVsClient;
+    client.apiKey = '';
+    client.accessToken = token;
+    client.tokenExpiry = Date.now() / 1000 + 3600;
+    return client;
+  }
+
   getAccountId(): string | null {
     if (!this.accessToken) return null;
     try {

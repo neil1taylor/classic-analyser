@@ -303,6 +303,63 @@ const ROUTE_REPORT_MAX_ATTEMPTS = 40;     // Up to 2 minutes total timeout
 export type RouteReportProgressCallback = (message: string) => void;
 
 /**
+ * Clean up any existing route reports for a transit gateway before creating a new one.
+ * The API may throttle or block new report creation if stale reports exist.
+ */
+async function cleanupExistingRouteReports(
+  client: VpcClient,
+  tgId: string,
+  tgName: string,
+): Promise<TransitGatewayRouteReport | null> {
+  try {
+    const response = await client.requestTransitGateway<{ route_reports?: TransitGatewayRouteReport[] }>(
+      `transit_gateways/${tgId}/route_reports`,
+    );
+    const reports = response.route_reports ?? [];
+    if (reports.length === 0) return null;
+
+    logger.debug(`TGW ${tgName}: found ${reports.length} existing route report(s)`);
+
+    // If there's a recently completed report, reuse it instead of creating a new one
+    const complete = reports.find((r) => r.status === 'complete');
+    if (complete) {
+      logger.debug(`TGW ${tgName}: reusing existing complete route report ${complete.id}`);
+      return complete;
+    }
+
+    // If there's a pending report, wait for it instead of creating a new one
+    const pending = reports.find((r) => r.status === 'pending');
+    if (pending) {
+      logger.debug(`TGW ${tgName}: found pending route report ${pending.id}, will poll it`);
+      return pending;
+    }
+
+    // Delete any failed or stale reports
+    for (const report of reports) {
+      logger.debug(`TGW ${tgName}: deleting stale route report ${report.id} (status: ${report.status})`);
+      await client.deleteTransitGateway(`transit_gateways/${tgId}/route_reports/${report.id}`);
+    }
+  } catch (err) {
+    const error = err as Error;
+    logger.warn(`TGW ${tgName}: failed to list existing route reports`, { message: error.message });
+  }
+  return null;
+}
+
+/**
+ * Delete a route report after extracting data.
+ */
+async function deleteRouteReport(client: VpcClient, tgId: string, reportId: string, tgName: string): Promise<void> {
+  try {
+    await client.deleteTransitGateway(`transit_gateways/${tgId}/route_reports/${reportId}`);
+    logger.debug(`TGW ${tgName}: deleted route report ${reportId}`);
+  } catch (err) {
+    const error = err as Error;
+    logger.warn(`TGW ${tgName}: failed to delete route report ${reportId}`, { message: error.message });
+  }
+}
+
+/**
  * Create and poll route reports for each transit gateway to extract reachable prefixes.
  * Also accepts connections to map tunnel IDs back to parent redundant_gre connection IDs.
  */
@@ -335,16 +392,36 @@ export async function getTransitGatewayRouteReports(
     }
   }
 
+  // Process TGWs sequentially (not concurrently) to avoid rate limiting on route report creation
   const tasks = transitGateways.map((tg, tgIndex) => async () => {
+    let reportId: string | null = null;
     try {
-      // Create route report
-      onProgress?.(`Creating route report for ${tg.name} (${tgIndex + 1}/${transitGateways.length})`);
-      const report = await client.postTransitGateway<TransitGatewayRouteReport>(
-        `transit_gateways/${tg.id}/route_reports`,
-      );
+      // Check for existing route reports — reuse complete/pending, clean up stale
+      onProgress?.(`Checking existing route reports for ${tg.name} (${tgIndex + 1}/${transitGateways.length})`);
+      const existing = await cleanupExistingRouteReports(client, tg.id, tg.name);
+
+      let current: TransitGatewayRouteReport;
+      if (existing && (existing.status === 'complete' || existing.status === 'pending')) {
+        current = existing;
+        reportId = existing.id;
+        if (existing.status === 'complete') {
+          // Fetch full report details (the list response may not include connections)
+          current = await client.requestTransitGateway<TransitGatewayRouteReport>(
+            `transit_gateways/${tg.id}/route_reports/${existing.id}`,
+          );
+        }
+      } else {
+        // Create a new route report
+        onProgress?.(`Creating route report for ${tg.name} (${tgIndex + 1}/${transitGateways.length})`);
+        const report = await client.postTransitGateway<TransitGatewayRouteReport>(
+          `transit_gateways/${tg.id}/route_reports`,
+        );
+        current = report;
+        reportId = report.id;
+        logger.debug(`TGW ${tg.name}: created route report ${report.id} (status: ${report.status})`);
+      }
 
       // Poll until complete
-      let current = report;
       for (let attempt = 0; attempt < ROUTE_REPORT_MAX_ATTEMPTS; attempt++) {
         if (current.status === 'complete') break;
         if (current.status === 'failed') {
@@ -353,13 +430,24 @@ export async function getTransitGatewayRouteReports(
         }
         onProgress?.(`Waiting for ${tg.name} route report... (${attempt + 1}/${ROUTE_REPORT_MAX_ATTEMPTS})`);
         await new Promise((r) => setTimeout(r, ROUTE_REPORT_POLL_INTERVAL));
-        current = await client.requestTransitGateway<TransitGatewayRouteReport>(
-          `transit_gateways/${tg.id}/route_reports/${current.id}`,
-        );
+        try {
+          current = await client.requestTransitGateway<TransitGatewayRouteReport>(
+            `transit_gateways/${tg.id}/route_reports/${current.id}`,
+          );
+        } catch (pollErr) {
+          const pollError = pollErr as Error & { statusCode?: number };
+          // If the report was deleted or vanished, bail out
+          if (pollError.statusCode === 404) {
+            logger.warn(`TGW ${tg.name}: route report ${current.id} disappeared during polling`);
+            return { transitGatewayId: tg.id, transitGatewayName: tg.name, prefixes: [], connectionPrefixes: [] };
+          }
+          logger.warn(`TGW ${tg.name}: poll error (attempt ${attempt + 1})`, { message: pollError.message });
+          // Continue polling — transient errors shouldn't abort
+        }
       }
 
       if (current.status !== 'complete') {
-        logger.warn(`Route report timed out for TGW ${tg.name} after ${ROUTE_REPORT_MAX_ATTEMPTS * ROUTE_REPORT_POLL_INTERVAL / 1000}s`);
+        logger.warn(`Route report timed out for TGW ${tg.name} after ${ROUTE_REPORT_MAX_ATTEMPTS * ROUTE_REPORT_POLL_INTERVAL / 1000}s (status: ${current.status})`);
         return { transitGatewayId: tg.id, transitGatewayName: tg.name, prefixes: [], connectionPrefixes: [] };
       }
 
@@ -459,15 +547,26 @@ export async function getTransitGatewayRouteReports(
       const prefixes = Array.from(prefixSet).sort();
       const connsWithRoutes = connectionPrefixes.filter(c => c.prefixes.length > 0).length;
       logger.debug(`TGW ${tg.name}: ${prefixes.length} route prefixes across ${connsWithRoutes}/${connectionPrefixes.length} connections`);
+
+      // Clean up the route report after extracting data
+      if (reportId) {
+        await deleteRouteReport(client, tg.id, reportId, tg.name);
+      }
+
       return { transitGatewayId: tg.id, transitGatewayName: tg.name, prefixes, connectionPrefixes };
     } catch (err) {
       const error = err as Error;
       logger.warn(`Route report collection failed for TGW ${tg.name}`, { message: error.message });
+      // Attempt cleanup even on failure
+      if (reportId) {
+        await deleteRouteReport(client, tg.id, reportId, tg.name);
+      }
       return { transitGatewayId: tg.id, transitGatewayName: tg.name, prefixes: [], connectionPrefixes: [] };
     }
   });
 
-  const taskResults = await runWithConcurrencyLimit(tasks, MAX_REGION_CONCURRENCY);
+  // Run route reports with low concurrency — each one involves POST + polling + DELETE
+  const taskResults = await runWithConcurrencyLimit(tasks, 2);
   for (const r of taskResults) {
     if (r) results.push(r);
   }

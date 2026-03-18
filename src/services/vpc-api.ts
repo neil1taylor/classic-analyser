@@ -39,6 +39,7 @@ interface VpcSSECallbacks {
 export function collectVpcDataStream(
   apiKey: string,
   { onProgress, onData, onError, onComplete }: VpcSSECallbacks,
+  authConfig?: { authMode?: 'apikey' | 'iam'; iamToken?: string },
 ): AbortController {
   const controller = new AbortController();
 
@@ -48,10 +49,9 @@ export function collectVpcDataStream(
 
       const response = await fetch(url, {
         method: 'GET',
-        headers: {
-          'X-API-Key': apiKey,
-          'Accept': 'text/event-stream',
-        },
+        headers: authConfig?.authMode === 'iam'
+          ? { 'Authorization': `Bearer ${authConfig.iamToken}`, 'Accept': 'text/event-stream' }
+          : { 'X-API-Key': apiKey, 'Accept': 'text/event-stream' },
         signal: controller.signal,
       });
 
