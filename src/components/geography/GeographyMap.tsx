@@ -1,5 +1,7 @@
-import React, { useState, useMemo } from 'react';
-import { ComposableMap, Geographies, Geography, Marker, ZoomableGroup } from 'react-simple-maps';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { geoNaturalEarth1, geoPath } from 'd3-geo';
+import { feature } from 'topojson-client';
+import type { Topology } from 'topojson-specification';
 import { useData } from '@/contexts/DataContext';
 import { useGeographyData, type DCMarker } from '@/hooks/useGeographyData';
 
@@ -14,16 +16,83 @@ const RESOURCE_LABELS: Record<string, string> = {
   subnets: 'Subnets',
 };
 
+const MAP_WIDTH = 960;
+const MAP_HEIGHT = 500;
+
+interface GeoFeature {
+  type: string;
+  geometry: GeoJSON.Geometry;
+  properties: Record<string, unknown>;
+}
+
 const GeographyMap: React.FC = () => {
   const { collectedData } = useData();
   const hasData = Object.keys(collectedData).length > 0;
   const { markers } = useGeographyData();
   const [selectedDC, setSelectedDC] = useState<DCMarker | null>(null);
+  const [features, setFeatures] = useState<GeoFeature[]>([]);
+  const [hoveredGeo, setHoveredGeo] = useState<number | null>(null);
+
+  // Zoom/pan state
+  const [translate, setTranslate] = useState<[number, number]>([0, 0]);
+  const [scale, setScale] = useState(1);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const dragRef = useRef<{ dragging: boolean; start: [number, number] }>({
+    dragging: false,
+    start: [0, 0],
+  });
 
   const maxServers = useMemo(
     () => Math.max(1, ...markers.map((m) => m.serverCount)),
     [markers],
   );
+
+  const projection = useMemo(
+    () =>
+      geoNaturalEarth1()
+        .scale(140 * scale)
+        .translate([
+          MAP_WIDTH / 2 + translate[0],
+          MAP_HEIGHT / 2 - 20 + translate[1],
+        ]),
+    [scale, translate],
+  );
+
+  const pathGenerator = useMemo(() => geoPath().projection(projection), [projection]);
+
+  useEffect(() => {
+    fetch(GEO_URL)
+      .then((res) => res.json())
+      .then((topo: Topology) => {
+        const geojson = feature(topo, topo.objects.countries);
+        if (geojson.type === 'FeatureCollection') {
+          setFeatures(geojson.features as GeoFeature[]);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const handleWheel = useCallback((e: React.WheelEvent) => {
+    e.preventDefault();
+    setScale((s) => Math.max(0.5, Math.min(8, s * (e.deltaY < 0 ? 1.15 : 0.87))));
+  }, []);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    if (e.button !== 0) return;
+    dragRef.current = { dragging: true, start: [e.clientX, e.clientY] };
+  }, []);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!dragRef.current.dragging) return;
+    const dx = e.clientX - dragRef.current.start[0];
+    const dy = e.clientY - dragRef.current.start[1];
+    dragRef.current.start = [e.clientX, e.clientY];
+    setTranslate((t) => [t[0] + dx, t[1] + dy]);
+  }, []);
+
+  const handleMouseUp = useCallback(() => {
+    dragRef.current.dragging = false;
+  }, []);
 
   if (!hasData) {
     return (
@@ -43,66 +112,67 @@ const GeographyMap: React.FC = () => {
       <div style={{ display: 'flex', gap: '1.5rem' }}>
         {/* Map */}
         <div style={{ flex: 1, border: '1px solid var(--cds-border-subtle)', borderRadius: 4, overflow: 'hidden', background: 'var(--cds-layer)' }}>
-          <ComposableMap
-            projectionConfig={{ scale: 140, center: [10, 20] }}
-            style={{ width: '100%', height: 500 }}
+          <svg
+            ref={svgRef}
+            viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
+            style={{ width: '100%', height: MAP_HEIGHT, cursor: dragRef.current.dragging ? 'grabbing' : 'grab' }}
+            onWheel={handleWheel}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
           >
-            <ZoomableGroup>
-              <Geographies geography={GEO_URL}>
-                {({ geographies }) =>
-                  geographies.map((geo) => (
-                    <Geography
-                      key={geo.rsmKey}
-                      geography={geo}
-                      fill="var(--cds-border-subtle, #e0e0e0)"
-                      stroke="var(--cds-background, #f4f4f4)"
-                      strokeWidth={0.5}
-                      style={{
-                        default: { outline: 'none' },
-                        hover: { outline: 'none', fill: 'var(--cds-border-strong, #8d8d8d)' },
-                        pressed: { outline: 'none' },
-                      }}
-                    />
-                  ))
-                }
-              </Geographies>
+            {/* Country fills */}
+            {features.map((geo, i) => (
+              <path
+                key={i}
+                d={pathGenerator(geo.geometry as GeoJSON.Geometry) ?? ''}
+                fill={hoveredGeo === i ? 'var(--cds-border-strong, #8d8d8d)' : 'var(--cds-border-subtle, #e0e0e0)'}
+                stroke="var(--cds-background, #f4f4f4)"
+                strokeWidth={0.5}
+                onMouseEnter={() => setHoveredGeo(i)}
+                onMouseLeave={() => setHoveredGeo(null)}
+                style={{ outline: 'none' }}
+              />
+            ))}
 
-              {markers.map((marker) => {
-                const radius = Math.max(6, Math.min(25, (marker.serverCount / maxServers) * 25));
-                const isSelected = selectedDC?.dc === marker.dc;
+            {/* Datacenter markers */}
+            {markers.map((marker) => {
+              const coords = projection([marker.lng, marker.lat]);
+              if (!coords) return null;
+              const radius = Math.max(6, Math.min(25, (marker.serverCount / maxServers) * 25));
+              const isSelected = selectedDC?.dc === marker.dc;
 
-                return (
-                  <Marker
-                    key={marker.dc}
-                    coordinates={[marker.lng, marker.lat]}
-                    onClick={() => setSelectedDC(isSelected ? null : marker)}
+              return (
+                <g
+                  key={marker.dc}
+                  transform={`translate(${coords[0]}, ${coords[1]})`}
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => setSelectedDC(isSelected ? null : marker)}
+                >
+                  <circle
+                    r={radius}
+                    fill="#0f62fe"
+                    fillOpacity={0.6}
+                    stroke={isSelected ? '#fff' : '#0f62fe'}
+                    strokeWidth={isSelected ? 3 : 1.5}
+                  />
+                  <text
+                    textAnchor="middle"
+                    y={radius + 14}
+                    style={{
+                      fontFamily: "'IBM Plex Sans', sans-serif",
+                      fill: 'var(--cds-text-primary, #161616)',
+                      fontSize: 10,
+                      fontWeight: 600,
+                    }}
                   >
-                    <g style={{ cursor: 'pointer' }}>
-                    <circle
-                      r={radius}
-                      fill="#0f62fe"
-                      fillOpacity={0.6}
-                      stroke={isSelected ? '#fff' : '#0f62fe'}
-                      strokeWidth={isSelected ? 3 : 1.5}
-                    />
-                    <text
-                      textAnchor="middle"
-                      y={radius + 14}
-                      style={{
-                        fontFamily: "'IBM Plex Sans', sans-serif",
-                        fill: 'var(--cds-text-primary, #161616)',
-                        fontSize: 10,
-                        fontWeight: 600,
-                      }}
-                    >
-                      {marker.dc}
-                    </text>
-                    </g>
-                  </Marker>
-                );
-              })}
-            </ZoomableGroup>
-          </ComposableMap>
+                    {marker.dc}
+                  </text>
+                </g>
+              );
+            })}
+          </svg>
         </div>
 
         {/* Detail panel */}
