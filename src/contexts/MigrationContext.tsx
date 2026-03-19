@@ -40,8 +40,10 @@ export function MigrationProvider({ children }: { children: React.ReactNode }) {
   const [status, setStatus] = useState<MigrationAnalysisStatus>('idle');
   const [error, setError] = useState<string | null>(null);
   const [pricing, setPricing] = useState<VPCPricingData | null>(null);
-  const [pricingLoaded, setPricingLoaded] = useState(false);
+  const [pricingFetchedRegion, setPricingFetchedRegion] = useState<string | null>(null);
   const lastFetchedRegion = useRef<string | null>(null);
+
+  const pricingLoaded = pricingFetchedRegion === preferences.targetRegion;
 
   // Fetch VPC pricing on mount and when target region changes
   useEffect(() => {
@@ -50,20 +52,18 @@ export function MigrationProvider({ children }: { children: React.ReactNode }) {
     if (lastFetchedRegion.current === region) return;
 
     let cancelled = false;
-    setPricingLoaded(false);
+    lastFetchedRegion.current = region;
     fetchVPCPricing(region)
       .then((data) => {
         if (!cancelled) {
           setPricing(data);
-          setPricingLoaded(true);
-          lastFetchedRegion.current = region;
+          setPricingFetchedRegion(region);
         }
       })
       .catch(() => {
         // Fallback: pricing remains null, static defaults in cost functions will be used
         if (!cancelled) {
-          setPricingLoaded(true);
-          lastFetchedRegion.current = region;
+          setPricingFetchedRegion(region);
         }
       });
     return () => { cancelled = true; };

@@ -36,6 +36,7 @@ const GeographyMap: React.FC = () => {
   // Zoom/pan state
   const [translate, setTranslate] = useState<[number, number]>([0, 0]);
   const [scale, setScale] = useState(1);
+  const [isDragging, setIsDragging] = useState(false);
   const svgRef = useRef<SVGSVGElement>(null);
   const dragRef = useRef<{ dragging: boolean; start: [number, number] }>({
     dragging: false,
@@ -80,6 +81,7 @@ const GeographyMap: React.FC = () => {
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (e.button !== 0) return;
     dragRef.current = { dragging: true, start: [e.clientX, e.clientY] };
+    setIsDragging(true);
   }, []);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
@@ -92,6 +94,7 @@ const GeographyMap: React.FC = () => {
 
   const handleMouseUp = useCallback(() => {
     dragRef.current.dragging = false;
+    setIsDragging(false);
   }, []);
 
   if (!hasData) {
@@ -115,7 +118,7 @@ const GeographyMap: React.FC = () => {
           <svg
             ref={svgRef}
             viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
-            style={{ width: '100%', height: MAP_HEIGHT, cursor: dragRef.current.dragging ? 'grabbing' : 'grab' }}
+            style={{ width: '100%', height: MAP_HEIGHT, cursor: isDragging ? 'grabbing' : 'grab' }}
             onWheel={handleWheel}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}

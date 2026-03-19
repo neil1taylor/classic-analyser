@@ -20,12 +20,12 @@ const CostTreemap: React.FC<CostTreemapProps> = ({ data, width = 800, height = 4
       .sum((d) => d.value ?? 0)
       .sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
 
-    const layoutRoot: HierarchyRectangularNode<TreemapNode> = treemap<TreemapNode>()
+    const treemapLayout = treemap<TreemapNode>()
       .size([width, height])
       .padding(3)
       .paddingTop(20)
-      .tile(treemapSquarify)
-      (root);
+      .tile(treemapSquarify);
+    const layoutRoot: HierarchyRectangularNode<TreemapNode> = treemapLayout(root);
 
     const categories = (data.children ?? []).map((c) => c.name);
     const colorScale = scaleOrdinal<string>().domain(categories).range(COLORS);

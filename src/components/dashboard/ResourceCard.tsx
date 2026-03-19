@@ -67,8 +67,6 @@ const ResourceCard: React.FC<ResourceCardProps> = ({
     return <SkeletonCard />;
   }
 
-  const Icon = getCategoryIcon(category);
-
   return (
     <ClickableTile
       className="metric-card"
@@ -77,7 +75,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({
     >
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-          <Icon size={20} style={{ color: 'var(--cds-icon-secondary)' }} />
+          {React.createElement(getCategoryIcon(category), { size: 20, style: { color: 'var(--cds-icon-secondary)' } })}
           <span style={{ fontSize: '0.75rem', color: 'var(--cds-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.32px' }}>
             {category}
           </span>

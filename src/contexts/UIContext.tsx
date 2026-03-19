@@ -51,18 +51,13 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
   const [chatPanelOpen, setChatPanelOpen] = useState(false);
   const [domainOverride, setDomainOverride] = useState<InfrastructureDomain | null>(null);
 
-  const activeDomain = useMemo(
-    () => domainOverride ?? domainFromPath(location.pathname),
-    [domainOverride, location.pathname],
-  );
+  const urlDomain = useMemo(() => domainFromPath(location.pathname), [location.pathname]);
 
-  // Clear override when URL changes to a different domain
-  useEffect(() => {
-    const urlDomain = domainFromPath(location.pathname);
-    if (domainOverride && urlDomain !== domainOverride) {
-      setDomainOverride(null);
-    }
-  }, [location.pathname, domainOverride]);
+  // Override is only active when URL matches the override domain
+  const activeDomain = useMemo(
+    () => (domainOverride && urlDomain === domainOverride) ? domainOverride : urlDomain,
+    [domainOverride, urlDomain],
+  );
 
   useEffect(() => {
     document.documentElement.dataset.carbonTheme = theme;

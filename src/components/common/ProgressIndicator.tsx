@@ -99,16 +99,16 @@ const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({ onCancel }) => {
 
   useEffect(() => {
     if (collectionStatus === 'collecting') {
-      startTimeRef.current = Date.now();
-      setElapsedSeconds(0);
+      const startTime = Date.now();
+      startTimeRef.current = startTime;
       const interval = setInterval(() => {
-        if (startTimeRef.current) {
-          setElapsedSeconds(Math.floor((Date.now() - startTimeRef.current) / 1000));
-        }
+        setElapsedSeconds(Math.floor((Date.now() - startTime) / 1000));
       }, 1000);
-      return () => clearInterval(interval);
+      return () => {
+        clearInterval(interval);
+        startTimeRef.current = null;
+      };
     }
-    startTimeRef.current = null;
   }, [collectionStatus]);
 
   if (collectionStatus === 'idle') {
