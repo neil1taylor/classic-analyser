@@ -9,31 +9,43 @@ import {
 } from '@carbon/react';
 import { ConnectionSignal, Checkmark } from '@carbon/icons-react';
 import { useAI } from '@/contexts/AIContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { useAISettings } from '@/hooks/useAISettings';
 import { testConnection } from '@/services/ai/aiProxyClient';
 import '@/styles/settings.scss';
 
 const SettingsPanel: React.FC = () => {
   // AI Configuration
   const { isAvailable, refreshAvailability } = useAI();
-  const [aiEnabled, setAiEnabled] = useState(false);
+  const { accountInfo } = useAuth();
+  const { aiSettings, setAISettings } = useAISettings(
+    accountInfo?.id?.toString(),
+    accountInfo?.companyName,
+  );
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<'success' | 'error' | null>(null);
 
-  // Report Branding
+  // Report Branding (not account-scoped, keep raw localStorage)
   const [clientName, setClientName] = useState('');
   const [companyName, setCompanyName] = useState('');
   const [authorName, setAuthorName] = useState('');
 
-  // Load from localStorage
+  // Load branding from localStorage
   useEffect(() => {
-    setAiEnabled(localStorage.getItem('ai_enabled') === 'true');
     setClientName(localStorage.getItem('report_client_name') || '');
     setCompanyName(localStorage.getItem('report_company_name') || '');
     setAuthorName(localStorage.getItem('report_author_name') || '');
   }, []);
 
+  const aiEnabled = aiSettings.enableInsights || aiSettings.enableChat || aiSettings.enableCostOptimization || aiSettings.enableReportEnhancement;
+
   const handleToggle = async (checked: boolean) => {
-    setAiEnabled(checked);
+    setAISettings({
+      enableInsights: checked,
+      enableCostOptimization: checked,
+      enableReportEnhancement: checked,
+      enableChat: checked,
+    });
     localStorage.setItem('ai_enabled', String(checked));
     setTestResult(null);
     await refreshAvailability();

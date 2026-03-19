@@ -2,8 +2,8 @@
 /* eslint-disable react-refresh/only-export-components */
 import { lazy, Suspense } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import { Loading } from '@carbon/react';
 import { AppLayout } from '@/components/layout';
+import { LoadingSkeleton } from '@/components/common/LoadingSkeleton';
 import AuthPage from '@/pages/AuthPage';
 
 // Detects chunk load failures (stale deploys, missing hashed assets)
@@ -37,7 +37,7 @@ function lazyWithRetry(importFn: () => Promise<{ default: React.ComponentType }>
 // Suspense wrapper for lazy-loaded pages
 export function PageLoader({ children }: { children: React.ReactNode }) {
   return (
-    <Suspense fallback={<Loading description="Loading page..." withOverlay={false} />}>
+    <Suspense fallback={<LoadingSkeleton type="page" />}>
       {children}
     </Suspense>
   );
@@ -63,6 +63,7 @@ const PowerVsResourcePage = lazyWithRetry(() => import('@/pages/PowerVsResourceP
 const PowerVsTopologyPage = lazyWithRetry(() => import('@/pages/PowerVsTopologyPage'));
 const PowerVsCostsPage = lazyWithRetry(() => import('@/pages/PowerVsCostsPage'));
 const PowerVsGeographyPage = lazyWithRetry(() => import('@/pages/PowerVsGeographyPage'));
+const ExportPage = lazyWithRetry(() => import('@/pages/ExportPage'));
 const SettingsPage = lazyWithRetry(() => import('@/pages/SettingsPage'));
 const DocsHub = lazyWithRetry(() => import('@/components/docs/DocsHub'));
 
@@ -97,6 +98,7 @@ export const router = createBrowserRouter([
       { path: 'powervs/costs', element: <PageLoader><PowerVsCostsPage /></PageLoader> },
       { path: 'powervs/geography', element: <PageLoader><PowerVsGeographyPage /></PageLoader> },
       // Shared routes
+      { path: 'export', element: <PageLoader><ExportPage /></PageLoader> },
       { path: 'settings', element: <PageLoader><SettingsPage /></PageLoader> },
       { path: 'docs', element: <PageLoader><DocsHub /></PageLoader> },
       { path: 'help', element: <Navigate to="/docs" replace /> },

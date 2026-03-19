@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useCallback } from 'react';
-import { dataReducer, initialDataState, type DataAction } from '../context/dataReducer';
+import { dataReducer, initialDataState, type DataAction } from './dataReducer';
 
 export type CollectionStatus = 'idle' | 'collecting' | 'complete' | 'error' | 'cancelled';
 export type DataSource = 'none' | 'collected' | 'imported';

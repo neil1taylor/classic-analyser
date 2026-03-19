@@ -2,6 +2,7 @@ import axios from 'axios';
 import type { AccountInfo } from '@/types/resources';
 import type { CollectionProgress, CollectionError } from '@/contexts/DataContext';
 import { createLogger } from '@/utils/logger';
+import { withRetry } from '@/utils/retry';
 
 const log = createLogger('API');
 
@@ -38,10 +39,13 @@ apiClient.interceptors.request.use((config) => {
 
 export async function validateApiKey(apiKey: string): Promise<AccountInfo> {
   log.info('Validating API key');
-  const response = await apiClient.post<{ valid: boolean; account: AccountInfo }>(
-    '/auth/validate',
-    {},
-    { headers: { 'X-API-Key': apiKey } },
+  const response = await withRetry(
+    () => apiClient.post<{ valid: boolean; account: AccountInfo }>(
+      '/auth/validate',
+      {},
+      { headers: { 'X-API-Key': apiKey } },
+    ),
+    { onRetry: (err, attempt) => log.warn(`API key validation retry ${attempt}:`, err.message) },
   );
   setApiKeyForRequests(apiKey);
   log.info('API key validated, account:', response.data.account.companyName);
@@ -187,7 +191,10 @@ function processSSEEvent(
 export async function fetchVPCPricing(region?: string): Promise<import('@/types/migration').VPCPricingData> {
   log.info('Fetching VPC pricing', region ? `for ${region}` : '');
   const params = region ? { region } : {};
-  const response = await apiClient.get<import('@/types/migration').VPCPricingData>('/migration/pricing', { params });
+  const response = await withRetry(
+    () => apiClient.get<import('@/types/migration').VPCPricingData>('/migration/pricing', { params }),
+    { onRetry: (err, attempt) => log.warn(`VPC pricing fetch retry ${attempt}:`, err.message) },
+  );
   log.info('VPC pricing loaded', response.data.generatedAt, `region=${response.data.region}`);
   return response.data;
 }

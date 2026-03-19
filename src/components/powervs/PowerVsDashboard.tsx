@@ -10,6 +10,7 @@ import { usePowerVsExport } from '@/hooks/usePowerVsExport';
 import { usePowerVsData } from '@/contexts/PowerVsDataContext';
 import { usePowerVsDashboardMetrics } from '@/hooks/usePowerVsDashboardMetrics';
 import { POWERVS_RESOURCE_TYPES } from '@/types/powervs-resources';
+import { SectionErrorBoundary } from '@/components/common/SectionErrorBoundary';
 import type { ExportScope } from '@/components/common/ExportDialog';
 import type { ExportFormat } from '@/services/export';
 
@@ -90,6 +91,7 @@ const PowerVsDashboard: React.FC = () => {
 
       {/* Summary tiles */}
       {hasData && (
+        <SectionErrorBoundary sectionName="PowerVS Summary">
         <div style={{
           display: 'flex',
           gap: '1rem',
@@ -151,6 +153,7 @@ const PowerVsDashboard: React.FC = () => {
             </div>
           )}
         </div>
+        </SectionErrorBoundary>
       )}
 
       {/* Resource cards */}

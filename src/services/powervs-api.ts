@@ -1,5 +1,6 @@
 import type { PowerVsCollectionProgress, PowerVsCollectionError } from '@/contexts/PowerVsDataContext';
 import { createLogger } from '@/utils/logger';
+import { withRetry } from '@/utils/retry';
 
 const log = createLogger('PowerVS-API');
 
@@ -14,19 +15,24 @@ export interface PowerVsAuthResult {
 
 export async function validatePowerVsApiKey(apiKey: string): Promise<PowerVsAuthResult> {
   log.info('Validating PowerVS API key via IAM');
-  const response = await fetch('/api/powervs/auth/validate', {
-    method: 'POST',
-    headers: {
-      'X-API-Key': apiKey,
-      'Accept': 'application/json',
+  return withRetry(
+    async () => {
+      const response = await fetch('/api/powervs/auth/validate', {
+        method: 'POST',
+        headers: {
+          'X-API-Key': apiKey,
+          'Accept': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`PowerVS auth validation failed: ${response.status}`);
+      }
+
+      return response.json();
     },
-  });
-
-  if (!response.ok) {
-    throw new Error(`PowerVS auth validation failed: ${response.status}`);
-  }
-
-  return response.json();
+    { onRetry: (err, attempt) => log.warn(`PowerVS API key validation retry ${attempt}:`, err.message) },
+  );
 }
 
 interface PowerVsSSECallbacks {

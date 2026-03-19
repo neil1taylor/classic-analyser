@@ -11,6 +11,8 @@ import { VpcDataProvider } from '@/contexts/VpcDataContext';
 import { PowerVsDataProvider } from '@/contexts/PowerVsDataContext';
 import { AIProvider } from '@/contexts/AIContext';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
+import { GuidedTour } from '@/components/common/GuidedTour';
+import { useTour } from '@/hooks/useTour';
 import TopNav from './TopNav';
 import AppSideNav from '@/components/common/SideNav';
 import AIChatPanel from '@/components/ai/AIChatPanel';
@@ -104,7 +106,7 @@ function getRouteRequirements(pathname: string): { requiresAuth: boolean; requir
 
   if (pathname.startsWith('/vpc/')) return { requiresAuth: true, requiredMode: 'vpc' };
   if (pathname.startsWith('/powervs/')) return { requiresAuth: true, requiredMode: 'powervs' };
-  if (pathname === '/settings') return { requiresAuth: true };
+  if (pathname === '/settings' || pathname === '/export') return { requiresAuth: true };
   return { requiresAuth: true, requiredMode: 'classic' };
 }
 
@@ -113,14 +115,25 @@ function AppLayoutInner() {
   const { theme } = useUI();
   const { dataSource } = useData();
   const location = useLocation();
+  const tour = useTour();
+  const prevHasAccessRef = React.useRef(false);
 
   const hasAccess = isAuthenticated || dataSource === 'imported';
   const { requiresAuth, requiredMode } = getRouteRequirements(location.pathname);
   const isAuthRoute = location.pathname === '/';
 
+  // Auto-open guided tour on first successful auth
+  React.useEffect(() => {
+    if (hasAccess && !prevHasAccessRef.current && !tour.state.completed) {
+      tour.openTour();
+    }
+    prevHasAccessRef.current = hasAccess;
+  }, [hasAccess, tour]);
+
   return (
     <Theme theme={theme}>
       <TopNav />
+      <GuidedTour tour={tour} />
       <ErrorBoundary>
         {isAuthRoute ? (
           hasAccess ? <RootRedirect /> : <div className="app-layout--no-nav"><Outlet /></div>

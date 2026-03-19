@@ -12,8 +12,14 @@ A web-based inventory and analysis tool for IBM Cloud Classic (SoftLayer), VPC, 
 - **Topology diagrams** showing resource relationships
 - **Geography maps** showing resource distribution across regions
 - **Cost analysis** views
+- **Export hub** — dedicated Export page with XLSX, PDF, DOCX, and PPTX formats per domain
 - **XLSX export/import** with one worksheet per resource type
 - **Real-time progress** via Server-Sent Events during data collection
+- **Guided tour** onboarding for first-time users
+- **Section error boundaries** — chart/section errors don't crash the whole dashboard
+- **Retry with exponential backoff** on transient API failures
+- **AI-powered insights** — optional watsonx.ai integration for chat, cost optimization, and report enhancement
+- **Account-scoped settings** — AI and preference persistence scoped per IBM Cloud account
 - **Stateless security** — API keys live only in browser memory, never persisted
 
 ## Architecture
@@ -82,12 +88,13 @@ docker run -p 8080:8080 ibm-infrastructure-explorer
 ```
 src/                    # React frontend
   components/           # UI components (auth, dashboard, tables, costs, geography, topology)
-  contexts/             # React Context providers (Auth, Data, UI, VPC, PowerVS)
-  hooks/                # Custom hooks for data collection, export, metrics
-  pages/                # Page components
-  services/             # API clients and data transforms
+  contexts/             # React Context providers + reducers (Auth, Data, UI, VPC, PowerVS, AI, Migration)
+  hooks/                # Custom hooks for data collection, export, metrics, AI, tour, preferences
+  pages/                # Page components (incl. ExportPage)
+  services/             # API clients and data transforms (with retry)
   types/                # TypeScript type definitions
-  utils/                # Formatters, relationships, logger
+  data/                 # Data-driven JSON configs (regions, datacenters, resource types)
+  utils/                # Formatters, relationships, logger, retry
 
 server/src/             # Express backend
   routes/               # API proxy routes (classic, VPC, PowerVS)

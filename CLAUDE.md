@@ -41,7 +41,8 @@ src/                              # React frontend
   components/
     auth/                         ApiKeyForm, ImportButton
     common/                       Header, SideNav, ExportDialog, AboutModal,
-                                  ProgressIndicator, AnimatedCounter, TrendIndicator, SkeletonCard
+                                  ProgressIndicator, AnimatedCounter, TrendIndicator, SkeletonCard,
+                                  SectionErrorBoundary, GuidedTour, LoadingSkeleton, MetricCard
     dashboard/                    Dashboard, AccountInfo, ResourceCard, DistributionCharts, ImportBanner
     tables/                       DataTable, VirtualizedTable, TableToolbar,
                                   ColumnFilter, AdvancedFilter, ColumnResizer
@@ -50,24 +51,33 @@ src/                              # React frontend
     topology/                     TopologyDiagram, TopologyNodes
     vpc/                          VpcDashboard
     help/                         HelpPage
-  contexts/                       AuthContext, DataContext, UIContext, VpcDataContext, PowerVsDataContext
+  contexts/                       AuthContext, DataContext, UIContext, VpcDataContext, PowerVsDataContext,
+                                  MigrationContext, AIContext,
+                                  dataReducer, vpcDataReducer, powerVsDataReducer
   hooks/                          useDataCollection, useExport, useTableState,
                                   useDashboardMetrics, useCostData, useGeographyData, useTopologyData,
                                   useVpcDataCollection, useVpcExport, useVpcDashboardMetrics,
                                   useVpcCostData, useVpcTopologyData, useVpcGeographyData,
                                   usePowerVsDataCollection, usePowerVsExport, usePowerVsDashboardMetrics,
-                                  usePowerVsCostData, usePowerVsTopologyData, usePowerVsGeographyData
+                                  usePowerVsCostData, usePowerVsTopologyData, usePowerVsGeographyData,
+                                  useAISettings, useAIInsights, useAICostAnalysis, useAIChat, useAIReport,
+                                  useTour, useLocalPreferences
   pages/                          AuthPage, DashboardPage, ResourcePage,
                                   CostsPage, GeographyPage, TopologyPage,
                                   VpcDashboardPage, VpcResourcePage, VpcTopologyPage,
                                   VpcCostsPage, VpcGeographyPage,
                                   PowerVsDashboardPage, PowerVsResourcePage, PowerVsTopologyPage,
-                                  PowerVsCostsPage, PowerVsGeographyPage
+                                  PowerVsCostsPage, PowerVsGeographyPage,
+                                  ExportPage, SettingsPage, MigrationPage
   services/                       api.ts, import.ts, transform.ts,
                                   vpc-api.ts, vpc-transform.ts,
                                   powervs-api.ts, powervs-transform.ts
   types/                          resources.ts, vpc-resources.ts, powervs-resources.ts
-  utils/                          formatters.ts, relationships.ts, logger.ts
+  utils/                          formatters.ts, relationships.ts, logger.ts, retry.ts
+  data/                           ibmCloudDataCenters.json, ibmCloudRegions.json,
+                                  classicResourceTypes.json, classicRelationships.json,
+                                  classicDisplayNames.json, vpcResourceTypes.json,
+                                  powerVsResourceTypes.json, index.ts
   styles/                         SCSS files
 
 server/src/                       # Express backend

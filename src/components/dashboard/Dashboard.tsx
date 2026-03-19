@@ -7,6 +7,7 @@ import DistributionCharts from '@/components/dashboard/DistributionCharts';
 import ProgressIndicator from '@/components/common/ProgressIndicator';
 import ExportDialog from '@/components/common/ExportDialog';
 import ImportBanner from '@/components/dashboard/ImportBanner';
+import { SectionErrorBoundary } from '@/components/common/SectionErrorBoundary';
 import { useDataCollection } from '@/hooks/useDataCollection';
 import { useExport } from '@/hooks/useExport';
 import { useData } from '@/contexts/DataContext';
@@ -101,12 +102,14 @@ const Dashboard: React.FC = () => {
       )}
 
       {hasData && (
-        <DistributionCharts
-          osDist={osDist}
-          dcDist={dcDist}
-          cpuDist={cpuDist}
-          totalServers={totalServers}
-        />
+        <SectionErrorBoundary sectionName="Distribution Charts">
+          <DistributionCharts
+            osDist={osDist}
+            dcDist={dcDist}
+            cpuDist={cpuDist}
+            totalServers={totalServers}
+          />
+        </SectionErrorBoundary>
       )}
 
       {hasData && (vmwareOverlap.esxiHosts > 0 || vmwareOverlap.vmwareVlans > 0 || vmwareOverlap.vmwareStorage > 0) && (

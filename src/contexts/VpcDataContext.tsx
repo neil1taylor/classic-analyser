@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useCallback } from 'react';
-import { vpcDataReducer, initialVpcDataState, type VpcDataAction } from '../context/vpcDataReducer';
+import { vpcDataReducer, initialVpcDataState, type VpcDataAction } from './vpcDataReducer';
 
 export type VpcCollectionStatus = 'idle' | 'collecting' | 'complete' | 'error' | 'cancelled';
 

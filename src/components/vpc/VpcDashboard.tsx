@@ -6,6 +6,7 @@ import ResourceCard from '@/components/dashboard/ResourceCard';
 import ExportDialog from '@/components/common/ExportDialog';
 import VpcProgressIndicator from '@/components/common/VpcProgressIndicator';
 import VpcDistributionCharts from '@/components/vpc/VpcDistributionCharts';
+import { SectionErrorBoundary } from '@/components/common/SectionErrorBoundary';
 import { useVpcDataCollection } from '@/hooks/useVpcDataCollection';
 import { useVpcExport } from '@/hooks/useVpcExport';
 import { useVpcData } from '@/contexts/VpcDataContext';
@@ -93,13 +94,15 @@ const VpcDashboard: React.FC = () => {
 
       {/* Distribution Charts (donuts + stacked bar + summary tiles) */}
       {hasData && (
-        <VpcDistributionCharts
-          regionDist={regionDist}
-          vpcDist={vpcDist}
-          profileDist={profileDist}
-          totalInstances={totalInstances}
-          totalResources={totalResources}
-        />
+        <SectionErrorBoundary sectionName="VPC Distribution Charts">
+          <VpcDistributionCharts
+            regionDist={regionDist}
+            vpcDist={vpcDist}
+            profileDist={profileDist}
+            totalInstances={totalInstances}
+            totalResources={totalResources}
+          />
+        </SectionErrorBoundary>
       )}
 
       {/* Resource cards */}

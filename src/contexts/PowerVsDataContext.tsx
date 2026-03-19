@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useCallback } from 'react';
-import { powerVsDataReducer, initialPowerVsDataState, type PowerVsDataAction } from '../context/powerVsDataReducer';
+import { powerVsDataReducer, initialPowerVsDataState, type PowerVsDataAction } from './powerVsDataReducer';
 
 export type PowerVsCollectionStatus = 'idle' | 'collecting' | 'complete' | 'error' | 'cancelled';
 

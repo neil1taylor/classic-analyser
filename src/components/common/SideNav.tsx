@@ -20,6 +20,7 @@ import {
   EarthFilled,
   Migrate,
   Document,
+  DocumentExport,
   Settings,
   Chip,
   Network_3,
@@ -212,6 +213,7 @@ const AppSideNav: React.FC = () => {
     );
   };
 
+  const isExport = currentPath === '/export';
   const isDocs = currentPath === '/docs';
   const isSettings = currentPath === '/settings';
 
@@ -249,6 +251,9 @@ const AppSideNav: React.FC = () => {
 
         <SideNavDivider />
 
+        <SideNavMenuItem onClick={() => navigate('/export')} isActive={isExport} aria-current={isExport ? 'page' : undefined}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><DocumentExport size={16} /> Export</span>
+        </SideNavMenuItem>
         <SideNavMenuItem onClick={() => navigate('/docs')} isActive={isDocs} aria-current={isDocs ? 'page' : undefined}>
           <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Document size={16} /> Documentation</span>
         </SideNavMenuItem>

@@ -1,0 +1,40 @@
+{
+  "vpcFallbackRegions": [
+    "us-south",
+    "us-east",
+    "eu-gb",
+    "eu-de",
+    "eu-es",
+    "jp-tok",
+    "jp-osa",
+    "au-syd",
+    "ca-tor",
+    "br-sao"
+  ],
+  "powerVsZoneToRegion": {
+    "dal10": "us-south",
+    "dal12": "us-south",
+    "dal14": "us-south",
+    "us-south": "us-south",
+    "us-east": "us-east",
+    "wdc06": "us-east",
+    "wdc07": "us-east",
+    "tor01": "tor",
+    "tor04": "tor",
+    "tor05": "tor",
+    "mon01": "mon",
+    "sao01": "sao",
+    "sao04": "sao",
+    "sao05": "sao",
+    "eu-de-1": "eu-de",
+    "eu-de-2": "eu-de",
+    "lon04": "lon",
+    "lon06": "lon",
+    "mad02": "mad",
+    "mad04": "mad",
+    "syd04": "syd",
+    "syd05": "syd",
+    "tok04": "tok",
+    "osa21": "osa"
+  }
+}
