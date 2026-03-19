@@ -1,4 +1,4 @@
-import { Paragraph, TextRun, HeadingLevel, AlignmentType, PageBreak } from 'docx';
+import { Paragraph, TextRun, HeadingLevel, PageBreak } from 'docx';
 
 // ── Brand colours ───────────────────────────────────────────────────────
 export const BLUE = '0F62FE';

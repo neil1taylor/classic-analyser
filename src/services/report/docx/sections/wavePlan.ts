@@ -1,6 +1,6 @@
 import { Paragraph, TextRun, HeadingLevel } from 'docx';
 import type { MigrationWave } from '@/types/migration';
-import { heading, body, bullet, spacer, pageBreak, BLUE, DARK } from '../utils/styles';
+import { heading, body, bullet, spacer, pageBreak, DARK } from '../utils/styles';
 
 export function buildWavePlan(waves: MigrationWave[]): Paragraph[] {
   const elements: Paragraph[] = [

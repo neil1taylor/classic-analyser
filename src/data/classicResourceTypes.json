@@ -1,0 +1,2779 @@
+[
+  {
+    "key": "virtualServers",
+    "label": "Virtual Servers",
+    "category": "Compute",
+    "worksheetName": "vVirtualServers",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "hostname",
+        "header": "Hostname",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "domain",
+        "header": "Domain",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "fqdn",
+        "header": "FQDN",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "primaryIp",
+        "header": "Primary IP",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "backendIp",
+        "header": "Backend IP",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "maxCpu",
+        "header": "CPU",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "maxMemory",
+        "header": "Memory (MB)",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "status",
+        "header": "Status",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "powerState",
+        "header": "Power State",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "datacenter",
+        "header": "Datacenter",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "os",
+        "header": "OS",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "hourlyBilling",
+        "header": "Hourly Billing",
+        "dataType": "boolean",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "createDate",
+        "header": "Create Date",
+        "dataType": "date",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "recurringFee",
+        "header": "Classic Monthly Fee",
+        "dataType": "currency",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "notes",
+        "header": "Notes",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      },
+      {
+        "field": "privateNetworkOnly",
+        "header": "Private Only",
+        "dataType": "boolean",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "localDisk",
+        "header": "Local Disk",
+        "dataType": "boolean",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "startCpus",
+        "header": "Start CPUs",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "modifyDate",
+        "header": "Modified",
+        "dataType": "date",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "dedicated",
+        "header": "Dedicated",
+        "dataType": "boolean",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "placementGroupId",
+        "header": "Placement Group",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "tags",
+        "header": "Tags",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      },
+      {
+        "field": "diskGb",
+        "header": "Disk (GB)",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "networkVlans",
+        "header": "VLANs",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      }
+    ]
+  },
+  {
+    "key": "bareMetal",
+    "label": "Bare Metal Servers",
+    "category": "Compute",
+    "worksheetName": "vBareMetal",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "hostname",
+        "header": "Hostname",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "domain",
+        "header": "Domain",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "fqdn",
+        "header": "FQDN",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "serialNumber",
+        "header": "Serial Number",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "primaryIp",
+        "header": "Primary IP",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "backendIp",
+        "header": "Backend IP",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "cores",
+        "header": "Cores",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "memory",
+        "header": "Memory (GB)",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "datacenter",
+        "header": "Datacenter",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "os",
+        "header": "OS",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "recurringFee",
+        "header": "Classic Monthly Fee",
+        "dataType": "currency",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "provisionDate",
+        "header": "Provision Date",
+        "dataType": "date",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "powerSupplyCount",
+        "header": "Power Supplies",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "gatewayMember",
+        "header": "Gateway Member",
+        "dataType": "boolean",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "vmwareRole",
+        "header": "VMware Role",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "notes",
+        "header": "Notes",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      },
+      {
+        "field": "hardDrives",
+        "header": "Hard Drives",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      },
+      {
+        "field": "networkComponents",
+        "header": "Network Components",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      },
+      {
+        "field": "networkVlans",
+        "header": "VLANs",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      },
+      {
+        "field": "tags",
+        "header": "Tags",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      }
+    ]
+  },
+  {
+    "key": "dedicatedHosts",
+    "label": "Dedicated Hosts",
+    "category": "Compute",
+    "worksheetName": "vDedicatedHosts",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "name",
+        "header": "Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "createDate",
+        "header": "Create Date",
+        "dataType": "date",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "datacenter",
+        "header": "Datacenter",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "cpuCount",
+        "header": "CPU Count",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "memoryCapacity",
+        "header": "Memory (GB)",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "diskCapacity",
+        "header": "Disk (GB)",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "guestCount",
+        "header": "Guest Count",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "imageTemplates",
+    "label": "Image Templates",
+    "category": "Compute",
+    "worksheetName": "vImages",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "globalIdentifier",
+        "header": "Global ID",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "name",
+        "header": "Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "note",
+        "header": "Note",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      },
+      {
+        "field": "createDate",
+        "header": "Create Date",
+        "dataType": "date",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "status",
+        "header": "Status",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "datacenter",
+        "header": "Datacenter",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "parentId",
+        "header": "Parent ID",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "vlans",
+    "label": "VLANs",
+    "category": "Network",
+    "worksheetName": "vVLANs",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "vlanNumber",
+        "header": "VLAN Number",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "name",
+        "header": "Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "networkSpace",
+        "header": "Network Space",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "primaryRouter",
+        "header": "Primary Router",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "datacenter",
+        "header": "Datacenter",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "gateway",
+        "header": "Gateway",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "subnets",
+    "label": "Subnets",
+    "category": "Network",
+    "worksheetName": "vSubnets",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "networkIdentifier",
+        "header": "Network",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "cidr",
+        "header": "CIDR",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "subnetType",
+        "header": "Type",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "gateway",
+        "header": "Gateway",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "broadcastAddress",
+        "header": "Broadcast",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "usableIpAddressCount",
+        "header": "Usable IPs",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "totalIpAddresses",
+        "header": "Total IPs",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "vlanNumber",
+        "header": "VLAN",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "datacenter",
+        "header": "Datacenter",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "gateways",
+    "label": "Network Gateways",
+    "category": "Network",
+    "worksheetName": "vGateways",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "name",
+        "header": "Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "networkSpace",
+        "header": "Network Space",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "status",
+        "header": "Status",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "publicIp",
+        "header": "Public IP",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "privateIp",
+        "header": "Private IP",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "memberCount",
+        "header": "Members",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "insideVlanCount",
+        "header": "Inside VLANs",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "firewalls",
+    "label": "Firewalls",
+    "category": "Network",
+    "worksheetName": "vFirewalls",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "primaryIpAddress",
+        "header": "Primary IP",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "firewallType",
+        "header": "Type",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "vlanNumber",
+        "header": "VLAN",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "datacenter",
+        "header": "Datacenter",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "recurringFee",
+        "header": "Classic Monthly Fee",
+        "dataType": "currency",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "ruleCount",
+        "header": "Rules",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "securityGroups",
+    "label": "Security Groups",
+    "category": "Network",
+    "worksheetName": "vSecurityGroups",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "name",
+        "header": "Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "description",
+        "header": "Description",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": false
+      },
+      {
+        "field": "createDate",
+        "header": "Create Date",
+        "dataType": "date",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "modifyDate",
+        "header": "Modified",
+        "dataType": "date",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "ruleCount",
+        "header": "Rules",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "bindingCount",
+        "header": "Bindings",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "securityGroupRules",
+    "label": "Security Group Rules",
+    "category": "Network",
+    "worksheetName": "vSecurityGroupRules",
+    "columns": [
+      {
+        "field": "securityGroupId",
+        "header": "Security Group ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "securityGroupName",
+        "header": "Security Group Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "id",
+        "header": "Rule ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "direction",
+        "header": "Direction",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "protocol",
+        "header": "Protocol",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "portRangeMin",
+        "header": "Port Min",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "portRangeMax",
+        "header": "Port Max",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "remoteIp",
+        "header": "Remote IP",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "remoteGroupId",
+        "header": "Remote Group ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "loadBalancers",
+    "label": "Load Balancers",
+    "category": "Network",
+    "worksheetName": "vLoadBalancers",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "name",
+        "header": "Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "ipAddress",
+        "header": "IP Address",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "loadBalancerType",
+        "header": "Type",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "connectionLimit",
+        "header": "Connection Limit",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "recurringFee",
+        "header": "Classic Monthly Fee",
+        "dataType": "currency",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "virtualServers",
+        "header": "Virtual Servers",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      }
+    ]
+  },
+  {
+    "key": "blockStorage",
+    "label": "Block Storage",
+    "category": "Storage",
+    "worksheetName": "vBlockStorage",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "username",
+        "header": "Username",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "capacityGb",
+        "header": "Capacity (GB)",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "iops",
+        "header": "IOPS",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "storageType",
+        "header": "Storage Type",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "storageTierLevel",
+        "header": "Tier",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "targetIp",
+        "header": "Target IP",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "lunId",
+        "header": "LUN ID",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "snapshotCapacityGb",
+        "header": "Snapshot (GB)",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "recurringFee",
+        "header": "Classic Monthly Fee",
+        "dataType": "currency",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "createDate",
+        "header": "Create Date",
+        "dataType": "date",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "notes",
+        "header": "Notes",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      },
+      {
+        "field": "allowedVirtualGuests",
+        "header": "Allowed VSIs",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      },
+      {
+        "field": "allowedHardware",
+        "header": "Allowed Hardware",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      },
+      {
+        "field": "replicationPartners",
+        "header": "Replication Partners",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      }
+    ]
+  },
+  {
+    "key": "fileStorage",
+    "label": "File Storage",
+    "category": "Storage",
+    "worksheetName": "vFileStorage",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "username",
+        "header": "Username",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "capacityGb",
+        "header": "Capacity (GB)",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "iops",
+        "header": "IOPS",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "storageType",
+        "header": "Storage Type",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "storageTierLevel",
+        "header": "Tier",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "targetIp",
+        "header": "Target IP",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "mountAddress",
+        "header": "Mount Address",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "snapshotCapacityGb",
+        "header": "Snapshot (GB)",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "recurringFee",
+        "header": "Classic Monthly Fee",
+        "dataType": "currency",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "createDate",
+        "header": "Create Date",
+        "dataType": "date",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "notes",
+        "header": "Notes",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      },
+      {
+        "field": "allowedVirtualGuests",
+        "header": "Allowed VSIs",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      },
+      {
+        "field": "allowedHardware",
+        "header": "Allowed Hardware",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      },
+      {
+        "field": "replicationPartners",
+        "header": "Replication Partners",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      }
+    ]
+  },
+  {
+    "key": "objectStorage",
+    "label": "Object Storage",
+    "category": "Storage",
+    "worksheetName": "vObjectStorage",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "username",
+        "header": "Username",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "storageType",
+        "header": "Storage Type",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "capacityGb",
+        "header": "Capacity (GB)",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "bytesUsed",
+        "header": "Bytes Used",
+        "dataType": "bytes",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "recurringFee",
+        "header": "Classic Monthly Fee",
+        "dataType": "currency",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "createDate",
+        "header": "Create Date",
+        "dataType": "date",
+        "defaultVisible": true,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "sslCertificates",
+    "label": "SSL Certificates",
+    "category": "Security",
+    "worksheetName": "vSSLCertificates",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "commonName",
+        "header": "Common Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "organizationName",
+        "header": "Organization",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "validityBegin",
+        "header": "Valid From",
+        "dataType": "date",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "validityDays",
+        "header": "Validity (Days)",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "validityEnd",
+        "header": "Valid Until",
+        "dataType": "date",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "createDate",
+        "header": "Create Date",
+        "dataType": "date",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "notes",
+        "header": "Notes",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      }
+    ]
+  },
+  {
+    "key": "sshKeys",
+    "label": "SSH Keys",
+    "category": "Security",
+    "worksheetName": "vSSHKeys",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "label",
+        "header": "Label",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "fingerprint",
+        "header": "Fingerprint",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "createDate",
+        "header": "Create Date",
+        "dataType": "date",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "modifyDate",
+        "header": "Modify Date",
+        "dataType": "date",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "notes",
+        "header": "Notes",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      }
+    ]
+  },
+  {
+    "key": "dnsDomains",
+    "label": "DNS Domains",
+    "category": "DNS",
+    "worksheetName": "vDNSDomains",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "name",
+        "header": "Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "serial",
+        "header": "Serial",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "updateDate",
+        "header": "Update Date",
+        "dataType": "date",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "recordCount",
+        "header": "Record Count",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "dnsRecords",
+    "label": "DNS Records",
+    "category": "DNS",
+    "worksheetName": "vDNSRecords",
+    "columns": [
+      {
+        "field": "domainId",
+        "header": "Domain ID",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "domainName",
+        "header": "Domain",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "host",
+        "header": "Host",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "type",
+        "header": "Type",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "data",
+        "header": "Data",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "ttl",
+        "header": "TTL",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "priority",
+        "header": "Priority",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "vpnTunnels",
+    "label": "VPN Tunnels",
+    "category": "Network",
+    "worksheetName": "vVPNTunnels",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "name",
+        "header": "Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "customerPeerIpAddress",
+        "header": "Customer Peer IP",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "internalPeerIpAddress",
+        "header": "Internal Peer IP",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "phaseOneAuthentication",
+        "header": "P1 Auth",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "phaseOneEncryption",
+        "header": "P1 Encryption",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "phaseTwoAuthentication",
+        "header": "P2 Auth",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "phaseTwoEncryption",
+        "header": "P2 Encryption",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "addressTranslations",
+        "header": "Address Translations",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      },
+      {
+        "field": "customerSubnets",
+        "header": "Customer Subnets",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      },
+      {
+        "field": "internalSubnets",
+        "header": "Internal Subnets",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      }
+    ]
+  },
+  {
+    "key": "classicTransitGateways",
+    "label": "Transit Gateways",
+    "category": "Network",
+    "worksheetName": "vTransitGateways",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "name",
+        "header": "Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "status",
+        "header": "Status",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "location",
+        "header": "Location",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "global",
+        "header": "Global",
+        "dataType": "boolean",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "createdAt",
+        "header": "Created",
+        "dataType": "date",
+        "defaultVisible": false,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "classicTransitGatewayConnections",
+    "label": "Transit GW Connections",
+    "category": "Network",
+    "worksheetName": "vTransitGWConns",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "name",
+        "header": "Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "status",
+        "header": "Status",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "networkType",
+        "header": "Network Type",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "transitGatewayName",
+        "header": "Transit Gateway",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "tgwRoutePrefixes",
+    "label": "TGW Route Prefixes",
+    "category": "Network",
+    "worksheetName": "vTGWRoutePrefixes",
+    "columns": [
+      {
+        "field": "transitGatewayId",
+        "header": "TGW ID",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "transitGatewayName",
+        "header": "TGW Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "prefixes",
+        "header": "Prefixes",
+        "dataType": "array",
+        "defaultVisible": true,
+        "sortable": false
+      },
+      {
+        "field": "connectionCount",
+        "header": "Connections",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "connectionSummary",
+        "header": "Connection Summary",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": false
+      }
+    ]
+  },
+  {
+    "key": "tgwVpcVpnGateways",
+    "label": "TGW VPC VPN Gateways",
+    "category": "Network",
+    "worksheetName": "vTGWVpcVPNGWs",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "name",
+        "header": "Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "status",
+        "header": "Status",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "mode",
+        "header": "Mode",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "transitGatewayName",
+        "header": "Transit Gateway",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "vpcName",
+        "header": "VPC Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "vpcRegion",
+        "header": "VPC Region",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "directLinkGateways",
+    "label": "Direct Links",
+    "category": "Network",
+    "worksheetName": "vDirectLinks",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "name",
+        "header": "Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "type",
+        "header": "Type",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "speedMbps",
+        "header": "Speed (Mbps)",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "locationName",
+        "header": "Location",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "bgpStatus",
+        "header": "BGP Status",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "operationalStatus",
+        "header": "Op Status",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "relationships",
+    "label": "Relationships",
+    "category": "Other",
+    "worksheetName": "vRelationships",
+    "columns": [
+      {
+        "field": "parentType",
+        "header": "Parent Type",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "parentId",
+        "header": "Parent ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "parentName",
+        "header": "Parent Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "childType",
+        "header": "Child Type",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "childId",
+        "header": "Child ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "childName",
+        "header": "Child Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "relationshipField",
+        "header": "Relationship Field",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "billingItems",
+    "label": "Billing Items",
+    "category": "Other",
+    "worksheetName": "vBilling",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "description",
+        "header": "Description",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "categoryCode",
+        "header": "Category",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "recurringFee",
+        "header": "Classic Monthly Fee",
+        "dataType": "currency",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "createDate",
+        "header": "Create Date",
+        "dataType": "date",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "cancellationDate",
+        "header": "Cancel Date",
+        "dataType": "date",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "notes",
+        "header": "Notes",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      }
+    ]
+  },
+  {
+    "key": "placementGroups",
+    "label": "Placement Groups",
+    "category": "Other",
+    "worksheetName": "vPlacementGroups",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "name",
+        "header": "Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "createDate",
+        "header": "Create Date",
+        "dataType": "date",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "rule",
+        "header": "Rule",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "backendRouter",
+        "header": "Backend Router",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "guestCount",
+        "header": "Guest Count",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "reservedCapacity",
+    "label": "Reserved Capacity",
+    "category": "Other",
+    "worksheetName": "vReservedCapacity",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "name",
+        "header": "Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "createDate",
+        "header": "Create Date",
+        "dataType": "date",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "backendRouter",
+        "header": "Backend Router",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "instanceCount",
+        "header": "Instances",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "users",
+    "label": "Users",
+    "category": "Other",
+    "worksheetName": "vUsers",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "username",
+        "header": "Username",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "email",
+        "header": "Email",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "firstName",
+        "header": "First Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "lastName",
+        "header": "Last Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "createDate",
+        "header": "Create Date",
+        "dataType": "date",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "statusDate",
+        "header": "Status Date",
+        "dataType": "date",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "userStatus",
+        "header": "Status",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "roles",
+        "header": "Roles",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      },
+      {
+        "field": "permissions",
+        "header": "Permissions",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      }
+    ]
+  },
+  {
+    "key": "eventLog",
+    "label": "Event Log",
+    "category": "Other",
+    "worksheetName": "vEventLog",
+    "columns": [
+      {
+        "field": "eventName",
+        "header": "Event",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "eventCreateDate",
+        "header": "Date",
+        "dataType": "date",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "userType",
+        "header": "User Type",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "userId",
+        "header": "User ID",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "username",
+        "header": "Username",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "objectName",
+        "header": "Object",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "objectId",
+        "header": "Object ID",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "traceId",
+        "header": "Trace ID",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "vmwareInstances",
+    "label": "VCF for Classic Instances",
+    "category": "VMware",
+    "worksheetName": "vVMwareInstances",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "name",
+        "header": "Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "location",
+        "header": "Location",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "status",
+        "header": "Status",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "deployType",
+        "header": "Deploy Type",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "domainType",
+        "header": "Domain Type",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "nsxType",
+        "header": "NSX Type",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "currentVersion",
+        "header": "Version",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "clusterCount",
+        "header": "Clusters",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "creator",
+        "header": "Creator",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "crn",
+        "header": "CRN",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      }
+    ]
+  },
+  {
+    "key": "vmwareClusters",
+    "label": "VCF for Classic Clusters",
+    "category": "VMware",
+    "worksheetName": "vVMwareClusters",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "name",
+        "header": "Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "clusterType",
+        "header": "Type",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "location",
+        "header": "Location",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "status",
+        "header": "Status",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "hostCount",
+        "header": "Hosts",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "storageType",
+        "header": "Storage Type",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "vsphereVersion",
+        "header": "vSphere",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "uplinkSpeed",
+        "header": "Uplink Speed",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "instanceId",
+        "header": "Instance ID",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "vmwareHosts",
+    "label": "VCF for Classic Hosts",
+    "category": "VMware",
+    "worksheetName": "vVMwareHosts",
+    "columns": [
+      {
+        "field": "hostname",
+        "header": "Hostname",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "primaryIp",
+        "header": "Public IP",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "backendIp",
+        "header": "Private IP",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "status",
+        "header": "Status",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "hardwareId",
+        "header": "Server ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "version",
+        "header": "Version",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "memory",
+        "header": "Memory (GB)",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "cpuCount",
+        "header": "CPUs",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "clusterName",
+        "header": "Cluster",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "location",
+        "header": "Location",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "instanceId",
+        "header": "Instance ID",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "clusterId",
+        "header": "Cluster ID",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "vmwareVlans",
+    "label": "VCF for Classic VLANs",
+    "category": "VMware",
+    "worksheetName": "vVMwareVlans",
+    "columns": [
+      {
+        "field": "vlanNumber",
+        "header": "VLAN Number",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "name",
+        "header": "Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "type",
+        "header": "Purpose",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "primaryRouter",
+        "header": "Primary Router",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "clusterName",
+        "header": "Cluster",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "location",
+        "header": "Location",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "instanceId",
+        "header": "Instance ID",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "clusterId",
+        "header": "Cluster ID",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "vmwareSubnets",
+    "label": "VCF for Classic Subnets",
+    "category": "VMware",
+    "worksheetName": "vVMwareSubnets",
+    "columns": [
+      {
+        "field": "cidr",
+        "header": "CIDR",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "netmask",
+        "header": "Netmask",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "gateway",
+        "header": "Gateway",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "subnetType",
+        "header": "Type",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "purpose",
+        "header": "Purpose",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "vlanNumber",
+        "header": "VLAN",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "vlanName",
+        "header": "VLAN Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "clusterName",
+        "header": "Cluster",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "location",
+        "header": "Location",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "instanceId",
+        "header": "Instance ID",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "directorSites",
+    "label": "VCFaaS Director Sites",
+    "category": "VMware",
+    "worksheetName": "vDirectorSites",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "name",
+        "header": "Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "status",
+        "header": "Status",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "region",
+        "header": "Region",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "pvdcCount",
+        "header": "PVDCs",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "createdAt",
+        "header": "Created",
+        "dataType": "date",
+        "defaultVisible": true,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "pvdcs",
+    "label": "VCFaaS PVDCs",
+    "category": "VMware",
+    "worksheetName": "vPVDCs",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "name",
+        "header": "Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "dataCenterName",
+        "header": "Datacenter",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "status",
+        "header": "Status",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "providerType",
+        "header": "Provider Type",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "clusterCount",
+        "header": "Clusters",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "directorSiteId",
+        "header": "Director Site ID",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "vcfClusters",
+    "label": "VCFaaS Clusters",
+    "category": "VMware",
+    "worksheetName": "vVCFClusters",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "name",
+        "header": "Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "hostCount",
+        "header": "Hosts",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "status",
+        "header": "Status",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "dataCenterName",
+        "header": "Datacenter",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "hostProfile",
+        "header": "Host Profile",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "storageType",
+        "header": "Storage Type",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "pvdcId",
+        "header": "PVDC ID",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "vdcs",
+    "label": "VCFaaS vDCs",
+    "category": "VMware",
+    "worksheetName": "vVDCs",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "name",
+        "header": "Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "status",
+        "header": "Status",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "directorSiteName",
+        "header": "Director Site",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "cpu",
+        "header": "CPU",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "ram",
+        "header": "RAM",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "disk",
+        "header": "Disk",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "region",
+        "header": "Region",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "type",
+        "header": "Type",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "createdAt",
+        "header": "Created",
+        "dataType": "date",
+        "defaultVisible": true,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "multitenantSites",
+    "label": "VCFaaS Multitenant Sites",
+    "category": "VMware",
+    "worksheetName": "vMultitenantSites",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "name",
+        "header": "Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "region",
+        "header": "Region",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "pvdcCount",
+        "header": "PVDCs",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      }
+    ]
+  }
+]

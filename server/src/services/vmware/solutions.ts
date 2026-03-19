@@ -1,5 +1,5 @@
 import type { VMwareClient } from './client.js';
-import type { VMwareInstance, VMwareCluster, VMwareHost, VMwareVlan, VMwareSubnet, VMwareNetworkResult } from './types.js';
+import type { VMwareInstance, VMwareCluster, VMwareHost, VMwareNetworkResult } from './types.js';
 import logger from '../../utils/logger.js';
 
 const VCF_CLASSIC_V2 = 'https://api.vmware-solutions.cloud.ibm.com/v2';

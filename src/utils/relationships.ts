@@ -1,3 +1,6 @@
+import relationshipData from '../data/classicRelationships.json';
+import displayNameData from '../data/classicDisplayNames.json';
+
 export interface Relationship {
   parentType: string;
   childType: string;
@@ -6,21 +9,7 @@ export interface Relationship {
   label: string;
 }
 
-const RELATIONSHIP_DEFINITIONS: Relationship[] = [
-  { parentType: 'vlans', childType: 'subnets', parentField: 'vlanNumber', childField: 'vlanNumber', label: 'VLAN has Subnets' },
-  { parentType: 'vlans', childType: 'virtualServers', parentField: 'id', childField: 'primaryNetworkComponent.networkVlan.id', label: 'VLAN has Virtual Servers' },
-  { parentType: 'vlans', childType: 'bareMetal', parentField: 'id', childField: 'primaryNetworkComponent.networkVlan.id', label: 'VLAN has Bare Metal' },
-  { parentType: 'vlans', childType: 'firewalls', parentField: 'vlanNumber', childField: 'vlanNumber', label: 'VLAN has Firewalls' },
-  { parentType: 'gateways', childType: 'vlans', parentField: 'id', childField: 'gateway', label: 'Gateway has VLANs' },
-  { parentType: 'blockStorage', childType: 'virtualServers', parentField: 'id', childField: 'blockStorageId', label: 'Block Storage attached to VSIs' },
-  { parentType: 'fileStorage', childType: 'virtualServers', parentField: 'id', childField: 'fileStorageId', label: 'File Storage attached to VSIs' },
-  { parentType: 'dnsDomains', childType: 'dnsRecords', parentField: 'id', childField: 'domainId', label: 'Domain has DNS Records' },
-  { parentType: 'dedicatedHosts', childType: 'virtualServers', parentField: 'id', childField: 'dedicatedHost.id', label: 'Dedicated Host has VSIs' },
-  { parentType: 'placementGroups', childType: 'virtualServers', parentField: 'id', childField: 'placementGroupId', label: 'Placement Group has VSIs' },
-  { parentType: 'securityGroups', childType: 'virtualServers', parentField: 'id', childField: 'securityGroupId', label: 'Security Group has VSIs' },
-  { parentType: 'loadBalancers', childType: 'virtualServers', parentField: 'id', childField: 'loadBalancerId', label: 'Load Balancer has VSIs' },
-  { parentType: 'sshKeys', childType: 'virtualServers', parentField: 'id', childField: 'sshKeyId', label: 'SSH Key used by VSIs' },
-];
+const RELATIONSHIP_DEFINITIONS: Relationship[] = relationshipData;
 
 export interface RelationshipInstance {
   parentType: string;
@@ -87,31 +76,7 @@ function getNestedValue(obj: Record<string, unknown>, path: string): unknown {
  * Mapping from server-side display type names (used in vRelationships worksheet)
  * to frontend resource keys.
  */
-const DISPLAY_NAME_TO_RESOURCE_KEY: Record<string, string> = {
-  'VLAN': 'vlans',
-  'Virtual Server': 'virtualServers',
-  'Bare Metal': 'bareMetal',
-  'Subnet': 'subnets',
-  'Firewall': 'firewalls',
-  'Network Gateway': 'gateways',
-  'Block Storage': 'blockStorage',
-  'File Storage': 'fileStorage',
-  'Security Group': 'securityGroups',
-  'Placement Group': 'placementGroups',
-  'Dedicated Host': 'dedicatedHosts',
-  'Image Template': 'imageTemplates',
-  'DNS Domain': 'dnsDomains',
-  'DNS Record': 'dnsRecords',
-  'SSL Certificate': 'sslCertificates',
-  'SSH Key': 'sshKeys',
-  'Load Balancer': 'loadBalancers',
-  'vCenter Instance': 'vmwareInstances',
-  'VMware Cluster': 'vmwareClusters',
-  'Director Site': 'directorSites',
-  'PVDC': 'pvdcs',
-  'VCF Cluster': 'vcfClusters',
-  'VDC': 'vdcs',
-};
+const DISPLAY_NAME_TO_RESOURCE_KEY: Record<string, string> = displayNameData;
 
 const RESOURCE_KEY_TO_DISPLAY_NAME: Record<string, string> = {};
 for (const [display, key] of Object.entries(DISPLAY_NAME_TO_RESOURCE_KEY)) {

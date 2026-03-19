@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useReducer, useCallback } from 'react';
+import { dataReducer, initialDataState, type DataAction } from '../context/dataReducer';
 
 export type CollectionStatus = 'idle' | 'collecting' | 'complete' | 'error' | 'cancelled';
 export type DataSource = 'none' | 'collected' | 'imported';
@@ -32,15 +33,8 @@ interface DataContextValue {
   setCollectionDuration: (duration: number | null) => void;
   clearData: () => void;
   importData: (data: Record<string, unknown[]>, filename: string) => void;
+  dispatch: React.Dispatch<DataAction>;
 }
-
-const initialProgress: CollectionProgress = {
-  phase: '',
-  resource: '',
-  status: '',
-  totalResources: 0,
-  completedResources: 0,
-};
 
 const DataContext = createContext<DataContextValue | undefined>(undefined);
 
@@ -53,70 +47,38 @@ export function useData(): DataContextValue {
 }
 
 export function DataProvider({ children }: { children: React.ReactNode }) {
-  const [collectedData, setCollectedData] = useState<Record<string, unknown[]>>({});
-  const [collectionStatus, setCollectionStatus] = useState<CollectionStatus>('idle');
-  const [progress, setProgressState] = useState<CollectionProgress>(initialProgress);
-  const [errors, setErrors] = useState<CollectionError[]>([]);
-  const [collectionDuration, setCollectionDurationState] = useState<number | null>(null);
-  const [dataSource, setDataSource] = useState<DataSource>('none');
-  const [importFilename, setImportFilename] = useState<string | null>(null);
-  const [importTimestamp, setImportTimestamp] = useState<Date | null>(null);
+  const [state, dispatch] = useReducer(dataReducer, initialDataState);
 
   const setResourceData = useCallback((key: string, items: unknown[]) => {
-    setCollectedData((prev) => ({ ...prev, [key]: items }));
-    if (dataSource === 'none') setDataSource('collected');
-  }, [dataSource]);
+    dispatch({ type: 'SET_RESOURCE_DATA', key, items });
+  }, []);
 
-  const setProgress = useCallback((p: CollectionProgress) => {
-    setProgressState(p);
+  const setProgress = useCallback((progress: CollectionProgress) => {
+    dispatch({ type: 'SET_PROGRESS', progress });
   }, []);
 
   const addError = useCallback((error: CollectionError) => {
-    setErrors((prev) => [...prev, error]);
+    dispatch({ type: 'ADD_ERROR', error });
   }, []);
 
   const setStatus = useCallback((status: CollectionStatus) => {
-    setCollectionStatus(status);
+    dispatch({ type: 'SET_STATUS', status });
   }, []);
 
   const setCollectionDuration = useCallback((duration: number | null) => {
-    setCollectionDurationState(duration);
+    dispatch({ type: 'SET_COLLECTION_DURATION', duration });
   }, []);
 
   const clearData = useCallback(() => {
-    setCollectedData({});
-    setCollectionStatus('idle');
-    setProgressState(initialProgress);
-    setErrors([]);
-    setCollectionDurationState(null);
-    setDataSource('none');
-    setImportFilename(null);
-    setImportTimestamp(null);
+    dispatch({ type: 'CLEAR_DATA' });
   }, []);
 
   const importData = useCallback((data: Record<string, unknown[]>, filename: string) => {
-    setCollectedData({});
-    setCollectionStatus('idle');
-    setProgressState(initialProgress);
-    setErrors([]);
-    setCollectionDurationState(null);
-
-    setCollectedData(data);
-    setDataSource('imported');
-    setImportFilename(filename);
-    setImportTimestamp(new Date());
-    setCollectionStatus('complete');
+    dispatch({ type: 'IMPORT_DATA', data, filename });
   }, []);
 
   const value: DataContextValue = {
-    collectedData,
-    collectionStatus,
-    progress,
-    errors,
-    collectionDuration,
-    dataSource,
-    importFilename,
-    importTimestamp,
+    ...state,
     setResourceData,
     setProgress,
     addError,
@@ -124,6 +86,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     setCollectionDuration,
     clearData,
     importData,
+    dispatch,
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

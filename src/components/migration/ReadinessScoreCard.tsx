@@ -69,6 +69,7 @@ const ReadinessScoreCard: React.FC<Props> = ({ score }) => {
               </span>
             </div>
             <ProgressBar
+              label={`${label} readiness`}
               value={dim.score}
               max={100}
               size="small"

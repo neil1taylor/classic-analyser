@@ -290,7 +290,7 @@ export const SubnetDetailNode = memo(({ data }: NodeProps) => {
       <div style={{ fontWeight: 600, marginBottom: 4, fontSize: '0.8125rem' }}>
         {d.networkIdentifier}/{d.cidr}
       </div>
-      {d.gateway && (
+      {d.gateway != null && d.gateway !== '' && (
         <div style={{ fontFamily: "'IBM Plex Mono', monospace", color: 'var(--cds-text-secondary)', fontSize: '0.6875rem', marginBottom: 4 }}>
           gw: {String(d.gateway)}
         </div>

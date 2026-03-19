@@ -38,7 +38,11 @@ const AboutModal: React.FC<AboutModalProps> = ({ open, onClose }) => {
         <dl style={{ fontSize: '0.875rem', lineHeight: '1.75' }}>
           <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
             <dt style={{ fontWeight: 600, minWidth: '80px' }}>Version:</dt>
-            <dd style={{ margin: 0 }}>1.0.0</dd>
+            <dd style={{ margin: 0 }}>{__APP_VERSION__}</dd>
+          </div>
+          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+            <dt style={{ fontWeight: 600, minWidth: '80px' }}>Build:</dt>
+            <dd style={{ margin: 0 }}>{__GIT_HASH__} ({new Date(__BUILD_TIME__).toLocaleDateString()})</dd>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
             <dt style={{ fontWeight: 600, minWidth: '80px' }}>Author:</dt>

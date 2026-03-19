@@ -282,7 +282,7 @@ const TopologyDiagram: React.FC = () => {
       <div style={{ padding: '0.75rem 1.5rem 0' }}>
         <ContentSwitcher
           selectedIndex={activeView}
-          onChange={({ index }: { index: number }) => setActiveView(index)}
+          onChange={(e) => { const idx = (e as { index?: number }).index; if (idx != null) setActiveView(idx); }}
           size="md"
         >
           <Switch name="infrastructure" text="Infrastructure" />

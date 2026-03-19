@@ -1,6 +1,8 @@
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { Pagination, Tooltip } from '@carbon/react';
 import { ArrowUp, ArrowDown, ArrowsVertical, ChevronRight } from '@carbon/icons-react';
+import { flexRender } from '@tanstack/react-table';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import type { ColumnDefinition } from '@/types/resources';
 import { get, formatValue } from '@/utils/formatters';
 import { useTableState } from '@/hooks/useTableState';
@@ -12,6 +14,7 @@ import ColumnResizer from '@/components/tables/ColumnResizer';
 import RowDetailPanel from '@/components/tables/RowDetailPanel';
 import ExportDialog from '@/components/common/ExportDialog';
 import type { ExportScope } from '@/components/common/ExportDialog';
+import type { ExportFormat } from '@/services/export';
 
 interface DataTableProps {
   resourceKey: string;
@@ -20,6 +23,7 @@ interface DataTableProps {
 }
 
 const ROW_HEIGHT = 40;
+const VIRTUALIZATION_THRESHOLD = 100;
 
 const AppDataTable: React.FC<DataTableProps> = ({ resourceKey, columns, data }) => {
   const {
@@ -37,11 +41,11 @@ const AppDataTable: React.FC<DataTableProps> = ({ resourceKey, columns, data }) 
     setPageSize,
     setSort,
     setFilter,
-    toggleColumn,
     setVisibleColumns,
     toggleRow,
     toggleAllRows,
     setGlobalSearch,
+    table,
   } = useTableState(columns, data);
 
   const { collectedData } = useData();
@@ -53,6 +57,7 @@ const AppDataTable: React.FC<DataTableProps> = ({ resourceKey, columns, data }) 
   useEffect(() => {
     setExpandedRow(null);
   }, [currentPage]);
+
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
     const widths: Record<string, number> = {};
     columns.forEach((col) => {
@@ -82,18 +87,161 @@ const AppDataTable: React.FC<DataTableProps> = ({ resourceKey, columns, data }) 
     return sortDirection === 'asc' ? ArrowUp : ArrowDown;
   };
 
-  const handleExport = async (scope: ExportScope, _filteredOnly: boolean) => {
+  const handleExport = async (scope: ExportScope, _filteredOnly: boolean, format: ExportFormat = 'xlsx') => {
     switch (scope) {
       case 'all':
       case 'currentTable':
-        await exportTable(resourceKey, filteredAndSortedData);
+        await exportTable(resourceKey, filteredAndSortedData, format);
         break;
       case 'selectedRows': {
         const selected = filteredAndSortedData.filter((_, i) => selectedRows.has(i));
-        await exportSelected(resourceKey, selected);
+        await exportSelected(resourceKey, selected, format);
         break;
       }
     }
+  };
+
+  // Virtualization for the body
+  const parentRef = useRef<HTMLDivElement>(null);
+  const useVirtualization = paginatedData.length > VIRTUALIZATION_THRESHOLD;
+
+  const virtualizer = useVirtualizer({
+    count: paginatedData.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: useCallback((index: number) => {
+      const globalIndex = pageOffset + index;
+      // If expanded, give extra height for the detail panel
+      return expandedRow === globalIndex ? ROW_HEIGHT + 200 : ROW_HEIGHT;
+    }, [expandedRow, pageOffset]),
+    overscan: 10,
+  });
+
+  const renderRow = (row: Record<string, unknown>, localIndex: number) => {
+    const globalIndex = pageOffset + localIndex;
+    const isSelected = selectedRows.has(globalIndex);
+    const isExpanded = expandedRow === globalIndex;
+
+    return (
+      <React.Fragment key={globalIndex}>
+        <div
+          role="row"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            borderBottom: '1px solid var(--cds-border-subtle)',
+            backgroundColor: isSelected
+              ? 'var(--cds-layer-selected)'
+              : localIndex % 2 === 0
+                ? 'var(--cds-layer)'
+                : 'var(--cds-layer-accent)',
+            height: `${ROW_HEIGHT}px`,
+            cursor: 'pointer',
+            width: 'fit-content',
+            minWidth: '100%',
+          }}
+          onClick={() => toggleRow(globalIndex)}
+          aria-selected={isSelected}
+        >
+          <div
+            style={{
+              width: '36px',
+              minWidth: '36px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setExpandedRow(isExpanded ? null : globalIndex);
+            }}
+            aria-label={isExpanded ? 'Collapse row' : 'Expand row'}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.stopPropagation();
+                e.preventDefault();
+                setExpandedRow(isExpanded ? null : globalIndex);
+              }
+            }}
+          >
+            <ChevronRight
+              size={16}
+              style={{
+                transition: 'transform 150ms',
+                transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+              }}
+            />
+          </div>
+          <div
+            style={{
+              width: '48px',
+              minWidth: '48px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={() => toggleRow(globalIndex)}
+              aria-label={`Select row ${globalIndex + 1}`}
+            />
+          </div>
+          {filteredColumns.map((col) => {
+            const value = get(row, col.field);
+            const formatted = formatValue(value, col.dataType, col.field);
+            const isEstimated = col.field === 'recurringFee' && get(row, 'estimatedCost') === true;
+            const isNoBilling = col.field === 'recurringFee' && get(row, 'noBillingItem') === true;
+            const width = columnWidths[col.field] || 150;
+
+            return (
+              <div
+                key={col.field}
+                role="cell"
+                style={{
+                  width: `${width}px`,
+                  minWidth: `${width}px`,
+                  padding: '0 0.75rem',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  fontSize: '0.875rem',
+                }}
+                title={isEstimated ? undefined : isNoBilling ? 'Hourly VSI with no active billing item' : formatted}
+              >
+                {isNoBilling ? (
+                  <span style={{ fontSize: '0.75rem', color: 'var(--cds-text-helper)', fontStyle: 'italic' }}>
+                    No billing item
+                  </span>
+                ) : (
+                  <>
+                    {formatted}
+                    {isEstimated && (
+                      <Tooltip label="Estimated from hourly rate — actual cost may differ" align="bottom">
+                        <span style={{ fontSize: '0.75rem', color: 'var(--cds-text-helper)', marginLeft: '0.25rem' }}>
+                          (est.)
+                        </span>
+                      </Tooltip>
+                    )}
+                  </>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        {isExpanded && (
+          <RowDetailPanel
+            row={row}
+            resourceKey={resourceKey}
+            columns={columns}
+            collectedData={collectedData}
+          />
+        )}
+      </React.Fragment>
+    );
   };
 
   return (
@@ -136,6 +284,16 @@ const AppDataTable: React.FC<DataTableProps> = ({ resourceKey, columns, data }) 
             const SortIcon = getSortIcon(col.field);
             const width = columnWidths[col.field] || 150;
 
+            // Use flexRender for the header content from the TanStack table column
+            const tanstackColumn = table.getColumn(col.field);
+            const headerContent = tanstackColumn
+              ? flexRender(tanstackColumn.columnDef.header, {
+                  column: tanstackColumn,
+                  header: table.getHeaderGroups()[0]?.headers.find(h => h.id === col.field),
+                  table,
+                } as never)
+              : col.header;
+
             return (
               <div
                 key={col.field}
@@ -155,7 +313,7 @@ const AppDataTable: React.FC<DataTableProps> = ({ resourceKey, columns, data }) 
                 onClick={col.sortable ? () => setSort(col.field) : undefined}
               >
                 <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {col.header}
+                  {headerContent}
                 </span>
                 {col.sortable && <SortIcon size={14} />}
                 <ColumnResizer columnField={col.field} onResize={handleResize} />
@@ -202,134 +360,46 @@ const AppDataTable: React.FC<DataTableProps> = ({ resourceKey, columns, data }) 
           >
             {data.length === 0 ? 'No data collected for this resource type.' : 'No rows match the current filters.'}
           </div>
-        ) : (
-          <div>
-            {paginatedData.map((row, localIndex) => {
-              const globalIndex = pageOffset + localIndex;
-              const isSelected = selectedRows.has(globalIndex);
-              const isExpanded = expandedRow === globalIndex;
-              return (
-                <React.Fragment key={globalIndex}>
+        ) : useVirtualization ? (
+          /* Virtualized rendering for large datasets */
+          <div
+            ref={parentRef}
+            style={{
+              height: `${Math.min(paginatedData.length * ROW_HEIGHT, 600)}px`,
+              overflow: 'auto',
+            }}
+          >
+            <div
+              style={{
+                height: `${virtualizer.getTotalSize()}px`,
+                width: '100%',
+                position: 'relative',
+              }}
+            >
+              {virtualizer.getVirtualItems().map((virtualItem) => {
+                const row = paginatedData[virtualItem.index];
+                if (!row) return null;
+                return (
                   <div
-                    role="row"
+                    key={virtualItem.key}
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      borderBottom: '1px solid var(--cds-border-subtle)',
-                      backgroundColor: isSelected
-                        ? 'var(--cds-layer-selected)'
-                        : localIndex % 2 === 0
-                          ? 'var(--cds-layer)'
-                          : 'var(--cds-layer-accent)',
-                      height: `${ROW_HEIGHT}px`,
-                      cursor: 'pointer',
-                      width: 'fit-content',
-                      minWidth: '100%',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      transform: `translateY(${virtualItem.start}px)`,
                     }}
-                    onClick={() => toggleRow(globalIndex)}
-                    aria-selected={isSelected}
                   >
-                    <div
-                      style={{
-                        width: '36px',
-                        minWidth: '36px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                      }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setExpandedRow(isExpanded ? null : globalIndex);
-                      }}
-                      aria-label={isExpanded ? 'Collapse row' : 'Expand row'}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          setExpandedRow(isExpanded ? null : globalIndex);
-                        }
-                      }}
-                    >
-                      <ChevronRight
-                        size={16}
-                        style={{
-                          transition: 'transform 150ms',
-                          transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
-                        }}
-                      />
-                    </div>
-                    <div
-                      style={{
-                        width: '48px',
-                        minWidth: '48px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => toggleRow(globalIndex)}
-                        aria-label={`Select row ${globalIndex + 1}`}
-                      />
-                    </div>
-                    {filteredColumns.map((col) => {
-                      const value = get(row, col.field);
-                      const formatted = formatValue(value, col.dataType, col.field);
-                      const isEstimated = col.field === 'recurringFee' && get(row, 'estimatedCost') === true;
-                      const isNoBilling = col.field === 'recurringFee' && get(row, 'noBillingItem') === true;
-                      const width = columnWidths[col.field] || 150;
-
-                      return (
-                        <div
-                          key={col.field}
-                          role="cell"
-                          style={{
-                            width: `${width}px`,
-                            minWidth: `${width}px`,
-                            padding: '0 0.75rem',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                            fontSize: '0.875rem',
-                          }}
-                          title={isEstimated ? undefined : isNoBilling ? 'Hourly VSI with no active billing item' : formatted}
-                        >
-                          {isNoBilling ? (
-                            <span style={{ fontSize: '0.75rem', color: 'var(--cds-text-helper)', fontStyle: 'italic' }}>
-                              No billing item
-                            </span>
-                          ) : (
-                            <>
-                              {formatted}
-                              {isEstimated && (
-                                <Tooltip label="Estimated from hourly rate — actual cost may differ" align="bottom">
-                                  <span style={{ fontSize: '0.75rem', color: 'var(--cds-text-helper)', marginLeft: '0.25rem' }}>
-                                    (est.)
-                                  </span>
-                                </Tooltip>
-                              )}
-                            </>
-                          )}
-                        </div>
-                      );
-                    })}
+                    {renderRow(row, virtualItem.index)}
                   </div>
-                  {isExpanded && (
-                    <RowDetailPanel
-                      row={row}
-                      resourceKey={resourceKey}
-                      columns={columns}
-                      collectedData={collectedData}
-                    />
-                  )}
-                </React.Fragment>
-              );
-            })}
+                );
+              })}
+            </div>
+          </div>
+        ) : (
+          /* Standard rendering for small datasets */
+          <div>
+            {paginatedData.map((row, localIndex) => renderRow(row, localIndex))}
           </div>
         )}
       </div>

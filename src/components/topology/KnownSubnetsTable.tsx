@@ -104,8 +104,8 @@ const KnownSubnetsTable: React.FC = () => {
                 <TableToolbarSearch
                   placeholder="Search subnets..."
                   value={searchText}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    setSearchText(e.target.value);
+                  onChange={(e: '' | React.ChangeEvent<HTMLInputElement>, value?: string) => {
+                    setSearchText(value ?? (typeof e === 'string' ? e : e.target.value));
                     setPage(1);
                   }}
                   persistent

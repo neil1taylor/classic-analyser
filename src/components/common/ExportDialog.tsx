@@ -10,18 +10,29 @@ import {
   Button,
   InlineLoading,
   Tooltip,
+  Select,
+  SelectItem,
 } from '@carbon/react';
+import type { ExportFormat } from '@/services/export';
 
 export type ExportScope = 'all' | 'currentTable' | 'selectedRows';
 
 interface ExportDialogProps {
   open: boolean;
   onClose: () => void;
-  onExport: (scope: ExportScope, filteredOnly: boolean) => Promise<void>;
+  onExport: (scope: ExportScope, filteredOnly: boolean, format: ExportFormat) => Promise<void>;
   hasSelectedRows: boolean;
   hasCurrentTable: boolean;
   isExporting: boolean;
 }
+
+const FORMAT_OPTIONS: Array<{ value: ExportFormat; label: string; description: string }> = [
+  { value: 'xlsx', label: 'Excel Workbook (.xlsx)', description: 'Full data with one worksheet per resource type' },
+  { value: 'pdf', label: 'PDF Document (.pdf)', description: 'Formatted tables in a printable document' },
+  { value: 'docx', label: 'Word Document (.docx)', description: 'Editable report with resource tables' },
+  { value: 'pptx', label: 'PowerPoint (.pptx)', description: 'Presentation with summary and data slides' },
+  { value: 'handover', label: 'Handover Package (.zip)', description: 'ZIP bundle with XLSX data and metadata' },
+];
 
 const ExportDialog: React.FC<ExportDialogProps> = ({
   open,
@@ -33,6 +44,7 @@ const ExportDialog: React.FC<ExportDialogProps> = ({
 }) => {
   const [scope, setScope] = useState<ExportScope>('all');
   const [filteredOnly, setFilteredOnly] = useState(false);
+  const [format, setFormat] = useState<ExportFormat>('xlsx');
 
   const blurAndClose = () => {
     if (document.activeElement instanceof HTMLElement) {
@@ -42,14 +54,41 @@ const ExportDialog: React.FC<ExportDialogProps> = ({
   };
 
   const handleExport = async () => {
-    await onExport(scope, filteredOnly);
+    await onExport(scope, filteredOnly, format);
     blurAndClose();
   };
+
+  const selectedFormat = FORMAT_OPTIONS.find((f) => f.value === format);
 
   return (
     <ComposedModal open={open} onClose={blurAndClose} size="sm">
       <ModalHeader title="Export Data" />
       <ModalBody>
+        <div style={{ marginBottom: '1.5rem' }}>
+          <Select
+            id="export-format"
+            labelText="Export format"
+            value={format}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              setFormat(e.target.value as ExportFormat)
+            }
+          >
+            {FORMAT_OPTIONS.map((opt) => (
+              <SelectItem key={opt.value} value={opt.value} text={opt.label} />
+            ))}
+          </Select>
+          {selectedFormat && (
+            <p
+              style={{
+                fontSize: '0.75rem',
+                color: 'var(--cds-text-helper)',
+                marginTop: '0.25rem',
+              }}
+            >
+              {selectedFormat.description}
+            </p>
+          )}
+        </div>
         <div style={{ marginBottom: '1.5rem' }}>
           <RadioButtonGroup
             legendText="Export scope"

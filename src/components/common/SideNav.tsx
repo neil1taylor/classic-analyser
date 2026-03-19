@@ -228,8 +228,10 @@ const AppSideNav: React.FC = () => {
           <li style={{ padding: '0.75rem 1rem', listStyle: 'none' }}>
             <ContentSwitcher
               selectedIndex={selectedIndex >= 0 ? selectedIndex : 0}
-              onChange={(e: { index: number }) => {
-                const domain = availableDomains[e.index];
+              onChange={(e) => {
+                const idx = (e as { index?: number }).index;
+                if (idx == null) return;
+                const domain = availableDomains[idx];
                 if (domain) handleDomainSwitch(domain);
               }}
               size="sm"

@@ -11,6 +11,7 @@ import { usePowerVsData } from '@/contexts/PowerVsDataContext';
 import { usePowerVsDashboardMetrics } from '@/hooks/usePowerVsDashboardMetrics';
 import { POWERVS_RESOURCE_TYPES } from '@/types/powervs-resources';
 import type { ExportScope } from '@/components/common/ExportDialog';
+import type { ExportFormat } from '@/services/export';
 
 const PowerVsDashboard: React.FC = () => {
   const { startPvsCollection, cancelPvsCollection, isPvsCollecting } = usePowerVsDataCollection();
@@ -18,7 +19,6 @@ const PowerVsDashboard: React.FC = () => {
   const { pvsCollectedData, pvsCollectionStatus, pvsErrors, pvsCollectionDuration } = usePowerVsData();
   const {
     totalInstances,
-    totalResources,
     totalProcessors,
     totalMemoryGB,
     totalStorageGB,
@@ -28,8 +28,8 @@ const PowerVsDashboard: React.FC = () => {
 
   const hasData = Object.keys(pvsCollectedData).length > 0;
 
-  const handleExport = async (_scope: ExportScope, _filteredOnly: boolean) => {
-    await exportPvsAll();
+  const handleExport = async (_scope: ExportScope, _filteredOnly: boolean, format: ExportFormat = 'xlsx') => {
+    await exportPvsAll(format);
   };
 
   const lastCollectionTime = pvsCollectionStatus === 'complete' && pvsCollectionDuration

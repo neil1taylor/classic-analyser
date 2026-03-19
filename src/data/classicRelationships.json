@@ -1,0 +1,15 @@
+[
+  { "parentType": "vlans", "childType": "subnets", "parentField": "vlanNumber", "childField": "vlanNumber", "label": "VLAN has Subnets" },
+  { "parentType": "vlans", "childType": "virtualServers", "parentField": "id", "childField": "primaryNetworkComponent.networkVlan.id", "label": "VLAN has Virtual Servers" },
+  { "parentType": "vlans", "childType": "bareMetal", "parentField": "id", "childField": "primaryNetworkComponent.networkVlan.id", "label": "VLAN has Bare Metal" },
+  { "parentType": "vlans", "childType": "firewalls", "parentField": "vlanNumber", "childField": "vlanNumber", "label": "VLAN has Firewalls" },
+  { "parentType": "gateways", "childType": "vlans", "parentField": "id", "childField": "gateway", "label": "Gateway has VLANs" },
+  { "parentType": "blockStorage", "childType": "virtualServers", "parentField": "id", "childField": "blockStorageId", "label": "Block Storage attached to VSIs" },
+  { "parentType": "fileStorage", "childType": "virtualServers", "parentField": "id", "childField": "fileStorageId", "label": "File Storage attached to VSIs" },
+  { "parentType": "dnsDomains", "childType": "dnsRecords", "parentField": "id", "childField": "domainId", "label": "Domain has DNS Records" },
+  { "parentType": "dedicatedHosts", "childType": "virtualServers", "parentField": "id", "childField": "dedicatedHost.id", "label": "Dedicated Host has VSIs" },
+  { "parentType": "placementGroups", "childType": "virtualServers", "parentField": "id", "childField": "placementGroupId", "label": "Placement Group has VSIs" },
+  { "parentType": "securityGroups", "childType": "virtualServers", "parentField": "id", "childField": "securityGroupId", "label": "Security Group has VSIs" },
+  { "parentType": "loadBalancers", "childType": "virtualServers", "parentField": "id", "childField": "loadBalancerId", "label": "Load Balancer has VSIs" },
+  { "parentType": "sshKeys", "childType": "virtualServers", "parentField": "id", "childField": "sshKeyId", "label": "SSH Key used by VSIs" }
+]

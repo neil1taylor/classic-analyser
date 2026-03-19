@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useReducer, useCallback } from 'react';
+import { vpcDataReducer, initialVpcDataState, type VpcDataAction } from '../context/vpcDataReducer';
 
 export type VpcCollectionStatus = 'idle' | 'collecting' | 'complete' | 'error' | 'cancelled';
 
@@ -29,15 +30,8 @@ interface VpcDataContextValue {
   setVpcCollectionDuration: (duration: number | null) => void;
   setUserAccountId: (accountId: string | null) => void;
   clearVpcData: () => void;
+  dispatch: React.Dispatch<VpcDataAction>;
 }
-
-const initialProgress: VpcCollectionProgress = {
-  phase: '',
-  resource: '',
-  status: '',
-  totalResources: 0,
-  completedResources: 0,
-};
 
 const VpcDataContext = createContext<VpcDataContextValue | undefined>(undefined);
 
@@ -50,53 +44,38 @@ export function useVpcData(): VpcDataContextValue {
 }
 
 export function VpcDataProvider({ children }: { children: React.ReactNode }) {
-  const [vpcCollectedData, setVpcCollectedData] = useState<Record<string, unknown[]>>({});
-  const [vpcCollectionStatus, setVpcCollectionStatus] = useState<VpcCollectionStatus>('idle');
-  const [vpcProgress, setVpcProgressState] = useState<VpcCollectionProgress>(initialProgress);
-  const [vpcErrors, setVpcErrors] = useState<VpcCollectionError[]>([]);
-  const [vpcCollectionDuration, setVpcCollectionDurationState] = useState<number | null>(null);
-  const [userAccountId, setUserAccountIdState] = useState<string | null>(null);
+  const [state, dispatch] = useReducer(vpcDataReducer, initialVpcDataState);
 
   const setVpcResourceData = useCallback((key: string, items: unknown[]) => {
-    setVpcCollectedData((prev) => ({ ...prev, [key]: items }));
+    dispatch({ type: 'SET_RESOURCE_DATA', key, items });
   }, []);
 
-  const setVpcProgress = useCallback((p: VpcCollectionProgress) => {
-    setVpcProgressState(p);
+  const setVpcProgress = useCallback((progress: VpcCollectionProgress) => {
+    dispatch({ type: 'SET_PROGRESS', progress });
   }, []);
 
   const addVpcError = useCallback((error: VpcCollectionError) => {
-    setVpcErrors((prev) => [...prev, error]);
+    dispatch({ type: 'ADD_ERROR', error });
   }, []);
 
   const setVpcStatus = useCallback((status: VpcCollectionStatus) => {
-    setVpcCollectionStatus(status);
+    dispatch({ type: 'SET_STATUS', status });
   }, []);
 
   const setVpcCollectionDuration = useCallback((duration: number | null) => {
-    setVpcCollectionDurationState(duration);
+    dispatch({ type: 'SET_COLLECTION_DURATION', duration });
   }, []);
 
   const setUserAccountId = useCallback((accountId: string | null) => {
-    setUserAccountIdState(accountId);
+    dispatch({ type: 'SET_USER_ACCOUNT_ID', accountId });
   }, []);
 
   const clearVpcData = useCallback(() => {
-    setVpcCollectedData({});
-    setVpcCollectionStatus('idle');
-    setVpcProgressState(initialProgress);
-    setVpcErrors([]);
-    setVpcCollectionDurationState(null);
-    setUserAccountIdState(null);
+    dispatch({ type: 'CLEAR_DATA' });
   }, []);
 
   const value: VpcDataContextValue = {
-    vpcCollectedData,
-    vpcCollectionStatus,
-    vpcProgress,
-    vpcErrors,
-    vpcCollectionDuration,
-    userAccountId,
+    ...state,
     setVpcResourceData,
     setVpcProgress,
     addVpcError,
@@ -104,6 +83,7 @@ export function VpcDataProvider({ children }: { children: React.ReactNode }) {
     setVpcCollectionDuration,
     setUserAccountId,
     clearVpcData,
+    dispatch,
   };
 
   return <VpcDataContext.Provider value={value}>{children}</VpcDataContext.Provider>;
