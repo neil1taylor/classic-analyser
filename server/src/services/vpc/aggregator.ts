@@ -52,12 +52,14 @@ interface CollectorTask {
 }
 
 export async function collectAllVpcData(
-  apiKey: string,
+  auth: { apiKey?: string; iamToken?: string },
   res: Response,
   abortSignal?: { aborted: boolean },
 ): Promise<void> {
   const startTime = Date.now();
-  const client = new VpcClient(apiKey);
+  const client = auth.iamToken
+    ? VpcClient.fromIamToken(auth.iamToken)
+    : new VpcClient(auth.apiKey!);
   const errors: VpcCollectionError[] = [];
 
   try {

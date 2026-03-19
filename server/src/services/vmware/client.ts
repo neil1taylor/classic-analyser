@@ -14,6 +14,14 @@ export class VMwareClient {
     this.apiKey = apiKey;
   }
 
+  static fromIamToken(token: string): VMwareClient {
+    const client = Object.create(VMwareClient.prototype) as VMwareClient;
+    client.apiKey = '';
+    client.accessToken = token;
+    client.tokenExpiry = Date.now() / 1000 + 3600;
+    return client;
+  }
+
   async exchangeToken(): Promise<string> {
     // Return cached token if still valid (with 60s buffer)
     if (this.accessToken && Date.now() / 1000 < this.tokenExpiry - 60) {

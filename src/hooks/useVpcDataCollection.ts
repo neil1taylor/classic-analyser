@@ -14,7 +14,7 @@ interface UseVpcDataCollectionReturn {
 }
 
 export function useVpcDataCollection(): UseVpcDataCollectionReturn {
-  const { apiKey } = useAuth();
+  const { apiKey, iamToken, authMode } = useAuth();
   const {
     vpcCollectionStatus,
     setVpcResourceData,
@@ -30,13 +30,13 @@ export function useVpcDataCollection(): UseVpcDataCollectionReturn {
   const isVpcCollecting = vpcCollectionStatus === 'collecting';
 
   const startVpcCollection = useCallback(() => {
-    if (!apiKey) return;
+    if (!apiKey && !iamToken) return;
 
     log.info('Starting VPC data collection');
     clearVpcData();
     setVpcStatus('collecting');
 
-    const controller = collectVpcDataStream(apiKey, {
+    const controller = collectVpcDataStream(apiKey || '', {
       onProgress: (progress) => {
         setVpcProgress(progress);
       },
@@ -59,10 +59,10 @@ export function useVpcDataCollection(): UseVpcDataCollectionReturn {
           setUserAccountId(metadata.userAccountId);
         }
       },
-    });
+    }, { authMode: authMode || undefined, iamToken: iamToken || undefined });
 
     abortControllerRef.current = controller;
-  }, [apiKey, clearVpcData, setVpcStatus, setVpcProgress, setVpcResourceData, addVpcError, setVpcCollectionDuration, setUserAccountId]);
+  }, [apiKey, iamToken, authMode, clearVpcData, setVpcStatus, setVpcProgress, setVpcResourceData, addVpcError, setVpcCollectionDuration, setUserAccountId]);
 
   const cancelVpcCollection = useCallback(() => {
     log.warn('VPC collection cancelled by user');

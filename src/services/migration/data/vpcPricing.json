@@ -1,105 +1,711 @@
 {
-  "generatedAt": "2026-01-30T00:00:00.000Z",
+  "generatedAt": "2026-03-13T00:00:00.000Z",
   "region": "us-south",
   "profiles": {
-    "bx2-2x8": { "monthlyCost": 77 },
-    "bx2-4x16": { "monthlyCost": 154 },
-    "bx2-8x32": { "monthlyCost": 307 },
-    "bx2-16x64": { "monthlyCost": 614 },
-    "bx2-32x128": { "monthlyCost": 1229 },
-    "bx2-48x192": { "monthlyCost": 1843 },
-    "bx2-64x256": { "monthlyCost": 2458 },
-    "bx3d-2x10": { "monthlyCost": 88 },
-    "bx3d-4x20": { "monthlyCost": 175 },
-    "bx3d-8x40": { "monthlyCost": 350 },
-    "bx3d-16x80": { "monthlyCost": 701 },
-    "bx3d-24x120": { "monthlyCost": 1051 },
-    "bx3d-32x160": { "monthlyCost": 1402 },
-    "bx3d-48x240": { "monthlyCost": 2102 },
-    "bx3d-64x320": { "monthlyCost": 2803 },
-    "bx3d-96x480": { "monthlyCost": 4204 },
-    "bx3d-128x640": { "monthlyCost": 5606 },
-    "bx3d-176x880": { "monthlyCost": 7708 },
-    "cx2-2x4": { "monthlyCost": 62 },
-    "cx2-4x8": { "monthlyCost": 123 },
-    "cx2-8x16": { "monthlyCost": 246 },
-    "cx2-16x32": { "monthlyCost": 491 },
-    "cx2-32x64": { "monthlyCost": 983 },
-    "cx3d-2x5": { "monthlyCost": 71 },
-    "cx3d-4x10": { "monthlyCost": 141 },
-    "cx3d-8x20": { "monthlyCost": 282 },
-    "cx3d-16x40": { "monthlyCost": 565 },
-    "cx3d-24x60": { "monthlyCost": 847 },
-    "cx3d-32x80": { "monthlyCost": 1129 },
-    "cx3d-48x120": { "monthlyCost": 1694 },
-    "cx3d-64x160": { "monthlyCost": 2258 },
-    "cx3d-96x240": { "monthlyCost": 3388 },
-    "cx3d-128x320": { "monthlyCost": 4517 },
-    "cx3d-176x440": { "monthlyCost": 6211 },
-    "mx2-2x16": { "monthlyCost": 100 },
-    "mx2-4x32": { "monthlyCost": 200 },
-    "mx2-8x64": { "monthlyCost": 399 },
-    "mx2-16x128": { "monthlyCost": 798 },
-    "mx2-32x256": { "monthlyCost": 1597 },
-    "mx2-48x384": { "monthlyCost": 2395 },
-    "mx2-64x512": { "monthlyCost": 3194 },
-    "mx3d-2x20": { "monthlyCost": 119 },
-    "mx3d-4x40": { "monthlyCost": 238 },
-    "mx3d-8x80": { "monthlyCost": 477 },
-    "mx3d-16x160": { "monthlyCost": 953 },
-    "mx3d-24x240": { "monthlyCost": 1430 },
-    "mx3d-32x320": { "monthlyCost": 1906 },
-    "mx3d-48x480": { "monthlyCost": 2860 },
-    "mx3d-64x640": { "monthlyCost": 3813 },
-    "mx3d-96x960": { "monthlyCost": 5719 },
-    "mx3d-128x1280": { "monthlyCost": 7626 },
-    "mx3d-176x1760": { "monthlyCost": 10485 },
-    "vx2d-2x28": { "monthlyCost": 152 },
-    "vx2d-4x56": { "monthlyCost": 304 },
-    "vx2d-8x112": { "monthlyCost": 608 },
-    "vx2d-16x224": { "monthlyCost": 1216 },
-    "vx2d-32x448": { "monthlyCost": 2432 },
-    "vx2d-48x672": { "monthlyCost": 3648 },
-    "vx2d-64x896": { "monthlyCost": 4864 },
-    "vx2d-96x1344": { "monthlyCost": 7296 },
-    "vx2d-128x1792": { "monthlyCost": 9728 },
-    "vx2d-176x2464": { "monthlyCost": 13376 },
-    "ux2d-2x56": { "monthlyCost": 275 },
-    "ux2d-4x112": { "monthlyCost": 550 },
-    "ux2d-8x224": { "monthlyCost": 1100 },
-    "ux2d-16x448": { "monthlyCost": 2200 },
-    "ux2d-36x1008": { "monthlyCost": 4950 },
-    "ux2d-48x1344": { "monthlyCost": 6600 },
-    "ux2d-72x2016": { "monthlyCost": 9900 },
-    "ux2d-100x2800": { "monthlyCost": 13750 },
-    "ux2d-200x5600": { "monthlyCost": 27500 }
+    "bxf-2x8": {
+      "monthlyCost": 70.08,
+      "hourlyRate": 0.096
+    },
+    "bx2-128x512": {
+      "monthlyCost": 4688.79,
+      "hourlyRate": 6.423
+    },
+    "bx2-16x64": {
+      "monthlyCost": 586.19,
+      "hourlyRate": 0.803
+    },
+    "bx2-2x8": {
+      "monthlyCost": 73,
+      "hourlyRate": 0.1
+    },
+    "bx2-32x128": {
+      "monthlyCost": 1171.65,
+      "hourlyRate": 1.605
+    },
+    "bx2-48x192": {
+      "monthlyCost": 1758.57,
+      "hourlyRate": 2.409
+    },
+    "bx2-4x16": {
+      "monthlyCost": 146.73,
+      "hourlyRate": 0.201
+    },
+    "bx2-64x256": {
+      "monthlyCost": 2344.03,
+      "hourlyRate": 3.211
+    },
+    "bx2-8x32": {
+      "monthlyCost": 293.46,
+      "hourlyRate": 0.402
+    },
+    "bx2-96x384": {
+      "monthlyCost": 3516.41,
+      "hourlyRate": 4.817
+    },
+    "bx2d-128x512": {
+      "monthlyCost": 4688.79,
+      "hourlyRate": 6.423
+    },
+    "bx2d-16x64": {
+      "monthlyCost": 586.19,
+      "hourlyRate": 0.803
+    },
+    "bx2d-2x8": {
+      "monthlyCost": 73,
+      "hourlyRate": 0.1
+    },
+    "bx2d-32x128": {
+      "monthlyCost": 1171.65,
+      "hourlyRate": 1.605
+    },
+    "bx2d-48x192": {
+      "monthlyCost": 1758.57,
+      "hourlyRate": 2.409
+    },
+    "bx2d-4x16": {
+      "monthlyCost": 146.73,
+      "hourlyRate": 0.201
+    },
+    "bx2d-64x256": {
+      "monthlyCost": 2344.03,
+      "hourlyRate": 3.211
+    },
+    "bx2d-8x32": {
+      "monthlyCost": 293.46,
+      "hourlyRate": 0.402
+    },
+    "bx2d-96x384": {
+      "monthlyCost": 3516.41,
+      "hourlyRate": 4.817
+    },
+    "cx2-128x256": {
+      "monthlyCost": 4150.78,
+      "hourlyRate": 5.686
+    },
+    "cx2-16x32": {
+      "monthlyCost": 519.03,
+      "hourlyRate": 0.711
+    },
+    "cx2-2x4": {
+      "monthlyCost": 64.24,
+      "hourlyRate": 0.088
+    },
+    "cx2-32x64": {
+      "monthlyCost": 1037.33,
+      "hourlyRate": 1.421
+    },
+    "cx2-48x96": {
+      "monthlyCost": 1557.09,
+      "hourlyRate": 2.133
+    },
+    "cx2-4x8": {
+      "monthlyCost": 129.94,
+      "hourlyRate": 0.178
+    },
+    "cx2-64x128": {
+      "monthlyCost": 2075.39,
+      "hourlyRate": 2.843
+    },
+    "cx2-8x16": {
+      "monthlyCost": 259.88,
+      "hourlyRate": 0.356
+    },
+    "cx2-96x192": {
+      "monthlyCost": 3112.72,
+      "hourlyRate": 4.264
+    },
+    "cx2d-128x256": {
+      "monthlyCost": 4150.78,
+      "hourlyRate": 5.686
+    },
+    "cx2d-16x32": {
+      "monthlyCost": 519.03,
+      "hourlyRate": 0.711
+    },
+    "cx2d-2x4": {
+      "monthlyCost": 64.24,
+      "hourlyRate": 0.088
+    },
+    "cx2d-32x64": {
+      "monthlyCost": 1037.33,
+      "hourlyRate": 1.421
+    },
+    "cx2d-48x96": {
+      "monthlyCost": 1557.09,
+      "hourlyRate": 2.133
+    },
+    "cx2d-4x8": {
+      "monthlyCost": 129.94,
+      "hourlyRate": 0.178
+    },
+    "cx2d-64x128": {
+      "monthlyCost": 2075.39,
+      "hourlyRate": 2.843
+    },
+    "cx2d-8x16": {
+      "monthlyCost": 259.88,
+      "hourlyRate": 0.356
+    },
+    "cx2d-96x192": {
+      "monthlyCost": 3112.72,
+      "hourlyRate": 4.264
+    },
+    "mx2-128x1024": {
+      "monthlyCost": 6063.38,
+      "hourlyRate": 8.306
+    },
+    "mx2-16x128": {
+      "monthlyCost": 758.47,
+      "hourlyRate": 1.039
+    },
+    "mx2-2x16": {
+      "monthlyCost": 94.9,
+      "hourlyRate": 0.13
+    },
+    "mx2-32x256": {
+      "monthlyCost": 1516.21,
+      "hourlyRate": 2.077
+    },
+    "mx2-48x384": {
+      "monthlyCost": 2273.95,
+      "hourlyRate": 3.115
+    },
+    "mx2-4x32": {
+      "monthlyCost": 189.07,
+      "hourlyRate": 0.259
+    },
+    "mx2-64x512": {
+      "monthlyCost": 3031.69,
+      "hourlyRate": 4.153
+    },
+    "mx2-8x64": {
+      "monthlyCost": 378.87,
+      "hourlyRate": 0.519
+    },
+    "mx2-96x768": {
+      "monthlyCost": 4547.9,
+      "hourlyRate": 6.23
+    },
+    "mx2d-128x1024": {
+      "monthlyCost": 6063.38,
+      "hourlyRate": 8.306
+    },
+    "mx2d-16x128": {
+      "monthlyCost": 758.47,
+      "hourlyRate": 1.039
+    },
+    "mx2d-2x16": {
+      "monthlyCost": 94.9,
+      "hourlyRate": 0.13
+    },
+    "mx2d-32x256": {
+      "monthlyCost": 1516.21,
+      "hourlyRate": 2.077
+    },
+    "mx2d-48x384": {
+      "monthlyCost": 2273.95,
+      "hourlyRate": 3.115
+    },
+    "mx2d-4x32": {
+      "monthlyCost": 189.07,
+      "hourlyRate": 0.259
+    },
+    "mx2d-64x512": {
+      "monthlyCost": 3031.69,
+      "hourlyRate": 4.153
+    },
+    "mx2d-8x64": {
+      "monthlyCost": 378.87,
+      "hourlyRate": 0.519
+    },
+    "mx2d-96x768": {
+      "monthlyCost": 4547.9,
+      "hourlyRate": 6.23
+    },
+    "ux2d-100x2800": {
+      "monthlyCost": 14406.55,
+      "hourlyRate": 19.735
+    },
+    "ux2d-16x448": {
+      "monthlyCost": 2305.34,
+      "hourlyRate": 3.158
+    },
+    "ux2d-200x5600": {
+      "monthlyCost": 28812.37,
+      "hourlyRate": 39.469
+    },
+    "ux2d-2x56": {
+      "monthlyCost": 288.35,
+      "hourlyRate": 0.395
+    },
+    "ux2d-36x1008": {
+      "monthlyCost": 5186.65,
+      "hourlyRate": 7.105
+    },
+    "ux2d-48x1344": {
+      "monthlyCost": 6915.29,
+      "hourlyRate": 9.473
+    },
+    "ux2d-4x112": {
+      "monthlyCost": 575.97,
+      "hourlyRate": 0.789
+    },
+    "ux2d-72x2016": {
+      "monthlyCost": 10372.57,
+      "hourlyRate": 14.209
+    },
+    "ux2d-8x224": {
+      "monthlyCost": 1151.94,
+      "hourlyRate": 1.578
+    },
+    "vx2d-144x2016": {
+      "monthlyCost": 10998.91,
+      "hourlyRate": 15.067
+    },
+    "vx2d-16x224": {
+      "monthlyCost": 1222.02,
+      "hourlyRate": 1.674
+    },
+    "vx2d-176x2464": {
+      "monthlyCost": 13442.95,
+      "hourlyRate": 18.415
+    },
+    "vx2d-2x28": {
+      "monthlyCost": 153.3,
+      "hourlyRate": 0.21
+    },
+    "vx2d-44x616": {
+      "monthlyCost": 3360.92,
+      "hourlyRate": 4.604
+    },
+    "vx2d-4x56": {
+      "monthlyCost": 305.14,
+      "hourlyRate": 0.418
+    },
+    "vx2d-88x1232": {
+      "monthlyCost": 6721.84,
+      "hourlyRate": 9.208
+    },
+    "vx2d-8x112": {
+      "monthlyCost": 611.01,
+      "hourlyRate": 0.837
+    },
+    "bx3dc-2x10": {
+      "monthlyCost": 16.22,
+      "hourlyRate": 0.0222
+    },
+    "bx3d-2x10": {
+      "monthlyCost": 82.49,
+      "hourlyRate": 0.113
+    },
+    "bx3d-4x20": {
+      "monthlyCost": 165.71,
+      "hourlyRate": 0.227
+    },
+    "bx3dc-4x20": {
+      "monthlyCost": 184.33,
+      "hourlyRate": 0.2525
+    },
+    "bxf-4x16": {
+      "monthlyCost": 140.89,
+      "hourlyRate": 0.193
+    },
+    "bx3dc-8x40": {
+      "monthlyCost": 330.69,
+      "hourlyRate": 0.453
+    },
+    "bxf-8x32": {
+      "monthlyCost": 281.78,
+      "hourlyRate": 0.386
+    },
+    "bx3d-8x40": {
+      "monthlyCost": 330.69,
+      "hourlyRate": 0.453
+    },
+    "bx3dc-16x80": {
+      "monthlyCost": 132.71,
+      "hourlyRate": 0.1818
+    },
+    "bx3d-16x80": {
+      "monthlyCost": 662.11,
+      "hourlyRate": 0.907
+    },
+    "bxf-16x64": {
+      "monthlyCost": 562.83,
+      "hourlyRate": 0.771
+    },
+    "bxf-24x96": {
+      "monthlyCost": 843.88,
+      "hourlyRate": 1.156
+    },
+    "bx3d-24x120": {
+      "monthlyCost": 992.8,
+      "hourlyRate": 1.36
+    },
+    "bx3dc-24x120": {
+      "monthlyCost": 198.56,
+      "hourlyRate": 0.272
+    },
+    "bxf-32x128": {
+      "monthlyCost": 1124.93,
+      "hourlyRate": 1.541
+    },
+    "bx3d-32x160": {
+      "monthlyCost": 1323.49,
+      "hourlyRate": 1.813
+    },
+    "bx3dc-32x160": {
+      "monthlyCost": 1453.43,
+      "hourlyRate": 1.991
+    },
+    "bx3dc-48x240": {
+      "monthlyCost": 397.12,
+      "hourlyRate": 0.544
+    },
+    "bx3d-48x240": {
+      "monthlyCost": 1985.6,
+      "hourlyRate": 2.72
+    },
+    "bxf-48x192": {
+      "monthlyCost": 1687.76,
+      "hourlyRate": 2.312
+    },
+    "bx3d-64x320": {
+      "monthlyCost": 2647.71,
+      "hourlyRate": 3.627
+    },
+    "bx3dc-64x320": {
+      "monthlyCost": 2909.78,
+      "hourlyRate": 3.986
+    },
+    "bxf-64x256": {
+      "monthlyCost": 2250.59,
+      "hourlyRate": 3.083
+    },
+    "bx3d-96x480": {
+      "monthlyCost": 3971.2,
+      "hourlyRate": 5.44
+    },
+    "bx3dc-96x480": {
+      "monthlyCost": 794.24,
+      "hourlyRate": 1.088
+    },
+    "bx3d-128x640": {
+      "monthlyCost": 5294.69,
+      "hourlyRate": 7.253
+    },
+    "bx3d-176x880": {
+      "monthlyCost": 6618.18,
+      "hourlyRate": 9.066
+    },
+    "cx3dc-2x5": {
+      "monthlyCost": 73.73,
+      "hourlyRate": 0.101
+    },
+    "cxf-2x4": {
+      "monthlyCost": 62.05,
+      "hourlyRate": 0.085
+    },
+    "cx3d-2x5": {
+      "monthlyCost": 73.73,
+      "hourlyRate": 0.101
+    },
+    "cx3d-4x10": {
+      "monthlyCost": 148.19,
+      "hourlyRate": 0.203
+    },
+    "cxf-4x8": {
+      "monthlyCost": 124.83,
+      "hourlyRate": 0.171
+    },
+    "cx3dc-4x10": {
+      "monthlyCost": 91.98,
+      "hourlyRate": 0.126
+    },
+    "cxf-8x16": {
+      "monthlyCost": 248.2,
+      "hourlyRate": 0.34
+    },
+    "cx3d-8x20": {
+      "monthlyCost": 296.38,
+      "hourlyRate": 0.406
+    },
+    "cx3dc-8x20": {
+      "monthlyCost": 58.98,
+      "hourlyRate": 0.0808
+    },
+    "cx3dc-16x40": {
+      "monthlyCost": 591.3,
+      "hourlyRate": 0.81
+    },
+    "cx3d-16x40": {
+      "monthlyCost": 591.3,
+      "hourlyRate": 0.81
+    },
+    "cxf-16x32": {
+      "monthlyCost": 497.86,
+      "hourlyRate": 0.682
+    },
+    "cx3dc-24x60": {
+      "monthlyCost": 543.85,
+      "hourlyRate": 0.745
+    },
+    "cx3d-24x60": {
+      "monthlyCost": 887.68,
+      "hourlyRate": 1.216
+    },
+    "cxf-24x48": {
+      "monthlyCost": 746.06,
+      "hourlyRate": 1.022
+    },
+    "cxf-32x64": {
+      "monthlyCost": 992.8,
+      "hourlyRate": 1.36
+    },
+    "cx3d-32x80": {
+      "monthlyCost": 1184.06,
+      "hourlyRate": 1.622
+    },
+    "cx3dc-32x80": {
+      "monthlyCost": 236.52,
+      "hourlyRate": 0.324
+    },
+    "cx3d-48x120": {
+      "monthlyCost": 1775.36,
+      "hourlyRate": 2.432
+    },
+    "cxf-48x96": {
+      "monthlyCost": 1492.85,
+      "hourlyRate": 2.045
+    },
+    "cx3dc-48x120": {
+      "monthlyCost": 1089.16,
+      "hourlyRate": 1.492
+    },
+    "cxf-64x128": {
+      "monthlyCost": 1990.71,
+      "hourlyRate": 2.727
+    },
+    "cx3dc-64x160": {
+      "monthlyCost": 473.04,
+      "hourlyRate": 0.648
+    },
+    "cx3d-64x160": {
+      "monthlyCost": 2368.12,
+      "hourlyRate": 3.244
+    },
+    "cx3dc-96x240": {
+      "monthlyCost": 3551.45,
+      "hourlyRate": 4.865
+    },
+    "cx3d-96x240": {
+      "monthlyCost": 3551.45,
+      "hourlyRate": 4.865
+    },
+    "cx3d-128x320": {
+      "monthlyCost": 4735.51,
+      "hourlyRate": 6.487
+    },
+    "cx3dc-128x320": {
+      "monthlyCost": 4735.51,
+      "hourlyRate": 6.487
+    },
+    "cx3d-176x440": {
+      "monthlyCost": 5919.57,
+      "hourlyRate": 8.109
+    },
+    "mx3d-2x20": {
+      "monthlyCost": 100.01,
+      "hourlyRate": 0.137
+    },
+    "mxf-2x16": {
+      "monthlyCost": 90.52,
+      "hourlyRate": 0.124
+    },
+    "mxf-4x32": {
+      "monthlyCost": 181.77,
+      "hourlyRate": 0.249
+    },
+    "mx3d-4x40": {
+      "monthlyCost": 201.48,
+      "hourlyRate": 0.276
+    },
+    "mx3d-8x80": {
+      "monthlyCost": 402.23,
+      "hourlyRate": 0.551
+    },
+    "mxf-8x64": {
+      "monthlyCost": 363.54,
+      "hourlyRate": 0.498
+    },
+    "mxf-16x128": {
+      "monthlyCost": 727.08,
+      "hourlyRate": 0.996
+    },
+    "mx3d-16x160": {
+      "monthlyCost": 804.46,
+      "hourlyRate": 1.102
+    },
+    "mx3d-24x240": {
+      "monthlyCost": 1608.92,
+      "hourlyRate": 2.204
+    },
+    "mxf-24x192": {
+      "monthlyCost": 1087.7,
+      "hourlyRate": 1.49
+    },
+    "mxf-32x256": {
+      "monthlyCost": 1454.89,
+      "hourlyRate": 1.993
+    },
+    "mx3d-32x320": {
+      "monthlyCost": 2413.38,
+      "hourlyRate": 3.306
+    },
+    "mx3d-48x480": {
+      "monthlyCost": 3217.84,
+      "hourlyRate": 4.408
+    },
+    "mxf-48x384": {
+      "monthlyCost": 2181.97,
+      "hourlyRate": 2.989
+    },
+    "mxf-64x512": {
+      "monthlyCost": 2909.05,
+      "hourlyRate": 3.985
+    },
+    "mx3d-64x640": {
+      "monthlyCost": 3363.11,
+      "hourlyRate": 4.607
+    },
+    "mx3d-96x960": {
+      "monthlyCost": 5043.57,
+      "hourlyRate": 6.909
+    },
+    "mx3d-128x1280": {
+      "monthlyCost": 6725.49,
+      "hourlyRate": 9.213
+    },
+    "mx3d-176x1760": {
+      "monthlyCost": 8406.68,
+      "hourlyRate": 11.516
+    }
   },
   "bareMetalProfiles": {
-    "bx2d-metal-96x384": { "monthlyCost": 5200 },
-    "bx3d-metal-64x320": { "monthlyCost": 4500 },
-    "bx3d-metal-96x480": { "monthlyCost": 6400 },
-    "bx3d-metal-128x640": { "monthlyCost": 8400 },
-    "bx3d-metal-176x880": { "monthlyCost": 11500 },
-    "cx2d-metal-96x192": { "monthlyCost": 4200 },
-    "cx3d-metal-64x160": { "monthlyCost": 3600 },
-    "cx3d-metal-96x240": { "monthlyCost": 5100 },
-    "cx3d-metal-128x320": { "monthlyCost": 6800 },
-    "cx3d-metal-176x440": { "monthlyCost": 9300 },
-    "mx2d-metal-96x768": { "monthlyCost": 7200 },
-    "mx3d-metal-64x640": { "monthlyCost": 5700 },
-    "mx3d-metal-96x960": { "monthlyCost": 8500 },
-    "mx3d-metal-128x1280": { "monthlyCost": 11400 },
-    "mx3d-metal-176x1760": { "monthlyCost": 15600 }
+    "bx2d-metal-96x384": {
+      "monthlyCost": 3845.64,
+      "hourlyRate": 5.268
+    },
+    "bx2-metal-96x384": {
+      "monthlyCost": 2495.14,
+      "hourlyRate": 3.418
+    },
+    "bx3d-metal-192x1024": {
+      "monthlyCost": 9411.16,
+      "hourlyRate": 12.892
+    },
+    "bx3d-metal-48x256": {
+      "monthlyCost": 3146.3,
+      "hourlyRate": 4.31
+    },
+    "bx3d-metal-64x256": {
+      "monthlyCost": 3312.01,
+      "hourlyRate": 4.537
+    },
+    "bx3-metal-48x256": {
+      "monthlyCost": 2044,
+      "hourlyRate": 2.8
+    },
+    "bx3-metal-64x256": {
+      "monthlyCost": 2206.06,
+      "hourlyRate": 3.022
+    },
+    "cx2d-metal-96x192": {
+      "monthlyCost": 3439.76,
+      "hourlyRate": 4.712
+    },
+    "cx2-metal-96x192": {
+      "monthlyCost": 2088.53,
+      "hourlyRate": 2.861
+    },
+    "cx3d-metal-48x128": {
+      "monthlyCost": 2808.31,
+      "hourlyRate": 3.847
+    },
+    "cx3d-metal-64x128": {
+      "monthlyCost": 2944.09,
+      "hourlyRate": 4.033
+    },
+    "mx2d-metal-96x768": {
+      "monthlyCost": 4887.35,
+      "hourlyRate": 6.695
+    },
+    "mx2-metal-96x768": {
+      "monthlyCost": 3536.85,
+      "hourlyRate": 4.845
+    },
+    "mx3d-metal-96x1024": {
+      "monthlyCost": 8384.05,
+      "hourlyRate": 11.485
+    },
+    "mx3d-metal-128x1024": {
+      "monthlyCost": 8877.53,
+      "hourlyRate": 12.161
+    },
+    "mx3d-metal-48x512": {
+      "monthlyCost": 3760.96,
+      "hourlyRate": 5.152
+    },
+    "mx3d-metal-64x512": {
+      "monthlyCost": 3973.39,
+      "hourlyRate": 5.443
+    },
+    "mx3d-metal-16x128": {
+      "monthlyCost": 2682.02,
+      "hourlyRate": 3.674
+    },
+    "mx3-metal-48x512": {
+      "monthlyCost": 2655.01,
+      "hourlyRate": 3.637
+    },
+    "mx3-metal-64x512": {
+      "monthlyCost": 2867.44,
+      "hourlyRate": 3.928
+    },
+    "vx3d-metal-16x256": {
+      "monthlyCost": 2997.38,
+      "hourlyRate": 4.106
+    },
+    "vx3-metal-16x256": {
+      "monthlyCost": 1891.43,
+      "hourlyRate": 2.591
+    },
+    "ux2d-metal-224x6144": {
+      "monthlyCost": 18593.1,
+      "hourlyRate": 25.47
+    },
+    "ux2d-metal-112x3072": {
+      "monthlyCost": 10593.76,
+      "hourlyRate": 14.512
+    },
+    "ux3d-metal-16x512": {
+      "monthlyCost": 3564.59,
+      "hourlyRate": 4.883
+    },
+    "ux3-metal-16x512": {
+      "monthlyCost": 2458.64,
+      "hourlyRate": 3.368
+    }
   },
   "storage": {
-    "block-general": 0.10,
+    "block-general": 0.1,
     "block-5iops": 0.13,
-    "block-10iops": 0.20,
+    "block-10iops": 0.16,
     "file": 0.12
   },
   "network": {
-    "floating-ip": 5.00,
-    "vpn-gateway": 90.00,
-    "load-balancer": 22.00
+    "floating-ip": 5,
+    "vpn-gateway": 99,
+    "load-balancer": 21.6
   }
 }

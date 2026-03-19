@@ -13,12 +13,36 @@ import { useAuth } from '@/contexts/AuthContext';
 import ImportButton from '@/components/auth/ImportButton';
 
 const ApiKeyForm: React.FC = () => {
-  const { login } = useAuth();
+  const { login, loginWithPasscode } = useAuth();
   const navigate = useNavigate();
   const [apiKey, setApiKey] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPasscodeInput, setShowPasscodeInput] = useState(false);
+  const [passcode, setPasscode] = useState('');
+  const [isPasscodeValidating, setIsPasscodeValidating] = useState(false);
+
+  const handlePasscodeSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!passcode.trim()) {
+      setError('Please enter a passcode.');
+      return;
+    }
+    setError(null);
+    setIsPasscodeValidating(true);
+    try {
+      await loginWithPasscode(passcode.trim());
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || 'Failed to authenticate with passcode.');
+      } else {
+        setError('Failed to authenticate with passcode.');
+      }
+    } finally {
+      setIsPasscodeValidating(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -144,6 +168,79 @@ const ApiKeyForm: React.FC = () => {
             </Button>
           )}
         </form>
+
+        <div
+          style={{
+            marginTop: '1.5rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1rem',
+          }}
+        >
+          <div style={{ flex: 1, height: '1px', background: 'var(--cds-border-subtle)' }} />
+          <span style={{ fontSize: '0.75rem', color: 'var(--cds-text-secondary)' }}>or</span>
+          <div style={{ flex: 1, height: '1px', background: 'var(--cds-border-subtle)' }} />
+        </div>
+
+        {!showPasscodeInput ? (
+          <div style={{ marginTop: '1rem' }}>
+            <Button
+              kind="tertiary"
+              onClick={() => {
+                window.open('https://iam.cloud.ibm.com/identity/passcode', '_blank', 'noopener');
+                setShowPasscodeInput(true);
+              }}
+              disabled={isValidating}
+              style={{ width: '100%' }}
+            >
+              Login with IBMid
+            </Button>
+          </div>
+        ) : (
+          <form onSubmit={handlePasscodeSubmit} style={{ marginTop: '1rem' }}>
+            <p
+              style={{
+                fontSize: '0.75rem',
+                color: 'var(--cds-text-secondary)',
+                marginBottom: '0.75rem',
+                lineHeight: 1.4,
+              }}
+            >
+              A new tab has opened for IBMid login. After authenticating, copy the
+              one-time passcode and paste it below.
+            </p>
+            <div style={{ marginBottom: '1rem' }}>
+              <TextInput
+                id="passcode-input"
+                labelText="One-time passcode"
+                type="password"
+                placeholder="Paste your passcode"
+                value={passcode}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPasscode(e.target.value)}
+                disabled={isPasscodeValidating}
+                autoFocus
+              />
+            </div>
+            {isPasscodeValidating ? (
+              <InlineLoading description="Authenticating..." status="active" />
+            ) : (
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <Button type="submit" kind="primary" disabled={!passcode.trim()}>
+                  Authenticate
+                </Button>
+                <Button
+                  kind="ghost"
+                  onClick={() => {
+                    setShowPasscodeInput(false);
+                    setPasscode('');
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            )}
+          </form>
+        )}
 
         <div
           style={{

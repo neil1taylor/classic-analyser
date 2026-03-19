@@ -2,7 +2,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 const mockCollectAllData = vi.fn();
 const mockApiKeyMiddleware = vi.fn((req: unknown, _res: unknown, next: () => void) => {
-  (req as { apiKey: string }).apiKey = 'test-key';
+  (req as { apiKey: string; authMode: string }).apiKey = 'test-key';
+  (req as { apiKey: string; authMode: string }).authMode = 'apikey';
   next();
 });
 
@@ -28,7 +29,6 @@ describe('collect route - GET /stream', () => {
     const mod = await import('./collect.js');
     const router = mod.default;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const layer = (router.stack as any[]).find(
       (l) => l.route?.path === '/stream' && l.route?.methods?.get
     );
@@ -40,6 +40,8 @@ describe('collect route - GET /stream', () => {
     const req = {
       headers: { 'x-api-key': 'test-key' },
       apiKey: 'test-key',
+      authMode: 'apikey',
+      query: {},
       on: vi.fn((event: string, cb: () => void) => {
         if (event === 'close') closeHandlers.push(cb);
       }),
@@ -85,14 +87,15 @@ describe('collect route - GET /stream', () => {
     await handlerPromise;
 
     expect(mockCollectAllData).toHaveBeenCalledWith(
-      'test-key',
+      { apiKey: 'test-key' },
       expect.anything(),
-      expect.objectContaining({ aborted: false })
+      expect.objectContaining({ aborted: false }),
+      { skipBilling: false },
     );
   });
 
   it('sets aborted flag on client disconnect', async () => {
-    mockCollectAllData.mockImplementation(async (_key: string, _res: unknown, signal: { aborted: boolean }) => {
+    mockCollectAllData.mockImplementation(async (_auth: unknown, _res: unknown, signal: { aborted: boolean }) => {
       // Simulate waiting
       await new Promise((r) => setTimeout(r, 10));
       expect(signal.aborted).toBe(true);

@@ -11,6 +11,9 @@ vi.mock('../middleware/apiKey.js', () => ({
   apiKeyMiddleware: (...args: unknown[]) => mockApiKeyMiddleware(...(args as [unknown, unknown, () => void])),
 }));
 
+// Import once after mocks are set up
+const { default: router } = await import('./export.js');
+
 describe('export route - POST /', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -21,12 +24,8 @@ describe('export route - POST /', () => {
   });
 
   async function callExportRoute(body: unknown) {
-    vi.resetModules();
-    const mod = await import('./export.js');
-    const router = mod.default;
 
     // Find the POST / handler (skip middleware, get the actual handler)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const layer = (router.stack as any[]).find(
       (l) => l.route?.path === '/' && l.route?.methods?.post
     );
@@ -54,8 +53,8 @@ describe('export route - POST /', () => {
     return res;
   }
 
-  it('returns 400 when body is missing collectionTimestamp', async () => {
-    const res = await callExportRoute({});
+  it('returns 400 when body data is not an object', async () => {
+    const res = await callExportRoute('not-an-object');
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({ error: 'Invalid data' })

@@ -14,7 +14,7 @@ interface UsePowerVsDataCollectionReturn {
 }
 
 export function usePowerVsDataCollection(): UsePowerVsDataCollectionReturn {
-  const { apiKey } = useAuth();
+  const { apiKey, iamToken, authMode } = useAuth();
   const {
     pvsCollectionStatus,
     setPvsResourceData,
@@ -30,13 +30,13 @@ export function usePowerVsDataCollection(): UsePowerVsDataCollectionReturn {
   const isPvsCollecting = pvsCollectionStatus === 'collecting';
 
   const startPvsCollection = useCallback(() => {
-    if (!apiKey) return;
+    if (!apiKey && !iamToken) return;
 
     log.info('Starting PowerVS data collection');
     clearPvsData();
     setPvsStatus('collecting');
 
-    const controller = collectPowerVsDataStream(apiKey, {
+    const controller = collectPowerVsDataStream(apiKey || '', {
       onProgress: (progress) => {
         setPvsProgress(progress);
       },
@@ -59,10 +59,10 @@ export function usePowerVsDataCollection(): UsePowerVsDataCollectionReturn {
           setPvsUserAccountId(metadata.userAccountId);
         }
       },
-    });
+    }, { authMode: authMode || undefined, iamToken: iamToken || undefined });
 
     abortControllerRef.current = controller;
-  }, [apiKey, clearPvsData, setPvsStatus, setPvsProgress, setPvsResourceData, addPvsError, setPvsCollectionDuration, setPvsUserAccountId]);
+  }, [apiKey, iamToken, authMode, clearPvsData, setPvsStatus, setPvsProgress, setPvsResourceData, addPvsError, setPvsCollectionDuration, setPvsUserAccountId]);
 
   const cancelPvsCollection = useCallback(() => {
     log.warn('PowerVS collection cancelled by user');

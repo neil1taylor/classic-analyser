@@ -159,7 +159,7 @@ function transformPvsCloudConnection(raw: RawItem): RawItem {
     name: raw.name,
     speed: raw.speed,
     globalRouting: raw.globalRouting,
-    greEnabled: raw.gre?.enabled ?? false,
+    greEnabled: (raw.gre as RawItem | undefined)?.enabled ?? false,
     transitEnabled: raw.transitEnabled,
     networkCount: networks?.length ?? 0,
     ...wsFields(raw),

@@ -1,7 +1,7 @@
 import { Paragraph, Table, HeadingLevel } from 'docx';
 import type { ComputeAssessment } from '@/types/migration';
 import { heading, body, bullet, spacer, pageBreak } from '../utils/styles';
-import { createStyledTable, fmt } from '../utils/tables';
+import { createStyledTable } from '../utils/tables';
 import { aiNarrativeSection } from '../utils/aiSections';
 
 export function buildComputeAssessment(

@@ -2,14 +2,16 @@ import { useState, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData } from '@/contexts/DataContext';
 import { exportData } from '@/services/api';
+import { exportAs, getFileExtension } from '@/services/export';
+import type { ExportFormat } from '@/services/export';
 import { createLogger } from '@/utils/logger';
 
 const log = createLogger('Export');
 
 interface UseExportReturn {
-  exportAll: () => Promise<void>;
-  exportTable: (resourceKey: string, data: unknown[]) => Promise<void>;
-  exportSelected: (resourceKey: string, selectedRows: unknown[]) => Promise<void>;
+  exportAll: (format?: ExportFormat) => Promise<void>;
+  exportTable: (resourceKey: string, data: unknown[], format?: ExportFormat) => Promise<void>;
+  exportSelected: (resourceKey: string, selectedRows: unknown[], format?: ExportFormat) => Promise<void>;
   isExporting: boolean;
 }
 
@@ -32,39 +34,76 @@ export function useExport(): UseExportReturn {
   const accountName = accountInfo?.companyName || 'export';
   const sanitizedName = accountName.replace(/[^a-zA-Z0-9_-]/g, '_');
 
-  const exportAll = useCallback(async () => {
-    log.info('Exporting all data');
+  const exportAll = useCallback(async (format: ExportFormat = 'xlsx') => {
+    log.info('Exporting all data, format:', format);
     setIsExporting(true);
     try {
-      const blob = await exportData(collectedData, accountName);
       const timestamp = new Date().toISOString().slice(0, 10);
-      const filename = `${sanitizedName}_classic_export_${timestamp}.xlsx`;
-      triggerDownload(blob, filename);
-      log.info('Export download triggered:', filename);
+
+      if (format === 'xlsx') {
+        const blob = await exportData(collectedData, accountName);
+        const filename = `${sanitizedName}_classic_export_${timestamp}.xlsx`;
+        triggerDownload(blob, filename);
+      } else {
+        const ext = getFileExtension(format);
+        const blob = await exportAs(
+          format,
+          { data: collectedData, accountName, domain: 'classic', timestamp },
+          { format, accountName, domain: 'classic' },
+          format === 'handover' ? (data, name) => exportData(data, name) : undefined,
+        );
+        triggerDownload(blob, `${sanitizedName}_classic_export_${timestamp}.${ext}`);
+      }
+
+      log.info('Export download triggered');
     } finally {
       setIsExporting(false);
     }
   }, [collectedData, accountName, sanitizedName]);
 
-  const exportTable = useCallback(async (resourceKey: string, data: unknown[]) => {
+  const exportTable = useCallback(async (resourceKey: string, data: unknown[], format: ExportFormat = 'xlsx') => {
     setIsExporting(true);
     try {
-      const payload: Record<string, unknown[]> = { [resourceKey]: data };
-      const blob = await exportData(payload, accountName);
       const timestamp = new Date().toISOString().slice(0, 10);
-      triggerDownload(blob, `${sanitizedName}_${resourceKey}_${timestamp}.xlsx`);
+      const payload: Record<string, unknown[]> = { [resourceKey]: data };
+
+      if (format === 'xlsx') {
+        const blob = await exportData(payload, accountName);
+        triggerDownload(blob, `${sanitizedName}_${resourceKey}_${timestamp}.xlsx`);
+      } else {
+        const ext = getFileExtension(format);
+        const blob = await exportAs(
+          format,
+          { data: payload, accountName, domain: 'classic', timestamp },
+          { format, accountName, domain: 'classic' },
+          format === 'handover' ? (d, n) => exportData(d, n) : undefined,
+        );
+        triggerDownload(blob, `${sanitizedName}_${resourceKey}_${timestamp}.${ext}`);
+      }
     } finally {
       setIsExporting(false);
     }
   }, [accountName, sanitizedName]);
 
-  const exportSelected = useCallback(async (resourceKey: string, selectedRows: unknown[]) => {
+  const exportSelected = useCallback(async (resourceKey: string, selectedRows: unknown[], format: ExportFormat = 'xlsx') => {
     setIsExporting(true);
     try {
-      const payload: Record<string, unknown[]> = { [resourceKey]: selectedRows };
-      const blob = await exportData(payload, accountName);
       const timestamp = new Date().toISOString().slice(0, 10);
-      triggerDownload(blob, `${sanitizedName}_${resourceKey}_selected_${timestamp}.xlsx`);
+      const payload: Record<string, unknown[]> = { [resourceKey]: selectedRows };
+
+      if (format === 'xlsx') {
+        const blob = await exportData(payload, accountName);
+        triggerDownload(blob, `${sanitizedName}_${resourceKey}_selected_${timestamp}.xlsx`);
+      } else {
+        const ext = getFileExtension(format);
+        const blob = await exportAs(
+          format,
+          { data: payload, accountName, domain: 'classic', timestamp },
+          { format, accountName, domain: 'classic' },
+          format === 'handover' ? (d, n) => exportData(d, n) : undefined,
+        );
+        triggerDownload(blob, `${sanitizedName}_${resourceKey}_selected_${timestamp}.${ext}`);
+      }
     } finally {
       setIsExporting(false);
     }

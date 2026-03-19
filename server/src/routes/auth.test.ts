@@ -1,21 +1,20 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
+let mockRequest = vi.fn();
+
 vi.mock('../services/softlayer/client.js', () => {
   return {
-    SoftLayerClient: vi.fn(),
+    SoftLayerClient: class {
+      request(...args: unknown[]) {
+        return mockRequest(...args);
+      }
+    },
   };
 });
 
-import { SoftLayerClient } from '../services/softlayer/client.js';
-
 describe('auth route - POST /validate', () => {
-  let mockRequest: ReturnType<typeof vi.fn>;
-
   beforeEach(() => {
     mockRequest = vi.fn();
-    (SoftLayerClient as unknown as ReturnType<typeof vi.fn>).mockImplementation(() => ({
-      request: mockRequest,
-    }));
   });
 
   afterEach(() => {
@@ -29,7 +28,6 @@ describe('auth route - POST /validate', () => {
     const router = mod.default;
 
     // Find the POST /validate handler
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const layer = (router.stack as any[]).find(
       (l) => l.route?.path === '/validate' && l.route?.methods?.post
     );

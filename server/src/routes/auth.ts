@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import type { Request, Response } from 'express';
 import { SoftLayerClient } from '../services/softlayer/client.js';
+import { VpcClient } from '../services/vpc/client.js';
+import { PowerVsClient } from '../services/powervs/client.js';
 import type { SLAccount } from '../services/softlayer/types.js';
 import logger from '../utils/logger.js';
 
@@ -148,6 +150,217 @@ router.post('/validate', async (req: Request, res: Response): Promise<void> => {
       message: error.message || 'Unable to validate API key. The SoftLayer API may be unavailable.',
     });
   }
+});
+
+// --- IAM Passcode exchange endpoint ---
+
+router.post('/passcode', async (req: Request, res: Response): Promise<void> => {
+  const { passcode } = req.body as { passcode?: string };
+
+  if (!passcode || passcode.trim().length === 0) {
+    res.status(400).json({ error: 'Missing passcode' });
+    return;
+  }
+
+  try {
+    const body = new URLSearchParams({
+      grant_type: 'urn:ibm:params:oauth:grant-type:passcode',
+      passcode: passcode.trim(),
+    });
+
+    const resp = await fetch('https://iam.cloud.ibm.com/identity/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json',
+      },
+      body: body.toString(),
+    });
+
+    if (!resp.ok) {
+      const errorBody = await resp.text().catch(() => '');
+      logger.error('Passcode exchange failed', { status: resp.status, body: errorBody.substring(0, 200) });
+      res.status(resp.status === 401 ? 401 : 502).json({
+        error: 'Passcode exchange failed',
+        message: resp.status === 401 ? 'Invalid or expired passcode. Please get a new one.' : errorBody.substring(0, 200),
+      });
+      return;
+    }
+
+    const data = await resp.json();
+    res.json(data);
+  } catch (err) {
+    const error = err as Error;
+    logger.error('Passcode exchange error', { message: error.message });
+    res.status(502).json({ error: 'Passcode exchange failed', message: error.message });
+  }
+});
+
+router.post('/oauth/refresh', async (req: Request, res: Response): Promise<void> => {
+  const { refresh_token } = req.body as { refresh_token?: string };
+
+  if (!refresh_token) {
+    res.status(400).json({ error: 'Missing refresh_token' });
+    return;
+  }
+
+  const clientId = process.env.IBM_OAUTH_CLIENT_ID;
+  if (!clientId) {
+    res.status(501).json({ error: 'OAuth not configured' });
+    return;
+  }
+
+  try {
+    const body = new URLSearchParams({
+      grant_type: 'refresh_token',
+      refresh_token,
+      client_id: clientId,
+    });
+
+    const resp = await fetch('https://iam.cloud.ibm.com/identity/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' },
+      body: body.toString(),
+    });
+
+    if (!resp.ok) {
+      const errorBody = await resp.text().catch(() => '');
+      res.status(resp.status).json({ error: 'Token refresh failed', message: errorBody.substring(0, 200) });
+      return;
+    }
+
+    const data = await resp.json();
+    res.json(data);
+  } catch (err) {
+    const error = err as Error;
+    res.status(502).json({ error: 'Token refresh failed', message: error.message });
+  }
+});
+
+router.post('/oauth/revoke', async (req: Request, res: Response): Promise<void> => {
+  const { token } = req.body as { token?: string };
+
+  if (!token) {
+    res.status(400).json({ error: 'Missing token' });
+    return;
+  }
+
+  const clientId = process.env.IBM_OAUTH_CLIENT_ID;
+  if (!clientId) {
+    res.status(501).json({ error: 'OAuth not configured' });
+    return;
+  }
+
+  try {
+    const body = new URLSearchParams({
+      token,
+      client_id: clientId,
+      token_type_hint: 'refresh_token',
+    });
+
+    await fetch('https://iam.cloud.ibm.com/identity/revoke', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: body.toString(),
+    });
+
+    res.json({ revoked: true });
+  } catch (err) {
+    const error = err as Error;
+    logger.warn('Token revocation failed (non-fatal)', { message: error.message });
+    res.json({ revoked: false, message: error.message });
+  }
+});
+
+router.post('/validate-iam', async (req: Request, res: Response): Promise<void> => {
+  const authHeader = req.headers['authorization'] as string | undefined;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    res.status(401).json({ error: 'Bearer token required' });
+    return;
+  }
+
+  const iamToken = authHeader.slice(7).trim();
+
+  const accountId = extractAccountIdFromToken(iamToken);
+
+  const [classicResult, vpcResult, powerVsResult] = await Promise.allSettled([
+    (async () => {
+      const client = SoftLayerClient.fromIamToken(iamToken);
+      return client.request<SLAccount>({
+        service: 'SoftLayer_Account',
+        method: 'getObject',
+        objectMask: 'mask[id,companyName,email,firstName,lastName]',
+      });
+    })(),
+    (async () => {
+      const client = VpcClient.fromIamToken(iamToken);
+      await client.request('us-south', 'vpcs?limit=1');
+      return true;
+    })(),
+    (async () => {
+      const client = PowerVsClient.fromIamToken(iamToken);
+      const { discoverPowerVsWorkspaces } = await import('../services/powervs/workspaces.js');
+      const workspaces = await discoverPowerVsWorkspaces(client);
+      return workspaces.length > 0;
+    })(),
+  ]);
+
+  const classicOk = classicResult.status === 'fulfilled';
+  const vpcOk = vpcResult.status === 'fulfilled';
+  const powerVsOk = powerVsResult.status === 'fulfilled' && powerVsResult.value === true;
+
+  if (!classicOk && !vpcOk && !powerVsOk) {
+    res.status(401).json({
+      valid: false,
+      error: 'Invalid token',
+      message: 'The IAM token does not have access to any supported infrastructure domain.',
+    });
+    return;
+  }
+
+  const mode: string[] = [];
+  if (classicOk) mode.push('classic');
+  if (vpcOk) mode.push('vpc');
+  if (powerVsOk) mode.push('powervs');
+
+  let account: Record<string, unknown> = {};
+  if (classicOk) {
+    const slAccount = classicResult.value;
+    account = {
+      id: slAccount.id,
+      companyName: slAccount.companyName,
+      email: slAccount.email,
+      firstName: slAccount.firstName,
+      lastName: slAccount.lastName,
+    };
+  }
+
+  if (accountId) {
+    account.ibmCloudAccountId = accountId;
+    try {
+      const name = await getIbmCloudAccountName(accountId, iamToken);
+      if (name) account.ibmCloudAccountName = name;
+    } catch {
+      // non-fatal
+    }
+  }
+
+  if (!classicOk) {
+    account.id = 0;
+    account.companyName = (account.ibmCloudAccountName as string) || 'IBM Cloud Account';
+    account.email = '';
+    account.firstName = '';
+    account.lastName = '';
+  }
+
+  logger.info('IAM token validated', { mode, accountId });
+
+  res.json({
+    valid: true,
+    account,
+    infrastructureMode: mode,
+  });
 });
 
 export default router;

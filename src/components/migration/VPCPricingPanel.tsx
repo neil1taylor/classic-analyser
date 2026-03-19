@@ -11,7 +11,7 @@ import {
   Dropdown,
   Tile,
 } from '@carbon/react';
-import type { VPCPricingData, ProfileFamily } from '@/types/migration';
+import type { VPCPricingData } from '@/types/migration';
 import { VPC_PROFILES } from '@/services/migration/data/vpcProfiles';
 
 interface Props {
@@ -134,18 +134,14 @@ const VPCPricingPanel: React.FC<Props> = ({ pricing }) => {
           getTableProps,
           getHeaderProps,
           getRowProps,
-        }: {
-          rows: Array<{ id: string; cells: Array<{ id: string; value: string | number }> }>;
-          headers: Array<{ key: string; header: string }>;
-          getTableProps: () => Record<string, unknown>;
-          getHeaderProps: (opts: { header: { key: string; header: string } }) => Record<string, unknown>;
-          getRowProps: (opts: { row: { id: string; cells: Array<{ id: string; value: string | number }> } }) => Record<string, unknown>;
         }) => (
-          <Table {...getTableProps()} style={{ marginBottom: '2rem' }}>
+          <div style={{ marginBottom: '2rem' }}>
+          <Table {...getTableProps()}>
             <TableHead>
               <TableRow>
                 {headers.map((header) => {
-                  const { key: _key, ...headerProps } = getHeaderProps({ header });
+                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                  const { key, ...headerProps } = getHeaderProps({ header });
                   return (
                     <TableHeader key={header.key} {...headerProps}>
                       {header.header}
@@ -156,7 +152,8 @@ const VPCPricingPanel: React.FC<Props> = ({ pricing }) => {
             </TableHead>
             <TableBody>
               {rows.map((row) => {
-                const { key: _key, ...rowProps } = getRowProps({ row });
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const { key, ...rowProps } = getRowProps({ row });
                 return (
                   <TableRow key={row.id} {...rowProps}>
                     {row.cells.map((cell) => (
@@ -167,6 +164,7 @@ const VPCPricingPanel: React.FC<Props> = ({ pricing }) => {
               })}
             </TableBody>
           </Table>
+          </div>
         )}
       </DataTable>
 
@@ -174,7 +172,8 @@ const VPCPricingPanel: React.FC<Props> = ({ pricing }) => {
       <h5 style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.75rem' }}>
         Storage Pricing
       </h5>
-      <Table size="sm" style={{ marginBottom: '2rem' }}>
+      <div style={{ marginBottom: '2rem' }}>
+      <Table size="sm">
         <TableHead>
           <TableRow>
             <TableHeader>Tier</TableHeader>
@@ -190,6 +189,7 @@ const VPCPricingPanel: React.FC<Props> = ({ pricing }) => {
           ))}
         </TableBody>
       </Table>
+      </div>
 
       {/* Network Pricing */}
       <h5 style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.75rem' }}>

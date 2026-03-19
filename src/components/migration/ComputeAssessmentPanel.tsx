@@ -1,5 +1,7 @@
 import React from 'react';
-import { Tag, Tooltip } from '@carbon/react';
+import { Tag, Tooltip, Link } from '@carbon/react';
+import { Information } from '@carbon/icons-react';
+import { Link as RouterLink } from 'react-router-dom';
 import type { ComputeAssessment, CheckResult } from '@/types/migration';
 import RemediationChecklist from './RemediationChecklist';
 import MigrationTable from './MigrationTable';
@@ -84,6 +86,12 @@ const ComputeAssessmentPanel: React.FC<Props> = ({ assessment, prereqChecks }) =
         <Tooltip label="Servers with issues that prevent VPC migration" align="bottom">
           <Tag type="red">{assessment.summary.blocked} Blocked</Tag>
         </Tooltip>
+      </div>
+
+      <div style={{ marginBottom: '1rem' }}>
+        <Link as={RouterLink} to="/migration/vsi-profile-guide" renderIcon={Information} size="sm">
+          VSI Profile Selection Guide
+        </Link>
       </div>
 
       {assessment.recommendations.length > 0 && (

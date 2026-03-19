@@ -7,7 +7,6 @@ import logger from '../utils/logger.js';
 const router = Router();
 
 router.get('/stream', apiKeyMiddleware, async (req: Request, res: Response): Promise<void> => {
-  const apiKey = req.apiKey!;
   const skipBilling = req.query.skipBilling === '1';
 
   // Set SSE headers
@@ -30,7 +29,10 @@ router.get('/stream', apiKeyMiddleware, async (req: Request, res: Response): Pro
   });
 
   try {
-    await collectAllData(apiKey, res, abortSignal, { skipBilling });
+    const auth = req.authMode === 'iam'
+      ? { iamToken: req.iamToken! }
+      : { apiKey: req.apiKey! };
+    await collectAllData(auth, res, abortSignal, { skipBilling });
   } catch (err) {
     const error = err as Error;
     logger.error('Collection stream error', { message: error.message });

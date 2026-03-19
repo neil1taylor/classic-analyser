@@ -84,9 +84,9 @@ describe('useExport', () => {
 
     // Capture the anchor created by triggerDownload
     let downloadAnchor: HTMLAnchorElement | null = null;
-    const origCreate = document.createElement.bind(document);
+    const nativeCreate = Document.prototype.createElement.bind(document);
     vi.spyOn(document, 'createElement').mockImplementation((tag: string, options?: ElementCreationOptions) => {
-      const el = origCreate(tag, options);
+      const el = nativeCreate(tag, options);
       if (tag === 'a') {
         downloadAnchor = el as HTMLAnchorElement;
         (el as HTMLAnchorElement).click = vi.fn();
@@ -110,9 +110,9 @@ describe('useExport', () => {
     (exportData as ReturnType<typeof vi.fn>).mockResolvedValue(mockBlob);
 
     let downloadAnchor: HTMLAnchorElement | null = null;
-    const origCreate = document.createElement.bind(document);
+    const nativeCreate = Document.prototype.createElement.bind(document);
     vi.spyOn(document, 'createElement').mockImplementation((tag: string, options?: ElementCreationOptions) => {
-      const el = origCreate(tag, options);
+      const el = nativeCreate(tag, options);
       if (tag === 'a') {
         downloadAnchor = el as HTMLAnchorElement;
         (el as HTMLAnchorElement).click = vi.fn();

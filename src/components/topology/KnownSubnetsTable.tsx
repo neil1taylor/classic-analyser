@@ -104,8 +104,8 @@ const KnownSubnetsTable: React.FC = () => {
                 <TableToolbarSearch
                   placeholder="Search subnets..."
                   value={searchText}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    setSearchText(e.target.value);
+                  onChange={(e: '' | React.ChangeEvent<HTMLInputElement>, value?: string) => {
+                    setSearchText(value ?? (typeof e === 'string' ? e : e.target.value));
                     setPage(1);
                   }}
                   persistent
@@ -136,7 +136,8 @@ const KnownSubnetsTable: React.FC = () => {
               <TableHead>
                 <TableRow>
                   {headers.map((header) => {
-                    const { key: _hKey, ...headerProps } = getHeaderProps({ header });
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    const { key, ...headerProps } = getHeaderProps({ header });
                     return (
                       <TableHeader key={header.key} {...headerProps}>
                         {header.header}
@@ -147,7 +148,8 @@ const KnownSubnetsTable: React.FC = () => {
               </TableHead>
               <TableBody>
                 {rows.map((row) => {
-                  const { key: _rKey, ...rowProps } = getRowProps({ row });
+                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                  const { key, ...rowProps } = getRowProps({ row });
                   return (
                     <TableRow key={row.id} {...rowProps}>
                     {row.cells.map((cell) => (

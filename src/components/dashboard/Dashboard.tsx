@@ -13,6 +13,7 @@ import { useData } from '@/contexts/DataContext';
 import { useDashboardMetrics } from '@/hooks/useDashboardMetrics';
 import { RESOURCE_TYPES } from '@/types/resources';
 import type { ExportScope } from '@/components/common/ExportDialog';
+import type { ExportFormat } from '@/services/export';
 
 const Dashboard: React.FC = () => {
   const { startCollection, cancelCollection, isCollecting } = useDataCollection();
@@ -24,8 +25,8 @@ const Dashboard: React.FC = () => {
 
   const hasData = Object.keys(collectedData).length > 0;
 
-  const handleExport = async (_scope: ExportScope, _filteredOnly: boolean) => {
-    await exportAll();
+  const handleExport = async (_scope: ExportScope, _filteredOnly: boolean, format: ExportFormat = 'xlsx') => {
+    await exportAll(format);
   };
 
   const lastCollectionTime = collectionStatus === 'complete' && collectionDuration

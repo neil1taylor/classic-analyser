@@ -69,7 +69,7 @@ vi.mock('exceljs', () => {
 
   return {
     default: {
-      Workbook: vi.fn().mockImplementation(() => new MockWorkbook()),
+      Workbook: MockWorkbook,
     },
   };
 });

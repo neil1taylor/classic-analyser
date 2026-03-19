@@ -10,8 +10,8 @@ const router = Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// In-memory cache: { data, fetchedAt }
-let cache: { data: unknown; fetchedAt: number } | null = null;
+// In-memory cache keyed by region: { data, fetchedAt }
+const cache = new Map<string, { data: unknown; fetchedAt: number }>();
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 const CATALOG_BASE = 'https://globalcatalog.cloud.ibm.com/api/v1';
@@ -71,8 +71,6 @@ function extractHourlyRate(metrics: PricingMetric[], metricId: string): number |
 
 /**
  * Find a catalog service by name using kind:service filter.
- * The text-only query (e.g. ?q=is.instance) returns individual profiles
- * instead of the parent service — adding kind:service narrows to the service entry.
  */
 async function findService(serviceName: string): Promise<CatalogResource | null> {
   const url = `${CATALOG_BASE}?q=kind:service+${serviceName}`;
@@ -82,7 +80,6 @@ async function findService(serviceName: string): Promise<CatalogResource | null>
 
 /**
  * Paginate through all children (plans) of a catalog service.
- * The Global Catalog uses `_offset` for pagination and caps at 50 per page.
  */
 async function fetchAllPlans(childrenUrl: string): Promise<CatalogResource[]> {
   const plans: CatalogResource[] = [];
@@ -104,7 +101,6 @@ async function fetchAllPlans(childrenUrl: string): Promise<CatalogResource[]> {
       }
     }
 
-    // Stop if we've collected all or this page added nothing new (pagination stalled)
     if (!addedAny || plans.length >= (page as unknown as { count?: number }).count!) break;
     offset += page.resources.length;
   }
@@ -112,26 +108,13 @@ async function fetchAllPlans(childrenUrl: string): Promise<CatalogResource[]> {
   return plans;
 }
 
-async function fetchCatalogPricing(): Promise<unknown> {
-  // Step 1: Find the is.instance service (kind:service filter is critical)
-  const instanceService = await findService('is.instance');
-  if (!instanceService?.children_url) {
-    throw new Error('is.instance service not found in Global Catalog');
-  }
+async function fetchRegionDeploymentPricing(
+  plans: CatalogResource[],
+  region: string,
+): Promise<Record<string, { monthlyCost: number; hourlyRate: number }>> {
+  const profiles: Record<string, { monthlyCost: number; hourlyRate: number }> = {};
 
-  // Step 2: Get ALL plans (paginated — 119+ plans across multiple pages)
-  const allPlans = await fetchAllPlans(instanceService.children_url);
-  if (!allPlans.length) {
-    throw new Error('No plans found for is.instance');
-  }
-  logger.info(`Found ${allPlans.length} instance plans in Global Catalog`);
-
-  // Step 3: For each plan, find us-south deployment and extract instance-hour pricing.
-  // The metric_id pattern is: part-is.instance-hours-{profileName}
-  // Dedicated host metrics (dh-) are $0 and should be skipped.
-  const profiles: Record<string, { monthlyCost: number }> = {};
-
-  for (const plan of allPlans) {
+  for (const plan of plans) {
     if (!plan.children_url) continue;
 
     let deploymentsResult: CatalogListResponse;
@@ -141,13 +124,11 @@ async function fetchCatalogPricing(): Promise<unknown> {
       continue;
     }
 
-    // Find us-south deployment (or any deployment as fallback)
     const deployment = deploymentsResult.resources?.find(
-      (d) => d.name?.includes('us-south')
+      (d) => d.name?.includes(region)
     ) ?? deploymentsResult.resources?.[0];
     if (!deployment?.id) continue;
 
-    // Fetch pricing for this deployment
     let pricingData: DeploymentPricing;
     try {
       pricingData = await fetchJson(`${CATALOG_BASE}/${deployment.id}/pricing`) as DeploymentPricing;
@@ -157,13 +138,10 @@ async function fetchCatalogPricing(): Promise<unknown> {
 
     if (!pricingData.metrics?.length) continue;
 
-    // Extract profile pricing by scanning all metrics and matching profile names via regex.
-    // Use || instead of ?? because part_ref is often "" (empty string), which ?? treats
-    // as non-nullish, preventing metric_id from being checked.
     for (const metric of pricingData.metrics) {
       const ref = metric.part_ref || metric.metric_id || '';
       if (!ref || !metric.amounts?.length) continue;
-      const match = ref.match(/([a-z]{2}\d[a-z]?d?-\d+x\d+)/);
+      const match = ref.match(/([a-z]{2}\d[a-z]?d?c?-\d+x\d+)/);
       if (!match) continue;
 
       const name = match[1];
@@ -171,59 +149,43 @@ async function fetchCatalogPricing(): Promise<unknown> {
       const amount = usd ?? metric.amounts[0];
       const hourlyPrice = amount?.prices?.[0]?.price;
       if (hourlyPrice != null && hourlyPrice > 0) {
-        profiles[name] = { monthlyCost: Math.round(hourlyPrice * HOURS_PER_MONTH * 100) / 100 };
+        profiles[name] = {
+          monthlyCost: Math.round(hourlyPrice * HOURS_PER_MONTH * 100) / 100,
+          hourlyRate: hourlyPrice,
+        };
       }
     }
   }
 
-  // Step 4: Fetch bare metal server profiles (is.bare-metal-server)
-  const bareMetalProfiles: Record<string, { monthlyCost: number }> = {};
+  return profiles;
+}
+
+async function fetchCatalogPricing(targetRegion: string): Promise<unknown> {
+  // Step 1: Find the is.instance service
+  const instanceService = await findService('is.instance');
+  if (!instanceService?.children_url) {
+    throw new Error('is.instance service not found in Global Catalog');
+  }
+
+  // Step 2: Get ALL plans (paginated)
+  const allPlans = await fetchAllPlans(instanceService.children_url);
+  if (!allPlans.length) {
+    throw new Error('No plans found for is.instance');
+  }
+  logger.info(`Found ${allPlans.length} instance plans in Global Catalog`);
+
+  // Step 3: Fetch pricing for the target region
+  const profiles = await fetchRegionDeploymentPricing(allPlans, targetRegion);
+
+  // Step 4: Fetch bare metal server profiles
+  const bareMetalProfiles: Record<string, { monthlyCost: number; hourlyRate: number }> = {};
   try {
     const bmService = await findService('is.bare-metal-server');
     if (bmService?.children_url) {
       const bmPlans = await fetchAllPlans(bmService.children_url);
       logger.info(`Found ${bmPlans.length} bare metal server plans in Global Catalog`);
-
-      for (const plan of bmPlans) {
-        if (!plan.children_url) continue;
-
-        let deploymentsResult: CatalogListResponse;
-        try {
-          deploymentsResult = await fetchJson(plan.children_url) as CatalogListResponse;
-        } catch {
-          continue;
-        }
-
-        const deployment = deploymentsResult.resources?.find(
-          (d) => d.name?.includes('us-south')
-        ) ?? deploymentsResult.resources?.[0];
-        if (!deployment?.id) continue;
-
-        let pricingData: DeploymentPricing;
-        try {
-          pricingData = await fetchJson(`${CATALOG_BASE}/${deployment.id}/pricing`) as DeploymentPricing;
-        } catch {
-          continue;
-        }
-
-        if (!pricingData.metrics?.length) continue;
-
-        // Same regex-based extraction for bare metal profiles
-        for (const metric of pricingData.metrics) {
-          const ref = metric.part_ref || metric.metric_id || '';
-          if (!ref || !metric.amounts?.length) continue;
-          const match = ref.match(/([a-z]{2}\d[a-z]?d?-\d+x\d+)/);
-          if (!match) continue;
-
-          const name = match[1];
-          const usd = metric.amounts.find((a) => a.currency === 'USD');
-          const amount = usd ?? metric.amounts[0];
-          const hourlyPrice = amount?.prices?.[0]?.price;
-          if (hourlyPrice != null && hourlyPrice > 0) {
-            bareMetalProfiles[name] = { monthlyCost: Math.round(hourlyPrice * HOURS_PER_MONTH * 100) / 100 };
-          }
-        }
-      }
+      const bmPricing = await fetchRegionDeploymentPricing(bmPlans, targetRegion);
+      Object.assign(bareMetalProfiles, bmPricing);
     }
   } catch (err) {
     logger.warn('Failed to fetch bare metal server pricing from catalog', {
@@ -231,20 +193,20 @@ async function fetchCatalogPricing(): Promise<unknown> {
     });
   }
 
-  // Also try to fetch storage and network pricing
+  // Step 5: Fetch storage and network pricing (defaults as fallback)
   const storage = {
     'block-general': 0.10,
     'block-5iops': 0.13,
-    'block-10iops': 0.20,
+    'block-10iops': 0.16,
     'file': 0.12,
   };
   const network = {
     'floating-ip': 5.00,
-    'vpn-gateway': 90.00,
-    'load-balancer': 22.00,
+    'vpn-gateway': 99.00,
+    'load-balancer': 21.60,
   };
 
-  // Try fetching is.volume pricing (same kind:service fix)
+  // Try fetching is.volume pricing
   try {
     const volService = await findService('is.volume');
     if (volService?.children_url) {
@@ -252,7 +214,7 @@ async function fetchCatalogPricing(): Promise<unknown> {
       for (const plan of volPlans.resources ?? []) {
         if (!plan.children_url) continue;
         const deps = await fetchJson(plan.children_url) as CatalogListResponse;
-        const dep = deps.resources?.find((d) => d.name?.includes('us-south')) ?? deps.resources?.[0];
+        const dep = deps.resources?.find((d) => d.name?.includes(targetRegion)) ?? deps.resources?.[0];
         if (!dep?.id) continue;
         const pricing = await fetchJson(`${CATALOG_BASE}/${dep.id}/pricing`) as DeploymentPricing;
         if (!pricing.metrics?.length) continue;
@@ -267,7 +229,7 @@ async function fetchCatalogPricing(): Promise<unknown> {
     }
   } catch { /* use defaults */ }
 
-  // Try floating-ip pricing (same kind:service fix)
+  // Try floating-ip pricing
   try {
     const fipService = await findService('is.floating-ip');
     if (fipService?.children_url) {
@@ -275,7 +237,7 @@ async function fetchCatalogPricing(): Promise<unknown> {
       for (const plan of fipPlans.resources ?? []) {
         if (!plan.children_url) continue;
         const deps = await fetchJson(plan.children_url) as CatalogListResponse;
-        const dep = deps.resources?.find((d) => d.name?.includes('us-south')) ?? deps.resources?.[0];
+        const dep = deps.resources?.find((d) => d.name?.includes(targetRegion)) ?? deps.resources?.[0];
         if (!dep?.id) continue;
         const pricing = await fetchJson(`${CATALOG_BASE}/${dep.id}/pricing`) as DeploymentPricing;
         const rate = extractHourlyRate(pricing.metrics ?? [], 'floating-ip');
@@ -287,7 +249,7 @@ async function fetchCatalogPricing(): Promise<unknown> {
 
   return {
     generatedAt: new Date().toISOString(),
-    region: 'us-south',
+    region: targetRegion,
     profiles,
     bareMetalProfiles: Object.keys(bareMetalProfiles).length > 0 ? bareMetalProfiles : undefined,
     storage,
@@ -296,32 +258,68 @@ async function fetchCatalogPricing(): Promise<unknown> {
 }
 
 async function loadFallbackPricing(): Promise<unknown> {
-  // Resolve path relative to the project root
-  // In dev: server/src/routes/ → ../../.. → project root → src/services/migration/data/
-  // In prod: server/dist/routes/ → ../../.. → project root → src/services/migration/data/
   const fallbackPath = path.resolve(__dirname, '..', '..', '..', 'src', 'services', 'migration', 'data', 'vpcPricing.json');
   const content = await readFile(fallbackPath, 'utf-8');
   return JSON.parse(content);
 }
 
-router.get('/pricing', async (_req: Request, res: Response): Promise<void> => {
-  // Check cache first
-  if (cache && (Date.now() - cache.fetchedAt) < CACHE_TTL_MS) {
-    res.json(cache.data);
+async function loadRegionalFallbackPricing(): Promise<Record<string, unknown> | null> {
+  try {
+    // Try project-relative path first (works in both dev and prod)
+    const regionalPath = path.resolve(__dirname, '..', '..', '..', 'server', 'src', 'data', 'vpcRegionalPricing.json');
+    const content = await readFile(regionalPath, 'utf-8');
+    return JSON.parse(content);
+  } catch {
+    try {
+      // Fallback: resolve relative to __dirname (dev layout)
+      const altPath = path.resolve(__dirname, '..', 'data', 'vpcRegionalPricing.json');
+      const content = await readFile(altPath, 'utf-8');
+      return JSON.parse(content);
+    } catch {
+      return null;
+    }
+  }
+}
+
+/**
+ * Resolve fallback pricing for a specific region.
+ * First tries the regional fallback file, then falls back to the default (us-south) file.
+ */
+async function loadRegionSpecificFallback(region: string): Promise<unknown> {
+  const regionalData = await loadRegionalFallbackPricing();
+  if (regionalData && regionalData[region]) {
+    return {
+      generatedAt: '2026-03-13T00:00:00.000Z',
+      region,
+      source: 'fallback-file',
+      ...(regionalData[region] as object),
+    };
+  }
+  // Fall back to default us-south pricing
+  const fallback = await loadFallbackPricing();
+  return { ...(fallback as object), source: 'fallback-file' };
+}
+
+router.get('/pricing', async (req: Request, res: Response): Promise<void> => {
+  const targetRegion = (req.query.region as string) || 'us-south';
+
+  // Check cache for this region
+  const cached = cache.get(targetRegion);
+  if (cached && (Date.now() - cached.fetchedAt) < CACHE_TTL_MS) {
+    res.json(cached.data);
     return;
   }
 
   // Try live catalog
   try {
-    const data = await fetchCatalogPricing();
+    const data = await fetchCatalogPricing(targetRegion);
     const result = data as { profiles?: Record<string, { monthlyCost: number }> };
     if (result.profiles && Object.keys(result.profiles).length > 0) {
-      // Merge fallback data for profiles missing from the live catalog.
-      // Older-generation profiles (bx2-*, cx2-*, mx2-*) use per-vCPU/RAM pricing
-      // in the catalog (under the gen2-instance aggregate plan) rather than
-      // per-profile instance-hours metrics, so the regex extraction won't find them.
+      // Merge fallback data for profiles missing from the live catalog
       try {
-        const fallback = await loadFallbackPricing() as { profiles?: Record<string, { monthlyCost: number }> };
+        const fallback = await loadRegionSpecificFallback(targetRegion) as {
+          profiles?: Record<string, { monthlyCost: number }>;
+        };
         if (fallback.profiles) {
           let merged = 0;
           for (const [name, value] of Object.entries(fallback.profiles)) {
@@ -331,32 +329,39 @@ router.get('/pricing', async (_req: Request, res: Response): Promise<void> => {
             }
           }
           if (merged > 0) {
-            logger.info(`Merged ${merged} profiles from fallback file into live catalog data`);
+            logger.info(`Merged ${merged} profiles from fallback file into live catalog data for ${targetRegion}`);
           }
         }
       } catch { /* fallback merge is best-effort */ }
 
-      const enriched = { ...(data as object), source: 'live-catalog' };
-      cache = { data: enriched, fetchedAt: Date.now() };
-      logger.info('VPC pricing fetched from Global Catalog', {
+      // Add regional pricing from fallback for other regions (so frontend can switch regions client-side)
+      const regionalData = await loadRegionalFallbackPricing();
+      const enriched = {
+        ...(data as object),
+        source: 'live-catalog',
+        regionalPricing: regionalData ?? undefined,
+      };
+      cache.set(targetRegion, { data: enriched, fetchedAt: Date.now() });
+      logger.info(`VPC pricing fetched from Global Catalog for ${targetRegion}`, {
         profileCount: Object.keys(result.profiles).length,
       });
       res.json(enriched);
       return;
     }
-    // If no profiles were extracted, fall through to fallback
-    logger.warn('Global Catalog returned no extractable profile pricing, using fallback');
+    logger.warn(`Global Catalog returned no extractable profile pricing for ${targetRegion}, using fallback`);
   } catch (err) {
-    logger.warn('Failed to fetch from Global Catalog, using fallback', {
+    logger.warn(`Failed to fetch from Global Catalog for ${targetRegion}, using fallback`, {
       error: (err as Error).message,
     });
   }
 
   // Fallback to static JSON
   try {
-    const fallback = { ...(await loadFallbackPricing() as object), source: 'fallback-file' };
-    cache = { data: fallback, fetchedAt: Date.now() };
-    res.json(fallback);
+    const fallback = await loadRegionSpecificFallback(targetRegion);
+    const regionalData = await loadRegionalFallbackPricing();
+    const result = { ...(fallback as object), regionalPricing: regionalData ?? undefined };
+    cache.set(targetRegion, { data: result, fetchedAt: Date.now() });
+    res.json(result);
   } catch (err) {
     logger.error('Failed to load fallback pricing', { error: (err as Error).message });
     res.status(500).json({ error: 'Unable to load VPC pricing data' });

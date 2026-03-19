@@ -12,6 +12,7 @@ import { useVpcData } from '@/contexts/VpcDataContext';
 import { useVpcDashboardMetrics } from '@/hooks/useVpcDashboardMetrics';
 import { VPC_RESOURCE_TYPES } from '@/types/vpc-resources';
 import type { ExportScope } from '@/components/common/ExportDialog';
+import type { ExportFormat } from '@/services/export';
 
 const VpcDashboard: React.FC = () => {
   const { startVpcCollection, cancelVpcCollection, isVpcCollecting } = useVpcDataCollection();
@@ -29,8 +30,8 @@ const VpcDashboard: React.FC = () => {
 
   const hasData = Object.keys(vpcCollectedData).length > 0;
 
-  const handleExport = async (_scope: ExportScope, _filteredOnly: boolean) => {
-    await exportVpcAll();
+  const handleExport = async (_scope: ExportScope, _filteredOnly: boolean, format: ExportFormat = 'xlsx') => {
+    await exportVpcAll(format);
   };
 
   const lastCollectionTime = vpcCollectionStatus === 'complete' && vpcCollectionDuration

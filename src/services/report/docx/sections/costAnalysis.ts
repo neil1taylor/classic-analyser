@@ -1,6 +1,6 @@
 import { Paragraph, Table, HeadingLevel } from 'docx';
 import type { CostAnalysis } from '@/types/migration';
-import { heading, body, bullet, spacer, pageBreak } from '../utils/styles';
+import { heading, body, spacer, pageBreak } from '../utils/styles';
 import { createStyledTable, fmt } from '../utils/tables';
 import { aiNarrativeSection } from '../utils/aiSections';
 import { buildPieChartImage } from '../utils/charts';

@@ -40,6 +40,7 @@ interface PowerVsSSECallbacks {
 export function collectPowerVsDataStream(
   apiKey: string,
   { onProgress, onData, onError, onComplete, onMetadata }: PowerVsSSECallbacks,
+  authConfig?: { authMode?: 'apikey' | 'iam'; iamToken?: string },
 ): AbortController {
   const controller = new AbortController();
 
@@ -49,10 +50,9 @@ export function collectPowerVsDataStream(
 
       const response = await fetch(url, {
         method: 'GET',
-        headers: {
-          'X-API-Key': apiKey,
-          'Accept': 'text/event-stream',
-        },
+        headers: authConfig?.authMode === 'iam'
+          ? { 'Authorization': `Bearer ${authConfig.iamToken}`, 'Accept': 'text/event-stream' }
+          : { 'X-API-Key': apiKey, 'Accept': 'text/event-stream' },
         signal: controller.signal,
       });
 

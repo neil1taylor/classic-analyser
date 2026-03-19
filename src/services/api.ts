@@ -6,9 +6,17 @@ import { createLogger } from '@/utils/logger';
 const log = createLogger('API');
 
 let currentApiKey: string | null = null;
+let currentIamToken: string | null = null;
+let currentAuthMode: 'apikey' | 'iam' | null = null;
+
+export function setAuthForRequests(mode: 'apikey' | 'iam' | null, key?: string | null, token?: string | null): void {
+  currentAuthMode = mode;
+  currentApiKey = key ?? null;
+  currentIamToken = token ?? null;
+}
 
 export function setApiKeyForRequests(key: string | null): void {
-  currentApiKey = key;
+  setAuthForRequests(key ? 'apikey' : null, key);
 }
 
 const apiClient = axios.create({
@@ -20,7 +28,9 @@ const apiClient = axios.create({
 });
 
 apiClient.interceptors.request.use((config) => {
-  if (currentApiKey) {
+  if (currentAuthMode === 'iam' && currentIamToken) {
+    config.headers['Authorization'] = `Bearer ${currentIamToken}`;
+  } else if (currentApiKey) {
     config.headers['X-API-Key'] = currentApiKey;
   }
   return config;
@@ -60,7 +70,8 @@ interface SSECallbacks {
 export function collectDataStream(
   apiKey: string,
   { onProgress, onData, onError, onComplete }: SSECallbacks,
-  options?: { skipBilling?: boolean }
+  options?: { skipBilling?: boolean },
+  authConfig?: { authMode?: 'apikey' | 'iam'; iamToken?: string }
 ): AbortController {
   const controller = new AbortController();
 
@@ -73,10 +84,9 @@ export function collectDataStream(
 
       const response = await fetch(url, {
         method: 'GET',
-        headers: {
-          'X-API-Key': apiKey,
-          'Accept': 'text/event-stream',
-        },
+        headers: authConfig?.authMode === 'iam'
+          ? { 'Authorization': `Bearer ${authConfig.iamToken}`, 'Accept': 'text/event-stream' }
+          : { 'X-API-Key': apiKey, 'Accept': 'text/event-stream' },
         signal: controller.signal,
       });
 
@@ -174,10 +184,11 @@ function processSSEEvent(
   }
 }
 
-export async function fetchVPCPricing(): Promise<import('@/types/migration').VPCPricingData> {
-  log.info('Fetching VPC pricing');
-  const response = await apiClient.get<import('@/types/migration').VPCPricingData>('/migration/pricing');
-  log.info('VPC pricing loaded', response.data.generatedAt);
+export async function fetchVPCPricing(region?: string): Promise<import('@/types/migration').VPCPricingData> {
+  log.info('Fetching VPC pricing', region ? `for ${region}` : '');
+  const params = region ? { region } : {};
+  const response = await apiClient.get<import('@/types/migration').VPCPricingData>('/migration/pricing', { params });
+  log.info('VPC pricing loaded', response.data.generatedAt, `region=${response.data.region}`);
   return response.data;
 }
 

@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useReducer, useCallback } from 'react';
+import { powerVsDataReducer, initialPowerVsDataState, type PowerVsDataAction } from '../context/powerVsDataReducer';
 
 export type PowerVsCollectionStatus = 'idle' | 'collecting' | 'complete' | 'error' | 'cancelled';
 
@@ -27,13 +28,8 @@ interface PowerVsDataContextValue {
   setPvsCollectionDuration: (duration: number | null) => void;
   setPvsUserAccountId: (accountId: string | null) => void;
   clearPvsData: () => void;
+  dispatch: React.Dispatch<PowerVsDataAction>;
 }
-
-const initialProgress: PowerVsCollectionProgress = {
-  completed: 0,
-  total: 0,
-  currentResource: '',
-};
 
 const PowerVsDataContext = createContext<PowerVsDataContextValue | undefined>(undefined);
 
@@ -46,53 +42,38 @@ export function usePowerVsData(): PowerVsDataContextValue {
 }
 
 export function PowerVsDataProvider({ children }: { children: React.ReactNode }) {
-  const [pvsCollectedData, setPvsCollectedData] = useState<Record<string, unknown[]>>({});
-  const [pvsCollectionStatus, setPvsCollectionStatus] = useState<PowerVsCollectionStatus>('idle');
-  const [pvsProgress, setPvsProgressState] = useState<PowerVsCollectionProgress>(initialProgress);
-  const [pvsErrors, setPvsErrors] = useState<PowerVsCollectionError[]>([]);
-  const [pvsCollectionDuration, setPvsCollectionDurationState] = useState<number | null>(null);
-  const [pvsUserAccountId, setPvsUserAccountIdState] = useState<string | null>(null);
+  const [state, dispatch] = useReducer(powerVsDataReducer, initialPowerVsDataState);
 
   const setPvsResourceData = useCallback((key: string, items: unknown[]) => {
-    setPvsCollectedData((prev) => ({ ...prev, [key]: items }));
+    dispatch({ type: 'SET_RESOURCE_DATA', key, items });
   }, []);
 
-  const setPvsProgress = useCallback((p: PowerVsCollectionProgress) => {
-    setPvsProgressState(p);
+  const setPvsProgress = useCallback((progress: PowerVsCollectionProgress) => {
+    dispatch({ type: 'SET_PROGRESS', progress });
   }, []);
 
   const addPvsError = useCallback((error: PowerVsCollectionError) => {
-    setPvsErrors((prev) => [...prev, error]);
+    dispatch({ type: 'ADD_ERROR', error });
   }, []);
 
   const setPvsStatus = useCallback((status: PowerVsCollectionStatus) => {
-    setPvsCollectionStatus(status);
+    dispatch({ type: 'SET_STATUS', status });
   }, []);
 
   const setPvsCollectionDuration = useCallback((duration: number | null) => {
-    setPvsCollectionDurationState(duration);
+    dispatch({ type: 'SET_COLLECTION_DURATION', duration });
   }, []);
 
   const setPvsUserAccountId = useCallback((accountId: string | null) => {
-    setPvsUserAccountIdState(accountId);
+    dispatch({ type: 'SET_USER_ACCOUNT_ID', accountId });
   }, []);
 
   const clearPvsData = useCallback(() => {
-    setPvsCollectedData({});
-    setPvsCollectionStatus('idle');
-    setPvsProgressState(initialProgress);
-    setPvsErrors([]);
-    setPvsCollectionDurationState(null);
-    setPvsUserAccountIdState(null);
+    dispatch({ type: 'CLEAR_DATA' });
   }, []);
 
   const value: PowerVsDataContextValue = {
-    pvsCollectedData,
-    pvsCollectionStatus,
-    pvsProgress,
-    pvsErrors,
-    pvsCollectionDuration,
-    pvsUserAccountId,
+    ...state,
     setPvsResourceData,
     setPvsProgress,
     addPvsError,
@@ -100,6 +81,7 @@ export function PowerVsDataProvider({ children }: { children: React.ReactNode })
     setPvsCollectionDuration,
     setPvsUserAccountId,
     clearPvsData,
+    dispatch,
   };
 
   return <PowerVsDataContext.Provider value={value}>{children}</PowerVsDataContext.Provider>;
