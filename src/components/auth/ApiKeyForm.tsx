@@ -13,31 +13,34 @@ import { useAuth } from '@/contexts/AuthContext';
 import ImportButton from '@/components/auth/ImportButton';
 
 const ApiKeyForm: React.FC = () => {
-  const { login, loginWithOAuth } = useAuth();
+  const { login, loginWithPasscode } = useAuth();
   const navigate = useNavigate();
   const [apiKey, setApiKey] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isOAuthLoading, setIsOAuthLoading] = useState(false);
-  const [oauthAvailable, setOauthAvailable] = useState<boolean | null>(null);
+  const [showPasscodeInput, setShowPasscodeInput] = useState(false);
+  const [passcode, setPasscode] = useState('');
+  const [isPasscodeValidating, setIsPasscodeValidating] = useState(false);
 
-  React.useEffect(() => {
-    fetch('/api/auth/oauth/config')
-      .then((r) => {
-        setOauthAvailable(r.ok);
-      })
-      .catch(() => setOauthAvailable(false));
-  }, []);
-
-  const handleOAuthLogin = async () => {
+  const handlePasscodeSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!passcode.trim()) {
+      setError('Please enter a passcode.');
+      return;
+    }
     setError(null);
-    setIsOAuthLoading(true);
+    setIsPasscodeValidating(true);
     try {
-      await loginWithOAuth();
-    } catch (err) {
-      setIsOAuthLoading(false);
-      setError(err instanceof Error ? err.message : 'Failed to initiate IBMid login.');
+      await loginWithPasscode(passcode.trim());
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || 'Failed to authenticate with passcode.');
+      } else {
+        setError('Failed to authenticate with passcode.');
+      }
+    } finally {
+      setIsPasscodeValidating(false);
     }
   };
 
@@ -166,36 +169,77 @@ const ApiKeyForm: React.FC = () => {
           )}
         </form>
 
-        {oauthAvailable && (
-          <>
-            <div
+        <div
+          style={{
+            marginTop: '1.5rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1rem',
+          }}
+        >
+          <div style={{ flex: 1, height: '1px', background: 'var(--cds-border-subtle)' }} />
+          <span style={{ fontSize: '0.75rem', color: 'var(--cds-text-secondary)' }}>or</span>
+          <div style={{ flex: 1, height: '1px', background: 'var(--cds-border-subtle)' }} />
+        </div>
+
+        {!showPasscodeInput ? (
+          <div style={{ marginTop: '1rem' }}>
+            <Button
+              kind="tertiary"
+              onClick={() => {
+                window.open('https://iam.cloud.ibm.com/identity/passcode', '_blank', 'noopener');
+                setShowPasscodeInput(true);
+              }}
+              disabled={isValidating}
+              style={{ width: '100%' }}
+            >
+              Login with IBMid
+            </Button>
+          </div>
+        ) : (
+          <form onSubmit={handlePasscodeSubmit} style={{ marginTop: '1rem' }}>
+            <p
               style={{
-                marginTop: '1.5rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '1rem',
+                fontSize: '0.75rem',
+                color: 'var(--cds-text-secondary)',
+                marginBottom: '0.75rem',
+                lineHeight: 1.4,
               }}
             >
-              <div style={{ flex: 1, height: '1px', background: 'var(--cds-border-subtle)' }} />
-              <span style={{ fontSize: '0.75rem', color: 'var(--cds-text-secondary)' }}>or</span>
-              <div style={{ flex: 1, height: '1px', background: 'var(--cds-border-subtle)' }} />
+              A new tab has opened for IBMid login. After authenticating, copy the
+              one-time passcode and paste it below.
+            </p>
+            <div style={{ marginBottom: '1rem' }}>
+              <TextInput
+                id="passcode-input"
+                labelText="One-time passcode"
+                type="password"
+                placeholder="Paste your passcode"
+                value={passcode}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPasscode(e.target.value)}
+                disabled={isPasscodeValidating}
+                autoFocus
+              />
             </div>
-
-            <div style={{ marginTop: '1rem' }}>
-              {isOAuthLoading ? (
-                <InlineLoading description="Redirecting to IBMid..." status="active" />
-              ) : (
-                <Button
-                  kind="tertiary"
-                  onClick={handleOAuthLogin}
-                  disabled={isValidating}
-                  style={{ width: '100%' }}
-                >
-                  Login with IBMid
+            {isPasscodeValidating ? (
+              <InlineLoading description="Authenticating..." status="active" />
+            ) : (
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <Button type="submit" kind="primary" disabled={!passcode.trim()}>
+                  Authenticate
                 </Button>
-              )}
-            </div>
-          </>
+                <Button
+                  kind="ghost"
+                  onClick={() => {
+                    setShowPasscodeInput(false);
+                    setPasscode('');
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            )}
+          </form>
         )}
 
         <div

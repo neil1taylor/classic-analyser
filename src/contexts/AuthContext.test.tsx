@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import React from 'react';
-import { AuthProvider, useAuth } from './AuthContext';
+import { AuthProvider, useAuth, type InfrastructureMode } from './AuthContext';
 
 vi.mock('@/services/api', () => ({
   validateApiKey: vi.fn(),
@@ -14,6 +14,13 @@ vi.mock('@/services/vpc-api', () => ({
 
 vi.mock('@/services/powervs-api', () => ({
   validatePowerVsApiKey: vi.fn(),
+}));
+
+vi.mock('@/services/oauth', () => ({
+  exchangePasscodeForTokens: vi.fn(),
+  refreshAccessToken: vi.fn(),
+  revokeToken: vi.fn(),
+  validateIamToken: vi.fn(),
 }));
 
 vi.mock('@/utils/logger', () => ({
@@ -62,7 +69,7 @@ describe('AuthContext', () => {
 
     const { result } = renderHook(() => useAuth(), { wrapper });
 
-    let mode: string | undefined;
+    let mode: InfrastructureMode | undefined;
     await act(async () => {
       mode = await result.current.login('test-key');
     });
@@ -83,7 +90,7 @@ describe('AuthContext', () => {
 
     const { result } = renderHook(() => useAuth(), { wrapper });
 
-    let mode: string | undefined;
+    let mode: InfrastructureMode | undefined;
     await act(async () => {
       mode = await result.current.login('vpc-key');
     });

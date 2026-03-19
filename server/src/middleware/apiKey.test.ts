@@ -27,15 +27,37 @@ describe('apiKeyMiddleware', () => {
 
     expect(next).toHaveBeenCalled();
     expect(req.apiKey).toBe('valid-key-here');
+    expect(req.authMode).toBe('apikey');
   });
 
-  it('returns 401 when X-API-Key header is missing', () => {
+  it('accepts Bearer token in Authorization header', () => {
+    const { req, res, next } = mockReqRes({ authorization: 'Bearer my-iam-token' });
+    apiKeyMiddleware(req, res, next);
+
+    expect(next).toHaveBeenCalled();
+    expect(req.iamToken).toBe('my-iam-token');
+    expect(req.authMode).toBe('iam');
+  });
+
+  it('prefers Bearer token over X-API-Key when both present', () => {
+    const { req, res, next } = mockReqRes({
+      authorization: 'Bearer my-token',
+      'x-api-key': 'my-key',
+    });
+    apiKeyMiddleware(req, res, next);
+
+    expect(next).toHaveBeenCalled();
+    expect(req.iamToken).toBe('my-token');
+    expect(req.authMode).toBe('iam');
+  });
+
+  it('returns 401 when no auth header is present', () => {
     const { req, res, next } = mockReqRes({});
     apiKeyMiddleware(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ error: 'API key required' })
+      expect.objectContaining({ error: 'Authentication required' })
     );
     expect(next).not.toHaveBeenCalled();
   });

@@ -6,6 +6,7 @@ export enum LogLevel {
 }
 
 export type LogCategory =
+  | 'AI'
   | 'API'
   | 'Collection'
   | 'SSE'
@@ -13,7 +14,17 @@ export type LogCategory =
   | 'Export'
   | 'Auth'
   | 'OAuth'
-  | 'UI';
+  | 'PowerVS-API'
+  | 'PowerVS-Collection'
+  | 'PowerVS-Export'
+  | 'UI'
+  | 'VPC-API'
+  | 'VPC-Collection'
+  | 'VPC-Export'
+  | 'Export-PDF'
+  | 'Export-DOCX'
+  | 'Export-PPTX'
+  | 'Export-Handover';
 
 const API_KEY_PATTERN = /[A-Za-z0-9_-]{32,}/g;
 

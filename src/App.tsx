@@ -28,8 +28,6 @@ import PowerVsCostsPage from '@/pages/PowerVsCostsPage';
 import PowerVsGeographyPage from '@/pages/PowerVsGeographyPage';
 import SettingsPage from '@/pages/SettingsPage';
 import AIChatPanel from '@/components/ai/AIChatPanel';
-import OAuthCallbackPage from '@/pages/OAuthCallbackPage';
-
 import type { InfrastructureDomain } from '@/contexts/AuthContext';
 
 const domainDashboard: Record<InfrastructureDomain, string> = {
@@ -351,10 +349,6 @@ const App: React.FC = () => {
               </div>
             )
           }
-        />
-        <Route
-          path="/auth/callback"
-          element={<OAuthCallbackPage />}
         />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

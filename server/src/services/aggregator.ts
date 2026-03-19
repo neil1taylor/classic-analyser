@@ -252,7 +252,6 @@ export async function collectAllData(
   const errors: CollectionError[] = [];
   let currentPhaseName = '';
 
-  let account: SLAccount | undefined;
   let virtualGuests: SLVirtualGuest[] = [];
   let hardware: SLHardware[] = [];
   let vlans: SLNetworkVlan[] = [];
@@ -418,7 +417,6 @@ export async function collectAllData(
     ], res, errors, tracker);
 
     // Store shallow results (used as fallback if deep scan fails for individual resources)
-    account = shallowResults.get('account') as SLAccount | undefined;
     virtualGuests = (shallowResults.get('virtualGuests') as SLVirtualGuest[] | undefined) ?? [];
     hardware = (shallowResults.get('hardware') as SLHardware[] | undefined) ?? [];
     vlans = (shallowResults.get('vlans') as SLNetworkVlan[] | undefined) ?? [];

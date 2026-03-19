@@ -4,10 +4,7 @@ import { validateApiKey } from '@/services/api';
 import { validateVpcApiKey } from '@/services/vpc-api';
 import { validatePowerVsApiKey } from '@/services/powervs-api';
 import {
-  generateCodeVerifier,
-  generateCodeChallenge,
-  buildAuthorizationUrl,
-  exchangeCodeForTokens,
+  exchangePasscodeForTokens,
   refreshAccessToken,
   revokeToken,
   validateIamToken,
@@ -29,8 +26,7 @@ interface AuthContextValue {
   isAuthenticated: boolean;
   infrastructureMode: InfrastructureMode | null;
   login: (apiKey: string) => Promise<InfrastructureMode>;
-  loginWithOAuth: () => Promise<void>;
-  handleOAuthCallback: (code: string, codeVerifier: string) => Promise<void>;
+  loginWithPasscode: (passcode: string) => Promise<void>;
   logout: () => void;
   setImportedAccountInfo: (info: Partial<AccountInfo>, mode?: InfrastructureMode) => void;
 }
@@ -182,18 +178,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return mode;
   }, []);
 
-  const loginWithOAuth = useCallback(async () => {
-    log.info('Initiating OAuth login');
-    const verifier = generateCodeVerifier();
-    const challenge = await generateCodeChallenge(verifier);
-    sessionStorage.setItem('oauth_code_verifier', verifier);
-    const url = await buildAuthorizationUrl(challenge);
-    window.location.href = url;
-  }, []);
-
-  const handleOAuthCallback = useCallback(async (code: string, codeVerifier: string) => {
-    log.info('Handling OAuth callback');
-    const tokens = await exchangeCodeForTokens(code, codeVerifier);
+  const loginWithPasscode = useCallback(async (passcode: string) => {
+    log.info('Exchanging passcode for IAM tokens');
+    const tokens = await exchangePasscodeForTokens(passcode);
     const validation = await validateIamToken(tokens.access_token);
 
     if (!validation.valid) {
@@ -206,7 +193,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setAuthMode('iam');
     setAccountInfo(validation.account as AccountInfo);
     setInfrastructureMode(validation.infrastructureMode as InfrastructureMode);
-    log.info(`OAuth login successful — mode: [${validation.infrastructureMode.join(', ')}]`);
+    log.info(`Passcode login successful — mode: [${validation.infrastructureMode.join(', ')}]`);
   }, []);
 
   const setImportedAccountInfo = useCallback((info: Partial<AccountInfo>, mode: InfrastructureMode = ['classic', 'vpc']) => {
@@ -271,8 +258,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isAuthenticated,
     infrastructureMode,
     login,
-    loginWithOAuth,
-    handleOAuthCallback,
+    loginWithPasscode,
     logout,
     setImportedAccountInfo,
   };

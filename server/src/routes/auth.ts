@@ -152,61 +152,38 @@ router.post('/validate', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
-// --- OAuth 2.0 PKCE endpoints ---
+// --- IAM Passcode exchange endpoint ---
 
-router.get('/oauth/config', (_req: Request, res: Response): void => {
-  const clientId = process.env.IBM_OAUTH_CLIENT_ID;
-  const redirectUri = process.env.IBM_OAUTH_REDIRECT_URI;
+router.post('/passcode', async (req: Request, res: Response): Promise<void> => {
+  const { passcode } = req.body as { passcode?: string };
 
-  if (!clientId) {
-    res.status(501).json({ error: 'OAuth not configured', message: 'IBM_OAUTH_CLIENT_ID is not set.' });
-    return;
-  }
-
-  res.json({
-    clientId,
-    authorizationEndpoint: 'https://iam.cloud.ibm.com/identity/authorize',
-    redirectUri: redirectUri || `${_req.protocol}://${_req.get('host')}/auth/callback`,
-  });
-});
-
-router.post('/oauth/token', async (req: Request, res: Response): Promise<void> => {
-  const { code, code_verifier, redirect_uri } = req.body as {
-    code?: string;
-    code_verifier?: string;
-    redirect_uri?: string;
-  };
-
-  if (!code || !code_verifier) {
-    res.status(400).json({ error: 'Missing code or code_verifier' });
-    return;
-  }
-
-  const clientId = process.env.IBM_OAUTH_CLIENT_ID;
-  if (!clientId) {
-    res.status(501).json({ error: 'OAuth not configured' });
+  if (!passcode || passcode.trim().length === 0) {
+    res.status(400).json({ error: 'Missing passcode' });
     return;
   }
 
   try {
     const body = new URLSearchParams({
-      grant_type: 'authorization_code',
-      code,
-      code_verifier,
-      client_id: clientId,
-      redirect_uri: redirect_uri || process.env.IBM_OAUTH_REDIRECT_URI || '',
+      grant_type: 'urn:ibm:params:oauth:grant-type:passcode',
+      passcode: passcode.trim(),
     });
 
     const resp = await fetch('https://iam.cloud.ibm.com/identity/token', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json',
+      },
       body: body.toString(),
     });
 
     if (!resp.ok) {
       const errorBody = await resp.text().catch(() => '');
-      logger.error('OAuth token exchange failed', { status: resp.status, body: errorBody.substring(0, 200) });
-      res.status(resp.status).json({ error: 'Token exchange failed', message: errorBody.substring(0, 200) });
+      logger.error('Passcode exchange failed', { status: resp.status, body: errorBody.substring(0, 200) });
+      res.status(resp.status === 401 ? 401 : 502).json({
+        error: 'Passcode exchange failed',
+        message: resp.status === 401 ? 'Invalid or expired passcode. Please get a new one.' : errorBody.substring(0, 200),
+      });
       return;
     }
 
@@ -214,8 +191,8 @@ router.post('/oauth/token', async (req: Request, res: Response): Promise<void> =
     res.json(data);
   } catch (err) {
     const error = err as Error;
-    logger.error('OAuth token exchange error', { message: error.message });
-    res.status(502).json({ error: 'Token exchange failed', message: error.message });
+    logger.error('Passcode exchange error', { message: error.message });
+    res.status(502).json({ error: 'Passcode exchange failed', message: error.message });
   }
 });
 

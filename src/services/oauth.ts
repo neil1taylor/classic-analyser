@@ -2,54 +2,6 @@ import { createLogger } from '@/utils/logger';
 
 const log = createLogger('OAuth');
 
-export function generateCodeVerifier(): string {
-  const array = new Uint8Array(64);
-  crypto.getRandomValues(array);
-  return base64UrlEncode(array);
-}
-
-export async function generateCodeChallenge(verifier: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(verifier);
-  const digest = await crypto.subtle.digest('SHA-256', data);
-  return base64UrlEncode(new Uint8Array(digest));
-}
-
-function base64UrlEncode(bytes: Uint8Array): string {
-  let binary = '';
-  for (const byte of bytes) {
-    binary += String.fromCharCode(byte);
-  }
-  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-}
-
-export interface OAuthConfig {
-  clientId: string;
-  authorizationEndpoint: string;
-  redirectUri: string;
-}
-
-export async function fetchOAuthConfig(): Promise<OAuthConfig> {
-  const response = await fetch('/api/auth/oauth/config');
-  if (!response.ok) {
-    throw new Error(`OAuth not configured: ${response.status}`);
-  }
-  return response.json();
-}
-
-export async function buildAuthorizationUrl(codeChallenge: string): Promise<string> {
-  const config = await fetchOAuthConfig();
-  const params = new URLSearchParams({
-    response_type: 'code',
-    client_id: config.clientId,
-    redirect_uri: config.redirectUri,
-    code_challenge: codeChallenge,
-    code_challenge_method: 'S256',
-    scope: 'openid',
-  });
-  return `${config.authorizationEndpoint}?${params.toString()}`;
-}
-
 export interface TokenResponse {
   access_token: string;
   refresh_token: string;
@@ -57,25 +9,17 @@ export interface TokenResponse {
   token_type: string;
 }
 
-export async function exchangeCodeForTokens(
-  code: string,
-  codeVerifier: string,
-): Promise<TokenResponse> {
-  log.info('Exchanging authorization code for tokens');
-  const config = await fetchOAuthConfig();
-  const response = await fetch('/api/auth/oauth/token', {
+export async function exchangePasscodeForTokens(passcode: string): Promise<TokenResponse> {
+  log.info('Exchanging passcode for tokens');
+  const response = await fetch('/api/auth/passcode', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      code,
-      code_verifier: codeVerifier,
-      redirect_uri: config.redirectUri,
-    }),
+    body: JSON.stringify({ passcode }),
   });
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error((errorData as { message?: string }).message || `Token exchange failed: ${response.status}`);
+    throw new Error((errorData as { message?: string }).message || `Passcode exchange failed: ${response.status}`);
   }
 
   return response.json();
