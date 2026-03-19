@@ -140,7 +140,8 @@ const VPCPricingPanel: React.FC<Props> = ({ pricing }) => {
             <TableHead>
               <TableRow>
                 {headers.map((header) => {
-                  const { key: _key, ...headerProps } = getHeaderProps({ header });
+                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                  const { key, ...headerProps } = getHeaderProps({ header });
                   return (
                     <TableHeader key={header.key} {...headerProps}>
                       {header.header}
@@ -151,7 +152,8 @@ const VPCPricingPanel: React.FC<Props> = ({ pricing }) => {
             </TableHead>
             <TableBody>
               {rows.map((row) => {
-                const { key: _key, ...rowProps } = getRowProps({ row });
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const { key, ...rowProps } = getRowProps({ row });
                 return (
                   <TableRow key={row.id} {...rowProps}>
                     {row.cells.map((cell) => (

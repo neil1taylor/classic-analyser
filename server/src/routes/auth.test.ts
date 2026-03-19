@@ -28,7 +28,6 @@ describe('auth route - POST /validate', () => {
     const router = mod.default;
 
     // Find the POST /validate handler
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const layer = (router.stack as any[]).find(
       (l) => l.route?.path === '/validate' && l.route?.methods?.post
     );

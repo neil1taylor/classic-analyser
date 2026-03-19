@@ -82,7 +82,7 @@ export default defineConfig({
           vendor: ['react', 'react-dom', 'react-router-dom'],
           carbon: ['@carbon/react', '@carbon/icons-react'],
           charts: ['recharts', '@carbon/charts', '@carbon/charts-react'],
-          tables: ['@tanstack/react-table', '@tanstack/react-virtual', 'react-window'],
+          tables: ['@tanstack/react-table', '@tanstack/react-virtual'],
           excel: ['exceljs'],
           d3: ['d3-hierarchy', 'd3-interpolate', 'd3-scale', 'd3-shape'],
         },

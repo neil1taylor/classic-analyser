@@ -29,7 +29,6 @@ describe('collect route - GET /stream', () => {
     const mod = await import('./collect.js');
     const router = mod.default;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const layer = (router.stack as any[]).find(
       (l) => l.route?.path === '/stream' && l.route?.methods?.get
     );

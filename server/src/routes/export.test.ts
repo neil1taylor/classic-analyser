@@ -26,7 +26,6 @@ describe('export route - POST /', () => {
   async function callExportRoute(body: unknown) {
 
     // Find the POST / handler (skip middleware, get the actual handler)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const layer = (router.stack as any[]).find(
       (l) => l.route?.path === '/' && l.route?.methods?.post
     );
