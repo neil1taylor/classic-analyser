@@ -14,6 +14,8 @@ A web-based inventory and analysis tool for IBM Cloud Classic (SoftLayer), VPC, 
 - **Cost analysis** views
 - **Export hub** — dedicated Export page with XLSX, PDF, DOCX, and PPTX formats per domain
 - **XLSX export/import** with one worksheet per resource type
+- **IMS report import** — parse CSVs, HTMLs, drawio, and report XLSXs from IBM's IMS reporting tool
+- **MDL import** — server-side conversion of IMS `.mdl` data files (serialized SoftLayer API responses) to populate all views
 - **Real-time progress** via Server-Sent Events during data collection
 - **Guided tour** onboarding for first-time users
 - **Section error boundaries** — chart/section errors don't crash the whole dashboard
@@ -34,15 +36,16 @@ Browser → Express.js (/api/* proxy + / static SPA) → SoftLayer REST API
 
 ## Tech Stack
 
-- **Frontend:** React 18, TypeScript 5, Vite 5, Carbon Design System v11, react-window, ExcelJS
-- **Backend:** Node.js 20, Express 4, winston, helmet, compression
-- **Infrastructure:** Docker (multi-stage build), IBM Code Engine
+- **Frontend:** React 18, TypeScript 5, Vite 5, Carbon Design System v11, react-window, ExcelJS, multer
+- **Backend:** Node.js 20, Express 4, winston, helmet, compression, Python 3 (MDL conversion)
+- **Infrastructure:** Docker (Node 20 Alpine + Python 3, multi-stage build), IBM Code Engine
 
 ## Prerequisites
 
 - Node.js 20 LTS
 - npm
-- An IBM Cloud API key with access to Classic, VPC, and/or PowerVS infrastructure
+- Python 3 (for MDL import — optional, only needed for `.mdl` file conversion)
+- An IBM Cloud API key with access to Classic, VPC, and/or PowerVS infrastructure (or use import for offline analysis)
 
 ## Getting Started
 
@@ -91,15 +94,19 @@ src/                    # React frontend
   contexts/             # React Context providers + reducers (Auth, Data, UI, VPC, PowerVS, AI, Migration)
   hooks/                # Custom hooks for data collection, export, metrics, AI, tour, preferences
   pages/                # Page components (incl. ExportPage)
-  services/             # API clients and data transforms (with retry)
+  services/             # API clients, data transforms, report parsers (with retry)
+    report-parsers/     # IMS report file parsers (CSV, HTML, drawio, JSON, XLSX)
   types/                # TypeScript type definitions
   data/                 # Data-driven JSON configs (regions, datacenters, resource types)
   utils/                # Formatters, relationships, logger, retry
 
 server/src/             # Express backend
-  routes/               # API proxy routes (classic, VPC, PowerVS)
+  routes/               # API proxy routes (classic, VPC, PowerVS) + MDL convert endpoint
   services/             # IBM Cloud API clients and aggregators
   middleware/           # API key extraction, error handling
+
+scripts/                # Utility scripts
+  mdl-to-json.py        # Converts IMS .mdl files to JSON
 ```
 
 ## License

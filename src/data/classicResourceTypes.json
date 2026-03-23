@@ -2775,5 +2775,119 @@
         "sortable": true
       }
     ]
+  },
+  {
+    "key": "reportWarnings",
+    "label": "Report Warnings",
+    "category": "Other",
+    "worksheetName": "vReportWarnings",
+    "columns": [
+      {
+        "field": "id",
+        "header": "Resource ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "name",
+        "header": "Resource Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "location",
+        "header": "Location",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "priority",
+        "header": "Priority",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "warning",
+        "header": "Warning",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": false
+      },
+      {
+        "field": "issue",
+        "header": "Issue",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "type",
+        "header": "Type",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "recommendation",
+        "header": "Recommendation",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": false
+      }
+    ]
+  },
+  {
+    "key": "reportChecks",
+    "label": "Health Checks",
+    "category": "Other",
+    "worksheetName": "vReportChecks",
+    "columns": [
+      {
+        "field": "priority",
+        "header": "Priority",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "issue",
+        "header": "Issue",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "type",
+        "header": "Type",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "check",
+        "header": "Check",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": false
+      },
+      {
+        "field": "recommendation",
+        "header": "Recommendation",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": false
+      },
+      {
+        "field": "rationale",
+        "header": "Rationale",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      }
+    ]
   }
 ]

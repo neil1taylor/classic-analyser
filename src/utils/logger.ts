@@ -26,7 +26,16 @@ export type LogCategory =
   | 'Export-PDF'
   | 'Export-DOCX'
   | 'Export-PPTX'
-  | 'Export-Handover';
+  | 'Export-Handover'
+  | 'ReportImport'
+  | 'ReportCSV'
+  | 'ReportHTML'
+  | 'ReportDrawio'
+  | 'ReportMerger'
+  | 'ReportJSON'
+  | 'ReportXLSX'
+  | 'ImportReport'
+  | 'ImportMDL';
 
 export interface LogContext {
   [key: string]: unknown;

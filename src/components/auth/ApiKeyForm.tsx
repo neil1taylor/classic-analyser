@@ -11,6 +11,8 @@ import { Login, ViewFilled, ViewOffFilled } from '@carbon/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import ImportButton from '@/components/auth/ImportButton';
+import ImportReportButton from '@/components/auth/ImportReportButton';
+import ImportMdlButton from '@/components/auth/ImportMdlButton';
 
 const ApiKeyForm: React.FC = () => {
   const { login, loginWithPasscode } = useAuth();
@@ -276,8 +278,10 @@ const ApiKeyForm: React.FC = () => {
           to generate one.
         </p>
 
-        <div style={{ marginTop: '0.5rem', textAlign: 'center' }}>
+        <div style={{ marginTop: '0.5rem', textAlign: 'center', display: 'flex', gap: '0.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
           <ImportButton />
+          <ImportReportButton />
+          <ImportMdlButton />
         </div>
 
         <div
@@ -304,7 +308,7 @@ const ApiKeyForm: React.FC = () => {
             textAlign: 'center',
           }}
         >
-          v1.0.0
+          v1.1.0
         </p>
       </Tile>
     </div>

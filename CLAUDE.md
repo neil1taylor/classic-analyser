@@ -26,20 +26,25 @@ Browser → Express.js (/api/* proxy routes + / static SPA) → SoftLayer REST A
 
 **Data collection** uses Server-Sent Events (SSE) to stream progress. Classic collection runs in two phases (shallow scan + deep scan) with 10 concurrent API calls per phase. VPC collection runs as a single phase across all auto-discovered regions with 10 concurrent resource tasks. PowerVS collection discovers workspaces via the Resource Controller API, collects Networks first (dependency), then Network Ports, then all remaining resources concurrently with 10 concurrent tasks.
 
+**IMS Report Import** provides three alternative data input methods (no API key required):
+- **Import XLSX** — re-imports a previously exported XLSX file (cloud-harvester output)
+- **Import IMS Reports** — multi-file import of CSVs, HTMLs, drawio, report XLSXs (assessment/device inventory) from IBM's IMS reporting tool. Parsers in `src/services/report-parsers/` handle each format. The merger deduplicates by `id` with `hostname` fallback.
+- **Import MDL** — uploads an IMS `.mdl` file to `POST /api/convert/mdl`, which runs `scripts/mdl-to-json.py` (Python) server-side to convert the serialized SoftLayer data model to JSON. This is the most complete data source (~13K+ resources per large account).
+
 **Navigation** uses a 3-domain tab switcher (Carbon ContentSwitcher) in the SideNav. The `InfrastructureMode` is an array of `InfrastructureDomain` values (`'classic' | 'vpc' | 'powervs'`). Login validates all three domains in parallel via `Promise.allSettled` and builds the mode array from whichever succeed. Only domains the user has access to appear as tabs.
 
 ## Tech Stack
 
-- **Frontend:** React 18, TypeScript 5, Vite 5, @carbon/react (Carbon Design System v11), Axios, react-window (virtualization), ExcelJS (xlsx export/import)
-- **Backend:** Node.js 20 LTS, Express 4, winston (logging), helmet (security headers), compression
-- **Infrastructure:** Docker (Node 20 Alpine, multi-stage build), IBM Code Engine, GitHub Actions CI/CD
+- **Frontend:** React 18, TypeScript 5, Vite 5, @carbon/react (Carbon Design System v11), Axios, react-window (virtualization), ExcelJS (xlsx export/import), multer (file uploads)
+- **Backend:** Node.js 20 LTS, Express 4, winston (logging), helmet (security headers), compression, Python 3 (MDL conversion)
+- **Infrastructure:** Docker (Node 20 Alpine + Python 3, multi-stage build), IBM Code Engine, GitHub Actions CI/CD
 
 ## Project Structure
 
 ```
 src/                              # React frontend
   components/
-    auth/                         ApiKeyForm, ImportButton
+    auth/                         ApiKeyForm, ImportButton, ImportReportButton, ImportMdlButton
     common/                       Header, SideNav, ExportDialog, AboutModal,
                                   ProgressIndicator, AnimatedCounter, TrendIndicator, SkeletonCard,
                                   SectionErrorBoundary, GuidedTour, LoadingSkeleton, MetricCard
@@ -69,9 +74,12 @@ src/                              # React frontend
                                   PowerVsDashboardPage, PowerVsResourcePage, PowerVsTopologyPage,
                                   PowerVsCostsPage, PowerVsGeographyPage,
                                   ExportPage, SettingsPage, MigrationPage
-  services/                       api.ts, import.ts, transform.ts,
+  services/                       api.ts, import.ts, report-import.ts, transform.ts,
                                   vpc-api.ts, vpc-transform.ts,
                                   powervs-api.ts, powervs-transform.ts
+    report-parsers/               types.ts, csv-utils.ts, csv-parsers.ts, html-parsers.ts,
+                                  drawio-parser.ts, json-parser.ts, xlsx-parsers.ts,
+                                  merger.ts, index.ts
   types/                          resources.ts, vpc-resources.ts, powervs-resources.ts
   utils/                          formatters.ts, relationships.ts, logger.ts, retry.ts
   data/                           ibmCloudDataCenters.json, ibmCloudRegions.json,
@@ -81,7 +89,7 @@ src/                              # React frontend
   styles/                         SCSS files
 
 server/src/                       # Express backend
-  routes/                         auth.ts, collect.ts, export.ts,
+  routes/                         auth.ts, collect.ts, export.ts, convert.ts,
                                   vpc-auth.ts, vpc-collect.ts, vpc-export.ts,
                                   powervs-auth.ts, powervs-collect.ts, powervs-export.ts
   services/
@@ -94,7 +102,10 @@ server/src/                       # Express backend
     aggregator.ts, relationships.ts, export.ts
   middleware/                     apiKey.ts, error.ts
   types/                          express.d.ts
-  utils/                          logger.ts, concurrency.ts
+  utils/                          logger.ts, concurrency.ts, iam.ts, sse.ts, validation.ts
+
+scripts/                          # Utility scripts
+  mdl-to-json.py                  Converts IMS .mdl data files to JSON for browser import
 ```
 
 ## Build Commands
@@ -130,3 +141,7 @@ npm run lint            # Lint
 **VPC:** 26 types across categories: Compute (Instances, Bare Metal Servers, Dedicated Hosts, Placement Groups), Network (VPCs, Subnets, Security Groups, Floating IPs, Public Gateways, Network ACLs, Load Balancers, VPN Gateways, Endpoint Gateways, Routing Tables, Routes, Transit Gateways, Transit Gateway Connections, TGW Route Prefixes, TGW VPC VPN Gateways, Direct Link Gateways, Direct Link Virtual Connections, VPN Gateway Connections), Storage (Volumes), Security (SSH Keys, Images), Other (Flow Log Collectors). Transit Gateways are global resources collected via a separate API endpoint (`transit.cloud.ibm.com`). TGW Route Prefixes are collected via async route reports (POST + poll). TGW VPC VPN Gateways are discovered by examining TGW VPC connections and fetching VPN gateways from the connected VPC regions. Direct Link Gateways and Virtual Connections are collected via `directlink.cloud.ibm.com`. VPN Gateway Connections include peer CIDRs for the Routes page. Routing Tables are collected per VPC, and Routes are collected per routing table, with dependency ordering to ensure parent resources are available. Regional VPC resources are collected across all available VPC regions with `_region` field injection.
 
 **PowerVS:** 22 types across categories: Compute (PVM Instances, Shared Processor Pools, Placement Groups, Host Groups), Network (Networks, Network Ports, Network Security Groups, Cloud Connections, DHCP Servers, VPN Connections, IKE Policies, IPSec Policies), Storage (Volumes, Volume Groups, Snapshots), Security (SSH Keys), Other (Workspaces, System Pools, SAP Profiles, Events, Images, Stock Images). PowerVS is workspace-scoped (not region-scoped like VPC). Workspace discovery uses the Resource Controller API to find all PowerVS service instances. PowerVS API calls require a CRN header with the workspace CRN. Zone-to-region mapping converts zones (e.g., `dal12`) to API regions (e.g., `us-south`). Network Ports depend on Networks (collected first). Resource keys are prefixed with `pvs` (e.g., `pvsInstances`), worksheet names with `p` (e.g., `pPvsInstances`).
+
+**IMS Report Types:** 2 additional types added for IMS report import: Report Warnings (`reportWarnings` — priority, issue, type, recommendation) and Health Checks (`reportChecks` — checks performed with priority and rationale). These appear in Classic tables when importing IMS report files.
+
+**IMS Report Import Formats:** The app supports importing data from IBM's IMS reporting tool in multiple formats: CSV (warnings, gateways, NAS, security groups), HTML (warnings with embedded JS arrays, overview with Chart.js data, summary tables, inventory with nested DOM trees), drawio (XML network topology), report XLSX (assessment with VPC mapping, device inventory with physical location), JSON (converted from .mdl), and .mdl (serialized SoftLayer API responses, converted server-side via Python). The merger deduplicates across all sources using `id` as primary key and `hostname` as fallback.

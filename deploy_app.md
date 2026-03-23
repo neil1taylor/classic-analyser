@@ -125,7 +125,7 @@ docker build -t infra-explorer .
 
 This runs a multi-stage build that:
 1. Installs all dependencies and builds both the React frontend and Express backend
-2. Creates a slim production image with only runtime dependencies
+2. Creates a slim production image with only runtime dependencies, Python 3 (for MDL import), and the `mdl-to-json.py` converter script
 
 ---
 
