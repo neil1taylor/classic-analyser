@@ -274,7 +274,8 @@ export function runComputeChecks(collectedData: Record<string, unknown[]>): Chec
   // Boot Disk > 250 GB
   const bootDiskAffected: AffectedResource[] = [];
   for (const vsi of vsis) {
-    const blocks = (vsi['blockDevices'] ?? []) as Record<string, unknown>[];
+    const rawBlocks1 = vsi['blockDevices'];
+    const blocks = (Array.isArray(rawBlocks1) ? rawBlocks1 : []) as Record<string, unknown>[];
     if (blocks.length > 0) {
       const bootCap = num(blocks[0], 'diskImage.capacity') || num(blocks[0], 'capacity') || 0;
       if (bootCap > 250) {
@@ -291,8 +292,9 @@ export function runComputeChecks(collectedData: Record<string, unknown[]>): Chec
   // Data volume count > 12
   const dataVolAffected: AffectedResource[] = [];
   for (const vsi of vsis) {
-    const blocks = (vsi['blockDevices'] ?? []) as Record<string, unknown>[];
-    const dataCount = Math.max(0, blocks.length - 1);
+    const rawBlocks2 = vsi['blockDevices'];
+    const blocks2 = (Array.isArray(rawBlocks2) ? rawBlocks2 : []) as Record<string, unknown>[];
+    const dataCount = Math.max(0, blocks2.length - 1);
     if (dataCount > 12) {
       dataVolAffected.push({
         id: num(vsi, 'id'),
@@ -371,8 +373,9 @@ export function runComputeChecks(collectedData: Record<string, unknown[]>): Chec
   // Disk > 2 TB
   const diskSizeAffected: AffectedResource[] = [];
   for (const vsi of vsis) {
-    const blocks = (vsi['blockDevices'] ?? []) as Record<string, unknown>[];
-    const hasLarge = blocks.some((b) => {
+    const rawBlocks3 = vsi['blockDevices'];
+    const blocks3 = (Array.isArray(rawBlocks3) ? rawBlocks3 : []) as Record<string, unknown>[];
+    const hasLarge = blocks3.some((b) => {
       const cap = num(b, 'diskImage.capacity') || num(b, 'capacity') || 0;
       return cap > 2000;
     });
