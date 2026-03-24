@@ -179,6 +179,27 @@
         "dataType": "string",
         "defaultVisible": false,
         "sortable": false
+      },
+      {
+        "field": "blockDeviceDetails",
+        "header": "Block Devices",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      },
+      {
+        "field": "billingCategories",
+        "header": "Billing Categories",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      },
+      {
+        "field": "hourlyRate",
+        "header": "Hourly Rate",
+        "dataType": "currency",
+        "defaultVisible": false,
+        "sortable": true
       }
     ]
   },
@@ -331,6 +352,20 @@
       {
         "field": "tags",
         "header": "Tags",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      },
+      {
+        "field": "nicDetails",
+        "header": "NIC Details",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      },
+      {
+        "field": "hardDriveDetails",
+        "header": "Drive Details",
         "dataType": "string",
         "defaultVisible": false,
         "sortable": false

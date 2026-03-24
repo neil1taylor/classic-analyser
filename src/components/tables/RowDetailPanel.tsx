@@ -6,8 +6,8 @@ import { getRelatedResources } from '@/utils/relationships';
 import { useVpcData } from '@/contexts/VpcDataContext';
 
 const KEY_FIELDS: Record<string, string[]> = {
-  virtualServers: ['id', 'hostname', 'domain', 'fqdn', 'primaryIp', 'backendIp', 'status', 'powerState', 'startCpus', 'maxCpu', 'maxMemory', 'diskGb', 'localDisk', 'os', 'datacenter', 'hourlyBilling', 'dedicated', 'privateNetworkOnly', 'placementGroupId', 'createDate', 'modifyDate', 'recurringFee', 'networkVlans', 'tags', 'notes'],
-  bareMetal: ['id', 'hostname', 'domain', 'fqdn', 'serialNumber', 'primaryIp', 'backendIp', 'cores', 'memory', 'hardDrives', 'os', 'datacenter', 'provisionDate', 'recurringFee', 'powerSupplyCount', 'gatewayMember', 'networkComponents', 'networkVlans', 'tags', 'notes'],
+  virtualServers: ['id', 'hostname', 'domain', 'fqdn', 'primaryIp', 'backendIp', 'status', 'powerState', 'startCpus', 'maxCpu', 'maxMemory', 'diskGb', 'blockDeviceDetails', 'localDisk', 'os', 'datacenter', 'hourlyBilling', 'dedicated', 'privateNetworkOnly', 'placementGroupId', 'createDate', 'modifyDate', 'recurringFee', 'hourlyRate', 'billingCategories', 'networkVlans', 'tags', 'notes'],
+  bareMetal: ['id', 'hostname', 'domain', 'fqdn', 'serialNumber', 'primaryIp', 'backendIp', 'cores', 'memory', 'hardDrives', 'hardDriveDetails', 'os', 'datacenter', 'provisionDate', 'recurringFee', 'powerSupplyCount', 'gatewayMember', 'networkComponents', 'nicDetails', 'networkVlans', 'tags', 'notes'],
   vlans: ['id', 'vlanNumber', 'name', 'networkSpace', 'primaryRouter', 'datacenter'],
   subnets: ['id', 'networkIdentifier', 'cidr', 'subnetType', 'gateway', 'datacenter', 'vlanNumber', 'usableIpAddressCount'],
   gateways: ['id', 'name', 'publicIp', 'privateIp', 'datacenter', 'status', 'memberCount', 'networkSpace'],

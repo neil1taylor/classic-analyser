@@ -165,6 +165,32 @@ function transformVirtualServer(raw: RawItem): RawItem {
     tags: flattenTags(raw),
     diskGb: diskGb || '',
     networkVlans: flattenNetworkVlans(raw),
+    blockDeviceDetails: blockDevices
+      ? blockDevices
+          .map((bd, i) => {
+            const cap = nested(bd, 'diskImage', 'capacity');
+            const units = nested(bd, 'diskImage', 'units') ?? 'GB';
+            return cap ? `Disk ${i}: ${safeStr(cap)}${safeStr(units)}` : '';
+          })
+          .filter(Boolean)
+          .join(', ')
+      : '',
+    billingCategories: (() => {
+      const billingItem = raw.billingItem as RawItem | undefined;
+      const children = billingItem?.children as RawItem[] | undefined;
+      if (!children || !Array.isArray(children)) return '';
+      return children
+        .map((c) => {
+          const cat = safeStr(c.categoryCode);
+          const fee = Number(c.hourlyRecurringFee ?? 0);
+          return cat && fee > 0 ? `${cat}: $${fee.toFixed(4)}/hr` : '';
+        })
+        .filter(Boolean)
+        .join(', ');
+    })(),
+    hourlyRate: raw.hourlyBillingFlag
+      ? Number(nested(raw, 'billingItem', 'hourlyRecurringFee') ?? 0) || ''
+      : '',
   };
 }
 
@@ -215,6 +241,37 @@ function transformBareMetal(raw: RawItem): RawItem {
     networkComponents,
     networkVlans: flattenNetworkVlans(raw),
     tags: flattenTags(raw),
+    nicDetails: nics
+      ? nics
+          .map((n) => {
+            const name = safeStr(n.name ?? n.port);
+            const ip = safeStr(n.primaryIpAddress);
+            const speed = n.speed ? `${safeStr(n.speed)}Mbps` : '';
+            const mac = safeStr(n.macAddress);
+            const status = safeStr(n.status);
+            const parts = [
+              name,
+              ip ? ip : null,
+              speed,
+              mac ? `MAC: ${mac}` : null,
+              status ? `Status: ${status}` : null,
+            ].filter(Boolean);
+            return parts.join(', ');
+          })
+          .filter(Boolean)
+          .join(' | ')
+      : '',
+    hardDriveDetails: drives
+      ? drives
+          .map((d) => {
+            const cap = nested(d, 'hardwareComponentModel', 'capacity') ?? nested(d, 'capacity');
+            const compType = nested(d, 'hardwareComponentModel', 'hardwareGenericComponentModel', 'hardwareComponentType') as RawItem | undefined;
+            const typeName = compType ? safeStr((compType as RawItem).keyName ?? (compType as RawItem).type ?? '') : '';
+            return cap ? `${safeStr(cap)}GB${typeName ? ` (${typeName})` : ''}` : '';
+          })
+          .filter(Boolean)
+          .join(', ')
+      : '',
   };
 }
 
@@ -331,6 +388,15 @@ function flattenAllowedHosts(raw: RawItem, field: string): string {
     .join(', ');
 }
 
+function flattenAllowedSubnets(raw: RawItem, field: string): string {
+  const items = raw[field] as RawItem[] | undefined;
+  if (!items || !Array.isArray(items)) return '';
+  return items
+    .map((item) => safeStr(item.networkIdentifier ?? item.id))
+    .filter(Boolean)
+    .join(', ');
+}
+
 function flattenReplicationPartners(raw: RawItem): string {
   const partners = raw.replicationPartners as RawItem[] | undefined;
   if (!partners || !Array.isArray(partners)) return '';
@@ -356,6 +422,7 @@ function transformBlockStorage(raw: RawItem): RawItem {
     notes: raw.notes,
     allowedVirtualGuests: flattenAllowedHosts(raw, 'allowedVirtualGuests'),
     allowedHardware: flattenAllowedHosts(raw, 'allowedHardware'),
+    allowedSubnets: flattenAllowedSubnets(raw, 'allowedSubnets'),
     replicationPartners: flattenReplicationPartners(raw),
   };
 }
@@ -376,6 +443,7 @@ function transformFileStorage(raw: RawItem): RawItem {
     notes: raw.notes,
     allowedVirtualGuests: flattenAllowedHosts(raw, 'allowedVirtualGuests'),
     allowedHardware: flattenAllowedHosts(raw, 'allowedHardware'),
+    allowedSubnets: flattenAllowedSubnets(raw, 'allowedSubnets'),
     replicationPartners: flattenReplicationPartners(raw),
   };
 }
