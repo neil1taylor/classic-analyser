@@ -1,5 +1,5 @@
 import type { CheckResult, PreRequisiteCheck, AffectedResource } from '@/types/migration';
-import { evaluateCheck } from './checkUtils';
+import { evaluateCheck, unknownCheck } from './checkUtils';
 import { mapDatacenterToVPC } from '../data/datacenterMapping';
 
 const FIREWALL_RULE_COUNT: PreRequisiteCheck = {
@@ -93,6 +93,34 @@ const VPC_RESERVED_IP: PreRequisiteCheck = {
     'Identify resources using reserved addresses and plan IP reassignment.',
     'Update application configurations to use the new private IP.',
     'Ensure DNS records and service discovery reflect the IP change.',
+  ],
+};
+
+const IPV6_USAGE: PreRequisiteCheck = {
+  id: 'net-ipv6-usage',
+  name: 'IPv6 Address Usage',
+  category: 'network',
+  description: 'VPC does not currently support IPv6 addressing. Subnets, servers, gateways, or load balancers using IPv6 will need to transition to IPv4-only in VPC. Note: IPv6 addresses were often assigned by default on Classic infrastructure (especially gateways) and may not be actively used — manual verification is recommended. This check may produce false positives.',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-about-networking-for-vpc',
+  remediationSteps: [
+    'Verify whether IPv6 is actively used by applications on each flagged resource.',
+    'Plan IPv4-only networking in VPC for all migrated workloads.',
+    'If IPv6 is required, consider a reverse proxy or gateway that provides IPv6 frontend with IPv4 backend.',
+    'Update DNS AAAA records as part of migration planning.',
+  ],
+};
+
+const VRRP_HA_PATTERN: PreRequisiteCheck = {
+  id: 'net-vrrp-ha',
+  name: 'VRRP High Availability Pattern',
+  category: 'network',
+  description: 'Virtual Router Redundancy Protocol (VRRP) is used in Classic for high availability patterns with floating virtual IPs. VPC does not support VRRP — equivalent HA must be achieved using VPC load balancers, floating IPs with failover, or application-level health checking. This includes multi-attach storage patterns that may depend on VRRP for failover. Cannot be determined from SoftLayer API data.',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-load-balancers',
+  remediationSteps: [
+    'Identify servers using VRRP by checking keepalived or VRRP configuration on each host.',
+    'Plan to replace VRRP with VPC Application Load Balancer or Network Load Balancer.',
+    'For active/passive failover, consider VPC floating IP reassignment via API automation.',
+    'Test HA failover behavior in VPC before production cutover.',
   ],
 };
 
@@ -262,6 +290,25 @@ export function runNetworkChecks(collectedData: Record<string, unknown[]>): Chec
     }
   }
   results.push(evaluateCheck(VPC_RESERVED_IP, 'warning', allServers.length, reservedIpAffected));
+
+  // IPv6 subnet detection
+  const ipv6Affected: AffectedResource[] = [];
+  for (const subnet of subnets) {
+    const netId = toStr(subnet['networkIdentifier'] as unknown);
+    const subType = toStr(subnet['subnetType'] as unknown) || toStr(subnet['addressSpace'] as unknown);
+    if (netId.includes(':') || /ipv6/i.test(subType)) {
+      const cidr = toNum(subnet['cidr']);
+      ipv6Affected.push({
+        id: toNum(subnet['id']),
+        hostname: netId || `Subnet ${toNum(subnet['id'])}`,
+        detail: `IPv6 subnet: ${netId}${cidr ? `/${cidr}` : ''} (type: ${subType || 'unknown'})`,
+      });
+    }
+  }
+  results.push(evaluateCheck(IPV6_USAGE, 'warning', subnets.length, ipv6Affected));
+
+  // VRRP HA pattern — unknown (not determinable from API)
+  results.push(unknownCheck(VRRP_HA_PATTERN, allServers.length));
 
   return results;
 }

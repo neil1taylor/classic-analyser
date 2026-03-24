@@ -82,6 +82,20 @@ const VOLUME_ATTACHMENT_COUNT: PreRequisiteCheck = {
   ],
 };
 
+const MULTI_ATTACH_STORAGE: PreRequisiteCheck = {
+  id: 'storage-multi-attach',
+  name: 'Multi-Attach Block Storage',
+  category: 'storage',
+  description: 'Block storage (iSCSI) volumes authorized for multiple hosts or subnets. VPC block storage does not support multi-attach for VSIs (multi-attach for Bare Metal is planned for Q4 2026). Recommendation is NFS file shares on VPC for shared storage. Note: authorization does not confirm active mount — this check may produce false positives as volumes may be authorized but not mounted on all hosts.',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-block-storage-about',
+  remediationSteps: [
+    'Verify which hosts are actively mounting each flagged volume.',
+    'For shared storage needs, consider VPC file shares (NFS) which support multi-mount.',
+    'For Bare Metal workloads, evaluate the VPC multi-attach capability (planned Q4 2026).',
+    'Redesign application architecture to use individual volumes per host where possible.',
+  ],
+};
+
 export function runStorageChecks(collectedData: Record<string, unknown[]>): CheckResult[] {
   const results: CheckResult[] = [];
   const blocks = (collectedData['blockStorage'] ?? []) as Record<string, unknown>[];
@@ -173,6 +187,30 @@ export function runStorageChecks(collectedData: Record<string, unknown[]>): Chec
     }
   }
   results.push(evaluateCheck(VOLUME_ATTACHMENT_COUNT, 'info', vsis.length, attachAffected));
+
+  // Multi-attach: block storage authorized to multiple hosts or subnets
+  const multiAttachAffected: AffectedResource[] = [];
+  for (const vol of blocks) {
+    const guests = toStr(vol['allowedVirtualGuests']);
+    const hardware = toStr(vol['allowedHardware']);
+    const subnets = toStr(vol['allowedSubnets']);
+    const guestCount = guests ? guests.split(',').map(s => s.trim()).filter(Boolean).length : 0;
+    const hwCount = hardware ? hardware.split(',').map(s => s.trim()).filter(Boolean).length : 0;
+    const subnetCount = subnets ? subnets.split(',').map(s => s.trim()).filter(Boolean).length : 0;
+    const totalHosts = guestCount + hwCount;
+    if (totalHosts > 1 || subnetCount > 1) {
+      const parts: string[] = [];
+      if (guestCount > 0) parts.push(`${guestCount} VSI(s)`);
+      if (hwCount > 0) parts.push(`${hwCount} BM(s)`);
+      if (subnetCount > 0) parts.push(`${subnetCount} subnet(s)`);
+      multiAttachAffected.push({
+        id: toNum(vol['id']),
+        hostname: toStr(vol['username']) || `Block ${toNum(vol['id'])}`,
+        detail: `Authorized for ${parts.join(', ')}`,
+      });
+    }
+  }
+  results.push(evaluateCheck(MULTI_ATTACH_STORAGE, 'warning', blocks.length, multiAttachAffected));
 
   return results;
 }

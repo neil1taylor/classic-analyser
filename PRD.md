@@ -1147,7 +1147,7 @@ Groups are expanded by default, collapsible via group header buttons. Active sec
 3. **VPC Infrastructure** — VPC dashboard, multi-region collection, Transit Gateways (global endpoint), Direct Link gateways/virtual connections, VPN gateway connections, 24 resource types, regional `_region` field
 4. **Data Tables** — Sorting, global search, column filtering, column visibility/resizing, row selection/expansion, pagination, virtualization, advanced filtering, toolbar actions
 5. **Visualizations** — Topology diagrams (Classic + VPC), Geography maps, Cost Analysis (treemap, donut/bar charts, cost data sources)
-6. **Migration Analysis** — 9 assessment tabs, readiness scoring (16+ checks, 5 dimensions), migration waves, Terraform export, DOCX reports, IBM migration resource links (Virtualization Solutions Guide, RackWare, Wanclouds, open-source tools)
+6. **Migration Analysis** — 9 assessment tabs, readiness scoring (43 checks, 5 dimensions), migration waves, Terraform export, DOCX reports, IBM migration resource links (Virtualization Solutions Guide, RackWare, Wanclouds, open-source tools)
 7. **AI Features** — Chat assistant (context-aware), migration insights (executive summary, risks, recommendations), cost optimization (narrative, savings), report narratives. Requires AI proxy configuration.
 8. **Import & Export** — XLSX export (3 modes), XLSX import, unified DOCX report (with branding, TOC, pie charts, headers/footers), draw.io topology export, Terraform HCL export
 9. **Settings** — AI configuration (enable/disable, test connection), report branding (client/company/author), theme toggle
@@ -2829,7 +2829,7 @@ The VPC Migration Analysis feature provides rule-based analysis capabilities to 
 
 Each migration assessment tab (Compute, Network, Storage, Security) includes a remediation checklist panel that evaluates per-resource-type pre-requisite checks against the collected Classic data. Checks produce one of five severity levels: **blocker**, **warning**, **info**, **unknown** (cannot determine from API), or **passed**.
 
-**Compute checks (19):**
+**Compute checks (23):**
 
 | Check | Severity | Logic |
 |---|---|---|
@@ -2849,11 +2849,15 @@ Each migration assessment tab (Compute, Network, Storage, Security) includes a r
 | Core Count Maximum 192 (BM) | blocker | `processorPhysicalCoreAmount > 192` |
 | Memory Maximum 768 GB (BM) | blocker | `memoryCapacity > 768` |
 | Network Speed Compatibility (BM) | warning | NIC speed > 25 Gbps |
-| VMware vSphere / ESXi OS (BM) | blocker | OS matches `vmware\|vsphere\|esxi` |
+| Hypervisor Detected — VMware / XenServer / Hyper-V (BM) | blocker | OS/notes/tags match `vmware\|vsphere\|esxi\|xenserver\|hyper-v` |
 | Potential Oracle Workload (BM) | warning | Hardware matches Oracle HCL config (4c/64GB, 16c/384GB, 48c/768GB) + No OS / Oracle Linux |
 | Potential SAP Workload (BM) | warning | Hardware matches SAP HANA-certified config (9 profiles) + SLES/RHEL for SAP OS or SAP hostname pattern |
+| 32-bit Operating System | blocker | OS string matches 32-bit pattern (`32-bit`, `i386`, `x86` non-64) |
+| End-of-Life Operating System | warning | OS matches EOL versions (CentOS 5-7, RHEL 5-6, Win 2003/2008, Debian 8-9, Ubuntu 14/16, SLES 11-12) |
+| Single-Socket High Clock Speed (BM) | unknown | Processor model/speed not in API mask — cannot determine |
+| Possible IKS/ROKS Worker Node | warning | Hostname contains "kube" — likely IKS or ROKS worker node, cluster must be recreated on VPC |
 
-**Storage checks (6):**
+**Storage checks (7):**
 
 | Check | Severity | Logic |
 |---|---|---|
@@ -2863,8 +2867,9 @@ Each migration assessment tab (Compute, Network, Storage, Security) includes a r
 | Snapshot Configuration | info | Has snapshot schedules |
 | Replication Partners | info | Has replication configured |
 | Volume Attachment Count | info | VSI with > 12 attached volumes |
+| Multi-Attach Block Storage | warning | Block volume authorized for > 1 host or > 1 subnet (false positives possible — authorization ≠ active mount) |
 
-**Network checks (7):**
+**Network checks (9):**
 
 | Check | Severity | Logic |
 |---|---|---|
@@ -2875,13 +2880,16 @@ Each migration assessment tab (Compute, Network, Storage, Security) includes a r
 | VLAN Subnet Mapping | info | VLANs in DCs without VPC region |
 | Public IP Address | blocker | VSI/Bare Metal has a public IP (public subnets cannot migrate to VPC) |
 | VPC Reserved IP Conflict | warning | Private IP falls on a VPC reserved address (network, gateway, DNS, future, broadcast) |
+| IPv6 Address Usage | warning | Subnet `networkIdentifier` contains `:` or `subnetType` contains IPv6 (false positives possible — IPv6 often auto-assigned) |
+| VRRP High Availability Pattern | unknown | VRRP config not exposed by SoftLayer API — cannot determine |
 
-**Security checks (2):**
+**Security checks (3):**
 
 | Check | Severity | Logic |
 |---|---|---|
 | SSL Certificate Expiry | warning | Expires within 90 days |
 | SSH Key Compatibility | passed | SSH keys work in VPC |
+| Hardware Security Module (HSM) | warning | Billing item category matches `security_module`/`hsm` or BM hostname/notes contain "HSM" — migrate to Key Protect or HPCS |
 
 **UI presentation:**
 - Reusable `RemediationChecklist` component using Carbon `Accordion`

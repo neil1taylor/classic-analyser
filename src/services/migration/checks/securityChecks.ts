@@ -27,6 +27,20 @@ const SSH_KEY_COMPAT: PreRequisiteCheck = {
   ],
 };
 
+const HSM_DETECTED: PreRequisiteCheck = {
+  id: 'sec-hsm-detected',
+  name: 'Hardware Security Module (HSM)',
+  category: 'security',
+  description: 'Hardware Security Module (HSM) devices detected on Classic infrastructure. VPC does not support dedicated HSM appliances — migrate to IBM Key Protect (FIPS 140-2 Level 3) or IBM Cloud Hyper Protect Crypto Services (FIPS 140-2 Level 4) for key management and cryptographic operations.',
+  docsUrl: 'https://cloud.ibm.com/docs/key-protect',
+  remediationSteps: [
+    'Inventory all keys and cryptographic material stored on the HSM.',
+    'Evaluate IBM Key Protect for standard key management needs.',
+    'For FIPS 140-2 Level 4 requirements, use IBM Cloud Hyper Protect Crypto Services (dedicated HSM-backed).',
+    'Plan key migration with zero-downtime key rotation strategy.',
+  ],
+};
+
 export function runSecurityChecks(collectedData: Record<string, unknown[]>): CheckResult[] {
   const results: CheckResult[] = [];
   const certs = (collectedData['sslCertificates'] ?? []) as Record<string, unknown>[];
@@ -55,6 +69,51 @@ export function runSecurityChecks(collectedData: Record<string, unknown[]>): Che
 
   // SSH keys — always passed (direct import supported)
   results.push(evaluateCheck(SSH_KEY_COMPAT, 'passed', sshKeys.length, []));
+
+  // HSM detection — check billing items and bare metal hostname/notes
+  const billingItems = (collectedData['billingItems'] ?? []) as Record<string, unknown>[];
+  const bms = (collectedData['bareMetal'] ?? collectedData['hardware'] ?? []) as Record<string, unknown>[];
+  const hsmAffected: AffectedResource[] = [];
+  const hsmSeenIds = new Set<number>();
+
+  // Check billing items for HSM category codes or descriptions
+  for (const item of billingItems) {
+    const catCode = toStr(item['categoryCode']);
+    const desc = toStr(item['description']);
+    if (/security_module|hsm/i.test(catCode) || /\bhsm\b|hardware security module/i.test(desc)) {
+      const id = toNum(item['id']);
+      if (!hsmSeenIds.has(id)) {
+        hsmSeenIds.add(id);
+        hsmAffected.push({
+          id,
+          hostname: desc || `Billing item ${id}`,
+          detail: `Billing category: ${catCode || 'unknown'} — ${desc || 'HSM detected'}`,
+        });
+      }
+    }
+  }
+
+  // Check bare metal hostname and notes for HSM
+  for (const bm of bms) {
+    const hostname = toStr(bm['hostname']);
+    const notes = toStr(bm['notes']);
+    const tags = toStr(bm['tagReferences']);
+    const combined = `${hostname} ${notes} ${tags}`;
+    if (/\bhsm\b/i.test(combined)) {
+      const id = toNum(bm['id']);
+      if (!hsmSeenIds.has(id)) {
+        hsmSeenIds.add(id);
+        hsmAffected.push({
+          id,
+          hostname: hostname || `BM ${id}`,
+          detail: 'Hostname/notes/tags contain "HSM"',
+        });
+      }
+    }
+  }
+
+  const totalChecked = billingItems.length + bms.length;
+  results.push(evaluateCheck(HSM_DETECTED, 'warning', totalChecked, hsmAffected));
 
   return results;
 }

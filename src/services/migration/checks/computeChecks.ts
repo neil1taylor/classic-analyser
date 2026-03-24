@@ -206,17 +206,73 @@ const BM_MEMORY_MAX: PreRequisiteCheck = {
   ],
 };
 
-const BM_VSPHERE_OS: PreRequisiteCheck = {
-  id: 'bm-vsphere-os',
-  name: 'VMware vSphere / ESXi OS',
+const BM_HYPERVISOR: PreRequisiteCheck = {
+  id: 'bm-hypervisor',
+  name: 'Hypervisor Detected (VMware / XenServer / Hyper-V)',
   category: 'compute',
-  description: 'Bare metal servers running VMware vSphere/ESXi cannot be directly migrated to VPC. The hosted VMs must be individually migrated to VPC VSIs or OpenShift Virtualization.',
+  description: 'Bare metal servers running a hypervisor (VMware vSphere/ESXi, Citrix XenServer, or Microsoft Hyper-V). The hosted VMs must be individually migrated to VPC VSIs or OpenShift Virtualization. Detection is based on the reported OS string and server notes/tags.',
   docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-migrate-from-classic',
   remediationSteps: [
-    'Inventory all VMs running on the vSphere host.',
-    'Plan to migrate each VM individually to a VPC VSI or OpenShift Virtualization.',
-    'Export VM disk images and import as VPC custom images where possible.',
-    'Consider IBM Cloud for VMware Solutions if a like-for-like VMware environment is required.',
+    'Inventory all guest VMs running on the hypervisor host.',
+    'Export guest VM disk images for import as VPC custom images.',
+    'Plan to migrate each guest VM individually to a VPC VSI.',
+    'Consider OpenShift Virtualization for workloads requiring a hypervisor layer.',
+    'For VMware environments, evaluate IBM Cloud for VMware Solutions for like-for-like migration.',
+  ],
+};
+
+const OS_32BIT: PreRequisiteCheck = {
+  id: 'os-32bit',
+  name: '32-bit Operating System',
+  category: 'compute',
+  description: 'Servers running 32-bit operating systems cannot be migrated to VPC. VPC only supports 64-bit OS images. For bare metal servers, OS detection relies on the reported OS string which may not reflect the actual guest OS.',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-about-images',
+  remediationSteps: [
+    'Upgrade the workload to a 64-bit operating system before migration.',
+    'For legacy applications that require 32-bit, consider running them under Hyper-V or OpenShift Virtualization on VPC.',
+    'Create a VPC custom image from the upgraded 64-bit OS.',
+  ],
+};
+
+const OS_EOL: PreRequisiteCheck = {
+  id: 'os-eol',
+  name: 'End-of-Life Operating System',
+  category: 'compute',
+  description: 'Servers running end-of-life OS versions should be upgraded before migration. EOL operating systems may not have VPC stock images available and pose security risks. For bare metal servers, OS detection relies on the reported OS string.',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-about-images',
+  remediationSteps: [
+    'Upgrade to a supported OS version before migration (e.g., CentOS 6/7 → RHEL 8/9, Windows 2008 → Windows 2022, Ubuntu 14/16 → Ubuntu 22/24).',
+    'For CentOS 7, consider migrating to RHEL, AlmaLinux, or Rocky Linux.',
+    'Test application compatibility with the target OS version.',
+    'Create VPC custom images for the upgraded OS.',
+  ],
+};
+
+const BM_SINGLE_SOCKET_HIGH_CLOCK: PreRequisiteCheck = {
+  id: 'bm-single-socket-high-clock',
+  name: 'Single-Socket High Clock Speed Processor',
+  category: 'compute',
+  description: 'Bare metal servers with single-socket, high clock speed processors (e.g., Xeon E-2174G / CoffeeLake at 3.8 GHz) have no equivalent VPC Bare Metal profile. VPC Bare Metal uses dual-socket Cascade Lake / Sapphire Rapids configurations. Cannot be determined from SoftLayer API data — processor model and clock speed are not collected.',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-bare-metal-servers-profile',
+  remediationSteps: [
+    'Check the server order details or billing for processor model information.',
+    'Look for Xeon E-21xx series or similar single-socket configurations.',
+    'Evaluate if the workload can run on VPC dual-socket profiles with comparable aggregate performance.',
+    'Consider VPC VSIs for workloads that do not require bare metal.',
+  ],
+};
+
+const IKS_ROKS_DETECTED: PreRequisiteCheck = {
+  id: 'server-iks-roks-detected',
+  name: 'Possible IKS/ROKS Worker Node',
+  category: 'compute',
+  description: 'Servers with "kube" in the hostname are likely IBM Kubernetes Service (IKS) or Red Hat OpenShift on IBM Cloud (ROKS) worker nodes. These should not be migrated individually — the entire cluster must be recreated in VPC using VPC-based IKS/ROKS clusters.',
+  docsUrl: 'https://cloud.ibm.com/docs/containers?topic=containers-vpc-migrate',
+  remediationSteps: [
+    'Confirm the server is an IKS/ROKS worker node via ibmcloud ks cluster ls or the IBM Cloud console.',
+    'Create a new IKS or ROKS cluster on VPC infrastructure.',
+    'Migrate workloads using Kubernetes-native tools (kubectl, Helm, Velero).',
+    'Do not attempt to migrate worker nodes as individual servers.',
   ],
 };
 
@@ -436,23 +492,30 @@ export function runComputeChecks(collectedData: Record<string, unknown[]>): Chec
   }
   results.push(evaluateCheck(BM_GATEWAY_MEMBER, 'blocker', bmCount, gwAffected));
 
-  // vSphere / VMware OS
-  const vsphereAffected: AffectedResource[] = [];
+  // Hypervisor detection (VMware, XenServer, Hyper-V)
+  const hypervisorAffected: AffectedResource[] = [];
+  const hypervisorPattern = /vmware|vsphere|esxi|xenserver|xen\s*server|citrix\s*hypervisor|hyper[\s-]?v/i;
   for (const bm of bms) {
     const osDesc = str(bm, 'operatingSystem.softwareDescription.longDescription')
       || str(bm, 'softwareDescription')
       || str(bm, 'operatingSystemReferenceCode')
       || str(bm, 'os')
       || '';
-    if (/vmware|vsphere|esxi/i.test(osDesc)) {
-      vsphereAffected.push({
+    const notes = str(bm, 'notes') || '';
+    const tags = str(bm, 'tagReferences') || '';
+    const combined = `${osDesc} ${notes} ${tags}`;
+    if (hypervisorPattern.test(combined)) {
+      const type = /vmware|vsphere|esxi/i.test(combined) ? 'VMware'
+        : /xenserver|xen\s*server|citrix/i.test(combined) ? 'XenServer'
+        : 'Hyper-V';
+      hypervisorAffected.push({
         id: num(bm, 'id'),
         hostname: str(bm, 'hostname') || `BM ${num(bm, 'id')}`,
-        detail: `OS: ${osDesc}`,
+        detail: `${type} — OS: ${osDesc || 'detected via notes/tags'}`,
       });
     }
   }
-  results.push(evaluateCheck(BM_VSPHERE_OS, 'blocker', bmCount, vsphereAffected));
+  results.push(evaluateCheck(BM_HYPERVISOR, 'blocker', bmCount, hypervisorAffected));
 
   // Core count > 192
   const coreAffected: AffectedResource[] = [];
@@ -567,6 +630,62 @@ export function runComputeChecks(collectedData: Record<string, unknown[]>): Chec
     }
   }
   results.push(evaluateCheck(BM_SAP_DETECTED, 'warning', bmCount, sapAffected));
+
+  // Single-socket high clock speed — unknown (not determinable from API)
+  results.push(unknownCheck(BM_SINGLE_SOCKET_HIGH_CLOCK, bmCount));
+
+  // 32-bit OS detection (blocker) — checks both VSIs and BMs
+  const allServers = [...vsis, ...bms];
+  const is32BitPattern = /\b32[\s-]?bit\b|i[36]86(?!_64)\b|\bx86\b(?![\s_-]*64)/i;
+  const os32bitAffected: AffectedResource[] = [];
+  for (const server of allServers) {
+    const osDesc = str(server, 'operatingSystem.softwareDescription.longDescription')
+      || str(server, 'softwareDescription')
+      || str(server, 'operatingSystemReferenceCode')
+      || str(server, 'os')
+      || '';
+    if (osDesc && is32BitPattern.test(osDesc)) {
+      os32bitAffected.push({
+        id: num(server, 'id'),
+        hostname: str(server, 'hostname') || str(server, 'fullyQualifiedDomainName') || `Server ${num(server, 'id')}`,
+        detail: `OS: ${osDesc}`,
+      });
+    }
+  }
+  results.push(evaluateCheck(OS_32BIT, 'blocker', allServers.length, os32bitAffected));
+
+  // End-of-life OS detection (warning) — checks both VSIs and BMs
+  const eolPattern = /centos\s*[567]\b|red\s*hat.*[56]\b|rhel\s*[56]\b|windows.*(2003|2008|2008\s*r2)\b|debian\s*[89]\b|ubuntu\s*(14|16)\b|sles?\s*(11|12)\b|suse.*(11|12)\b/i;
+  const eolAffected: AffectedResource[] = [];
+  for (const server of allServers) {
+    const osDesc = str(server, 'operatingSystem.softwareDescription.longDescription')
+      || str(server, 'softwareDescription')
+      || str(server, 'operatingSystemReferenceCode')
+      || str(server, 'os')
+      || '';
+    if (osDesc && eolPattern.test(osDesc)) {
+      eolAffected.push({
+        id: num(server, 'id'),
+        hostname: str(server, 'hostname') || str(server, 'fullyQualifiedDomainName') || `Server ${num(server, 'id')}`,
+        detail: `OS: ${osDesc}`,
+      });
+    }
+  }
+  results.push(evaluateCheck(OS_EOL, 'warning', allServers.length, eolAffected));
+
+  // IKS/ROKS worker node detection — hostname contains "kube"
+  const kubeAffected: AffectedResource[] = [];
+  for (const server of allServers) {
+    const hostname = str(server, 'hostname') || str(server, 'fullyQualifiedDomainName') || '';
+    if (/kube/i.test(hostname)) {
+      kubeAffected.push({
+        id: num(server, 'id'),
+        hostname: hostname || `Server ${num(server, 'id')}`,
+        detail: 'Hostname contains "kube" — likely IKS/ROKS worker node',
+      });
+    }
+  }
+  results.push(evaluateCheck(IKS_ROKS_DETECTED, 'warning', allServers.length, kubeAffected));
 
   return results;
 }

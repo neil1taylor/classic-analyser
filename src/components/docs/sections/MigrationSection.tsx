@@ -33,10 +33,10 @@ const MigrationSection: React.FC = () => (
         The migration view contains 9 assessment tabs:
       </p>
       <ul style={listStyle}>
-        <li><strong>Compute:</strong> VSI and Bare Metal readiness &mdash; boot disk limits, vCPU/memory maximums, OS compatibility, local disk usage.</li>
-        <li><strong>Network:</strong> VLAN, subnet, and gateway assessment &mdash; IP address compatibility, public IP detection, VPC reserved IP conflicts.</li>
-        <li><strong>Storage:</strong> Block and file storage analysis &mdash; volume sizes, IOPS tiers, snapshot requirements.</li>
-        <li><strong>Security:</strong> Security group rules, SSL certificates, and SSH key compatibility.</li>
+        <li><strong>Compute:</strong> VSI and Bare Metal readiness &mdash; boot disk limits, vCPU/memory maximums, OS compatibility, 32-bit/EOL OS detection, hypervisor detection (VMware, XenServer, Hyper-V), IKS/ROKS worker node detection, local disk usage.</li>
+        <li><strong>Network:</strong> VLAN, subnet, and gateway assessment &mdash; IP address compatibility, public IP detection, VPC reserved IP conflicts, IPv6 subnet detection, VRRP HA pattern.</li>
+        <li><strong>Storage:</strong> Block and file storage analysis &mdash; volume sizes, IOPS tiers, snapshot requirements, multi-attach volume detection.</li>
+        <li><strong>Security:</strong> Security group rules, SSL certificates, SSH key compatibility, and HSM device detection.</li>
         <li><strong>Feature Gaps:</strong> Features available in Classic but not yet in VPC (e.g., specific hardware configurations).</li>
         <li><strong>Costs:</strong> Classic vs VPC monthly and 3-year cost projections with break-even analysis.</li>
         <li><strong>Migration Waves:</strong> Resources grouped by dependency and priority into planned migration waves.</li>
@@ -49,14 +49,19 @@ const MigrationSection: React.FC = () => (
       <h3 style={headingStyle}>Readiness Scoring</h3>
       <p style={paragraphStyle}>
         Each resource receives a 0&ndash;100% readiness score across 5 dimensions. The score
-        reflects 16+ automated checks including:
+        reflects 43 automated checks including:
       </p>
       <ul style={listStyle}>
         <li>Boot disk size within VPC limits</li>
         <li>vCPU and memory within VPC profile maximums</li>
         <li>Operating system supported on VPC</li>
+        <li>32-bit or end-of-life OS detection</li>
+        <li>Hypervisor detection (VMware, XenServer, Hyper-V)</li>
         <li>Datacenter availability in VPC regions</li>
-        <li>Local disk usage (not available in VPC)</li>
+        <li>Multi-attach block storage detection</li>
+        <li>IPv6 subnet usage</li>
+        <li>IKS/ROKS worker node detection</li>
+        <li>HSM device detection (Key Protect / HPCS migration)</li>
         <li>IP address compatibility and conflicts</li>
       </ul>
       <p style={paragraphStyle}>
