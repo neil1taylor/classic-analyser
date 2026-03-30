@@ -33,6 +33,7 @@ import {
   getNasNetworkStorage,
   getNasNetworkStorageShallow,
   getHubNetworkStorage,
+  getStorageSnapshots,
 } from './softlayer/storage.js';
 import { getSecurityCertificates, getSshKeys } from './softlayer/security.js';
 import { getDomains, getDomainsShallow, flattenDNSRecords } from './softlayer/dns.js';
@@ -68,7 +69,8 @@ import { VpcClient } from './vpc/client.js';
 import { getTransitGateways, getTransitGatewayConnections, getDirectLinkGateways, getTransitGatewayRouteReports, getVpnGatewaysForTgwVpcConnections } from './vpc/resources.js';
 import type { TgwRoutePrefixes, TgwVpcVpnGateway } from './vpc/resources.js';
 import type { TransitGateway, TransitGatewayConnection, DirectLinkGateway } from './vpc/types.js';
-import { runWithConcurrencyLimit } from '../utils/concurrency.js';
+import { ConcurrencyLimiter, runWithConcurrencyLimit } from '../utils/concurrency.js';
+import { sendSSE } from '../utils/sse.js';
 import type {
   SLAccount,
   SLVirtualGuest,
@@ -126,14 +128,6 @@ const SL_METHOD_TO_RESOURCE: Record<string, string> = {
   getNetworkTunnelContexts: 'vpnTunnels',
 };
 
-function sendSSE(res: Response, event: string, data: unknown): void {
-  try {
-    res.write(`event: ${event}\n`);
-    res.write(`data: ${JSON.stringify(data)}\n\n`);
-  } catch {
-    // connection may be closed
-  }
-}
 
 interface CollectorTask {
   name: string;
@@ -621,6 +615,32 @@ export async function collectAllData(
       logger.info('Billing items collection skipped (user opted out)');
     }
 
+    // Storage Snapshots (depends on block + file storage from Phase 2)
+    const allStorageVolumeIds = [
+      ...blockStorage.map(v => ({ id: v.id!, type: 'block' as const })),
+      ...fileStorage.map(v => ({ id: v.id!, type: 'file' as const })),
+    ].filter(v => v.id);
+
+    if (allStorageVolumeIds.length > 0) {
+      tracker.totalResources += 1;
+      phase3Tasks.push({
+        name: 'storageSnapshots',
+        fn: async () => {
+          const limiter = new ConcurrencyLimiter(5);
+          const results = await Promise.all(
+            allStorageVolumeIds.map(vol =>
+              limiter.run(async () => ({
+                id: vol.id,
+                type: vol.type,
+                snapshots: await getStorageSnapshots(client, vol.id),
+              }))
+            )
+          );
+          return results;
+        },
+      });
+    }
+
     // Transit Gateway Connections (depends on TG list from Phase 2)
     if (iamAvailable && transitGateways.length > 0) {
       tracker.totalResources += 1;
@@ -674,6 +694,33 @@ export async function collectAllData(
 
     if (!skipBilling) {
       billingItems = (phase3Results.get('billingItems') as SLBillingItem[] | undefined) ?? billingItems;
+    }
+
+    // Merge snapshot data into storage volumes
+    const snapshotResults = phase3Results.get('storageSnapshots') as
+      Array<{ id: number; type: 'block' | 'file'; snapshots: Array<{ sizeBytes?: number }> }> | undefined;
+    if (snapshotResults) {
+      const snapshotMap = new Map(snapshotResults.map(r => [`${r.type}:${r.id}`, r.snapshots]));
+      for (const vol of blockStorage) {
+        const snaps = snapshotMap.get(`block:${vol.id}`);
+        if (snaps) {
+          (vol as Record<string, unknown>).snapshots = snaps;
+        }
+      }
+      for (const vol of fileStorage) {
+        const snaps = snapshotMap.get(`file:${vol.id}`);
+        if (snaps) {
+          (vol as Record<string, unknown>).snapshots = snaps;
+        }
+      }
+      // Re-send enriched storage data via SSE
+      sendSSE(res, 'data', { resourceKey: 'blockStorage', items: blockStorage, count: blockStorage.length });
+      sendSSE(res, 'data', { resourceKey: 'fileStorage', items: fileStorage, count: fileStorage.length });
+      logger.info('Merged storage snapshots', {
+        blockVolumes: blockStorage.length,
+        fileVolumes: fileStorage.length,
+        totalSnapshots: snapshotResults.reduce((sum, r) => sum + r.snapshots.length, 0),
+      });
     }
 
     if (vmwareAvailable) {

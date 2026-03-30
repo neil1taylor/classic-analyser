@@ -162,6 +162,9 @@ export async function generateExcelExport(
     { header: 'Placement Group', key: 'placementGroupId', width: 16 },
     { header: 'Tags', key: 'tags', width: 30 },
     { header: 'Disk (GB)', key: 'diskGb', width: 12 },
+    { header: 'Local Storage (GB)', key: 'localStorageGb', width: 16 },
+    { header: 'Portable Storage (GB)', key: 'portableStorageGb', width: 18 },
+    { header: 'Portable Storage Details', key: 'portableStorageDetails', width: 40 },
     { header: 'VLANs', key: 'networkVlans', width: 30 },
   ];
   addHeaderStyle(wsVSI);
@@ -215,6 +218,9 @@ export async function generateExcelExport(
       placementGroupId: r.placementGroupId ?? '',
       tags: r.tags ?? '',
       diskGb: r.diskGb ?? '',
+      localStorageGb: r.localStorageGb ?? '',
+      portableStorageGb: r.portableStorageGb ?? '',
+      portableStorageDetails: r.portableStorageDetails ?? '',
       networkVlans: r.networkVlans ?? '',
     });
   }
@@ -510,6 +516,11 @@ export async function generateExcelExport(
     { header: 'Allowed VSIs', key: 'allowedVirtualGuests', width: 30 },
     { header: 'Allowed Hardware', key: 'allowedHardware', width: 30 },
     { header: 'Replication Partners', key: 'replicationPartners', width: 30 },
+    { header: 'Encrypted', key: 'encrypted', width: 10 },
+    { header: 'Datacenter', key: 'datacenter', width: 14 },
+    { header: 'Snapshot Used (Bytes)', key: 'snapshotSizeBytes', width: 18 },
+    { header: 'Snapshot Count', key: 'snapshotCount', width: 14 },
+    { header: 'Allowed Subnets', key: 'allowedSubnets', width: 30 },
   ];
   addHeaderStyle(wsBS);
 
@@ -531,6 +542,11 @@ export async function generateExcelExport(
       allowedVirtualGuests: r.allowedVirtualGuests ?? '',
       allowedHardware: r.allowedHardware ?? '',
       replicationPartners: r.replicationPartners ?? '',
+      encrypted: vol.hasEncryptionAtRest ?? r.encrypted ?? '',
+      datacenter: vol.serviceResource?.datacenter?.name ?? r.datacenter ?? '',
+      snapshotSizeBytes: vol.parentVolume?.snapshotSizeBytes ?? r.snapshotSizeBytes ?? '',
+      snapshotCount: Array.isArray((vol as Record<string, unknown>).snapshots) ? ((vol as Record<string, unknown>).snapshots as unknown[]).length : (r.snapshotCount ?? ''),
+      allowedSubnets: r.allowedSubnets ?? '',
     });
   }
   autoWidth(wsBS);
@@ -553,6 +569,12 @@ export async function generateExcelExport(
     { header: 'Allowed VSIs', key: 'allowedVirtualGuests', width: 30 },
     { header: 'Allowed Hardware', key: 'allowedHardware', width: 30 },
     { header: 'Replication Partners', key: 'replicationPartners', width: 30 },
+    { header: 'Bytes Used', key: 'bytesUsed', width: 16 },
+    { header: 'Encrypted', key: 'encrypted', width: 10 },
+    { header: 'Datacenter', key: 'datacenter', width: 14 },
+    { header: 'Snapshot Used (Bytes)', key: 'snapshotSizeBytes', width: 18 },
+    { header: 'Snapshot Count', key: 'snapshotCount', width: 14 },
+    { header: 'Allowed Subnets', key: 'allowedSubnets', width: 30 },
   ];
   addHeaderStyle(wsFS);
 
@@ -574,6 +596,12 @@ export async function generateExcelExport(
       allowedVirtualGuests: r.allowedVirtualGuests ?? '',
       allowedHardware: r.allowedHardware ?? '',
       replicationPartners: r.replicationPartners ?? '',
+      bytesUsed: vol.bytesUsed ?? r.bytesUsed ?? '',
+      encrypted: vol.hasEncryptionAtRest ?? r.encrypted ?? '',
+      datacenter: vol.serviceResource?.datacenter?.name ?? r.datacenter ?? '',
+      snapshotSizeBytes: vol.parentVolume?.snapshotSizeBytes ?? r.snapshotSizeBytes ?? '',
+      snapshotCount: Array.isArray((vol as Record<string, unknown>).snapshots) ? ((vol as Record<string, unknown>).snapshots as unknown[]).length : (r.snapshotCount ?? ''),
+      allowedSubnets: r.allowedSubnets ?? '',
     });
   }
   autoWidth(wsFS);

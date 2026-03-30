@@ -8,6 +8,7 @@ const RETRY_DELAYS = [1000, 2000, 4000];
 export interface SoftLayerRequestOptions {
   service: string;
   method: string;
+  resourceId?: number;
   objectMask?: string;
   resultLimit?: number;
   offset?: number;
@@ -30,7 +31,7 @@ export class SoftLayerClient {
   }
 
   private buildUrl(options: SoftLayerRequestOptions): string {
-    const { service, method, objectMask, resultLimit, offset, additionalParams } = options;
+    const { service, method, resourceId, objectMask, resultLimit, offset, additionalParams } = options;
 
     // Build query string manually — SoftLayer requires unencoded brackets
     // in objectMask and unencoded commas in resultLimit.
@@ -52,7 +53,8 @@ export class SoftLayerClient {
     }
 
     const qs = params.length > 0 ? `?${params.join('&')}` : '';
-    return `${BASE_URL}/${service}/${method}.json${qs}`;
+    const resourcePath = resourceId ? `${resourceId}/` : '';
+    return `${BASE_URL}/${service}/${resourcePath}${method}.json${qs}`;
   }
 
   async request<T>(options: SoftLayerRequestOptions): Promise<T> {

@@ -3,12 +3,13 @@ import type {
   SLBlockStorage,
   SLFileStorage,
   SLObjectStorage,
+  SLSnapshot,
 } from './types.js';
 import logger from '../../utils/logger.js';
 
 export async function getIscsiNetworkStorage(client: SoftLayerClient): Promise<SLBlockStorage[]> {
   const objectMask =
-    'mask[id,username,capacityGb,iops,storageType,storageTierLevel,serviceResourceBackendIpAddress,lunId,allowedVirtualGuests[id,hostname],allowedHardware[id,hostname],allowedSubnets,snapshotCapacityGb,schedules,replicationPartners[id,username,serviceResourceBackendIpAddress],billingItem[recurringFee],createDate,notes]';
+    'mask[id,username,capacityGb,iops,storageType,storageTierLevel,serviceResourceBackendIpAddress,lunId,allowedVirtualGuests[id,hostname],allowedHardware[id,hostname],allowedSubnets,snapshotCapacityGb,schedules,replicationPartners[id,username,serviceResourceBackendIpAddress],billingItem[recurringFee],createDate,notes,hasEncryptionAtRest,serviceResource[datacenter[name]],parentVolume[snapshotSizeBytes]]';
 
   // Try both iSCSI and general network storage endpoints to capture all block storage types
   const results: SLBlockStorage[] = [];
@@ -61,7 +62,7 @@ export async function getIscsiNetworkStorage(client: SoftLayerClient): Promise<S
 
 export async function getNasNetworkStorage(client: SoftLayerClient): Promise<SLFileStorage[]> {
   const objectMask =
-    'mask[id,username,capacityGb,iops,storageType,storageTierLevel,serviceResourceBackendIpAddress,fileNetworkMountAddress,allowedVirtualGuests[id,hostname],allowedHardware[id,hostname],allowedSubnets,snapshotCapacityGb,schedules,replicationPartners,billingItem[recurringFee],createDate,notes]';
+    'mask[id,username,capacityGb,iops,storageType,storageTierLevel,serviceResourceBackendIpAddress,fileNetworkMountAddress,allowedVirtualGuests[id,hostname],allowedHardware[id,hostname],allowedSubnets,snapshotCapacityGb,schedules,replicationPartners[id,username,serviceResourceBackendIpAddress],billingItem[recurringFee],createDate,notes,bytesUsed,hasEncryptionAtRest,serviceResource[datacenter[name]],parentVolume[snapshotSizeBytes]]';
 
   try {
     const result = await client.requestAllPages<SLFileStorage>({
@@ -161,6 +162,29 @@ export async function getHubNetworkStorage(client: SoftLayerClient): Promise<SLO
     const error = err as Error & { statusCode?: number };
     if (error.statusCode === 403 || error.statusCode === 404) {
       logger.warn('Insufficient permissions to collect object storage (403)');
+      return [];
+    }
+    throw error;
+  }
+}
+
+export async function getStorageSnapshots(
+  client: SoftLayerClient,
+  volumeId: number
+): Promise<SLSnapshot[]> {
+  const objectMask = 'mask[id,createDate,sizeBytes,notes]';
+  try {
+    const result = await client.requestAllPages<SLSnapshot>({
+      service: 'SoftLayer_Network_Storage',
+      resourceId: volumeId,
+      method: 'getSnapshots',
+      objectMask,
+    });
+    return result;
+  } catch (err) {
+    const error = err as Error & { statusCode?: number };
+    if (error.statusCode === 403 || error.statusCode === 404) {
+      logger.warn('Could not collect snapshots for volume', { volumeId });
       return [];
     }
     throw error;

@@ -188,6 +188,27 @@
         "sortable": false
       },
       {
+        "field": "localStorageGb",
+        "header": "Local Storage (GB)",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "portableStorageGb",
+        "header": "Portable Storage (GB)",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "portableStorageDetails",
+        "header": "Portable Storage Details",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      },
+      {
         "field": "billingCategories",
         "header": "Billing Categories",
         "dataType": "string",
@@ -1051,6 +1072,41 @@
         "dataType": "string",
         "defaultVisible": false,
         "sortable": false
+      },
+      {
+        "field": "encrypted",
+        "header": "Encrypted",
+        "dataType": "boolean",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "datacenter",
+        "header": "Datacenter",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "snapshotSizeBytes",
+        "header": "Snapshot Used (Bytes)",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "snapshotCount",
+        "header": "Snapshot Count",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "allowedSubnets",
+        "header": "Allowed Subnets",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
       }
     ]
   },
@@ -1161,6 +1217,48 @@
       {
         "field": "replicationPartners",
         "header": "Replication Partners",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      },
+      {
+        "field": "bytesUsed",
+        "header": "Bytes Used",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "encrypted",
+        "header": "Encrypted",
+        "dataType": "boolean",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "datacenter",
+        "header": "Datacenter",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "snapshotSizeBytes",
+        "header": "Snapshot Used (Bytes)",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "snapshotCount",
+        "header": "Snapshot Count",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "allowedSubnets",
+        "header": "Allowed Subnets",
         "dataType": "string",
         "defaultVisible": false,
         "sortable": false

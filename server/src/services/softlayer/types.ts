@@ -22,9 +22,13 @@ export interface SLTag {
 }
 
 export interface SLBlockDevice {
+  bootableFlag?: number;
+  device?: string;
   diskImage?: {
     capacity?: number;
     units?: string;
+    localDiskFlag?: boolean;
+    description?: string;
   };
 }
 
@@ -296,6 +300,13 @@ export interface SLReplicationPartner {
   serviceResourceBackendIpAddress?: string;
 }
 
+export interface SLSnapshot {
+  id?: number;
+  createDate?: string;
+  sizeBytes?: number;
+  notes?: string;
+}
+
 export interface SLBlockStorage {
   id?: number;
   username?: string;
@@ -314,6 +325,10 @@ export interface SLBlockStorage {
   billingItem?: SLBillingItem;
   createDate?: string;
   notes?: string;
+  hasEncryptionAtRest?: boolean;
+  serviceResource?: { datacenter?: { name?: string } };
+  parentVolume?: { snapshotSizeBytes?: number };
+  snapshots?: SLSnapshot[];
 }
 
 export interface SLFileStorage {
@@ -334,6 +349,11 @@ export interface SLFileStorage {
   billingItem?: SLBillingItem;
   createDate?: string;
   notes?: string;
+  bytesUsed?: number;
+  hasEncryptionAtRest?: boolean;
+  serviceResource?: { datacenter?: { name?: string } };
+  parentVolume?: { snapshotSizeBytes?: number };
+  snapshots?: SLSnapshot[];
 }
 
 export interface SLObjectStorage {

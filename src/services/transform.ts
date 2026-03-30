@@ -121,6 +121,35 @@ function transformVirtualServer(raw: RawItem): RawItem {
       }, 0)
     : '';
 
+  const localStorageGb = blockDevices
+    ? blockDevices.reduce((sum, bd) => {
+        if (nested(bd, 'diskImage', 'localDiskFlag') === false) return sum;
+        const cap = Number(nested(bd, 'diskImage', 'capacity') ?? 0);
+        return sum + (isNaN(cap) ? 0 : cap);
+      }, 0)
+    : '';
+
+  const portableStorageGb = blockDevices
+    ? blockDevices.reduce((sum, bd) => {
+        if (nested(bd, 'diskImage', 'localDiskFlag') !== false) return sum;
+        const cap = Number(nested(bd, 'diskImage', 'capacity') ?? 0);
+        return sum + (isNaN(cap) ? 0 : cap);
+      }, 0)
+    : '';
+
+  const portableStorageDetails = blockDevices
+    ? blockDevices
+        .filter((bd) => nested(bd, 'diskImage', 'localDiskFlag') === false)
+        .map((bd) => {
+          const cap = nested(bd, 'diskImage', 'capacity');
+          const desc = nested(bd, 'diskImage', 'description') ?? '';
+          const dev = (bd as RawItem).device ?? '';
+          return cap ? `Device ${safeStr(dev)}: ${safeStr(cap)}GB${desc ? ' (' + safeStr(desc) + ')' : ''}` : '';
+        })
+        .filter(Boolean)
+        .join(', ')
+    : '';
+
   return {
     id: raw.id,
     hostname: raw.hostname,
@@ -165,12 +194,18 @@ function transformVirtualServer(raw: RawItem): RawItem {
     tags: flattenTags(raw),
     diskGb: diskGb || '',
     networkVlans: flattenNetworkVlans(raw),
+    localStorageGb: localStorageGb || '',
+    portableStorageGb: portableStorageGb || '',
+    portableStorageDetails,
     blockDeviceDetails: blockDevices
       ? blockDevices
-          .map((bd, i) => {
+          .map((bd) => {
             const cap = nested(bd, 'diskImage', 'capacity');
             const units = nested(bd, 'diskImage', 'units') ?? 'GB';
-            return cap ? `Disk ${i}: ${safeStr(cap)}${safeStr(units)}` : '';
+            const dev = safeStr((bd as RawItem).device ?? '');
+            const isLocal = nested(bd, 'diskImage', 'localDiskFlag');
+            const type = isLocal === false ? 'Portable' : isLocal === true ? 'Local' : '';
+            return cap ? `Dev ${dev}: ${safeStr(cap)}${safeStr(units)}${type ? ' [' + type + ']' : ''}` : '';
           })
           .filter(Boolean)
           .join(', ')
@@ -424,6 +459,10 @@ function transformBlockStorage(raw: RawItem): RawItem {
     allowedHardware: flattenAllowedHosts(raw, 'allowedHardware'),
     allowedSubnets: flattenAllowedSubnets(raw, 'allowedSubnets'),
     replicationPartners: flattenReplicationPartners(raw),
+    encrypted: raw.hasEncryptionAtRest ?? '',
+    datacenter: nested(raw, 'serviceResource', 'datacenter', 'name') ?? '',
+    snapshotSizeBytes: nested(raw, 'parentVolume', 'snapshotSizeBytes') ?? '',
+    snapshotCount: Array.isArray(raw.snapshots) ? (raw.snapshots as unknown[]).length : '',
   };
 }
 
@@ -445,6 +484,11 @@ function transformFileStorage(raw: RawItem): RawItem {
     allowedHardware: flattenAllowedHosts(raw, 'allowedHardware'),
     allowedSubnets: flattenAllowedSubnets(raw, 'allowedSubnets'),
     replicationPartners: flattenReplicationPartners(raw),
+    bytesUsed: raw.bytesUsed ?? '',
+    encrypted: raw.hasEncryptionAtRest ?? '',
+    datacenter: nested(raw, 'serviceResource', 'datacenter', 'name') ?? '',
+    snapshotSizeBytes: nested(raw, 'parentVolume', 'snapshotSizeBytes') ?? '',
+    snapshotCount: Array.isArray(raw.snapshots) ? (raw.snapshots as unknown[]).length : '',
   };
 }
 

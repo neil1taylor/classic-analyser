@@ -11,7 +11,7 @@ import logger from '../../utils/logger.js';
 
 export async function getVirtualGuests(client: SoftLayerClient): Promise<SLVirtualGuest[]> {
   const objectMask =
-    'mask[id,hostname,domain,fullyQualifiedDomainName,primaryIpAddress,primaryBackendIpAddress,maxCpu,maxMemory,startCpus,status,powerState,datacenter,operatingSystem[softwareDescription],hourlyBillingFlag,createDate,modifyDate,billingItem[recurringFee,hourlyRecurringFee,children[categoryCode,hourlyRecurringFee],orderItem],networkVlans[id,vlanNumber,name,networkSpace],blockDevices[diskImage[capacity,units]],tagReferences[tag],notes,dedicatedAccountHostOnlyFlag,placementGroupId,privateNetworkOnlyFlag,localDiskFlag]';
+    'mask[id,hostname,domain,fullyQualifiedDomainName,primaryIpAddress,primaryBackendIpAddress,maxCpu,maxMemory,startCpus,status,powerState,datacenter,operatingSystem[softwareDescription],hourlyBillingFlag,createDate,modifyDate,billingItem[recurringFee,hourlyRecurringFee,children[categoryCode,hourlyRecurringFee],orderItem],networkVlans[id,vlanNumber,name,networkSpace],blockDevices[bootableFlag,device,diskImage[capacity,units,localDiskFlag,description]],tagReferences[tag],notes,dedicatedAccountHostOnlyFlag,placementGroupId,privateNetworkOnlyFlag,localDiskFlag]';
 
   try {
     const result = await client.requestAllPages<SLVirtualGuest>({
