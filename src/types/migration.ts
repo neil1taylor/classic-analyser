@@ -64,6 +64,7 @@ export interface FeatureGapDefinition {
   severity: 'low' | 'medium' | 'high' | 'critical';
   detectionKey?: string;
   detectionField?: string;
+  docsUrl?: string;
 }
 
 // ── Storage Tier ─────────────────────────────────────────────────────────
@@ -86,6 +87,14 @@ export interface VPCCostEstimate {
 
 export type MigrationApproach = 'lift-and-shift' | 'rebuild' | 're-platform' | 're-architect';
 
+export interface ExecutionStep {
+  order: number;
+  title: string;
+  description: string;
+  tool?: string;
+  docsUrl?: string;
+}
+
 // ── Compute Assessment ───────────────────────────────────────────────────
 
 export interface VSIMigration {
@@ -104,6 +113,7 @@ export interface VSIMigration {
   osCompatible: boolean;
   osUpgradeTarget?: string;
   migrationApproach?: MigrationApproach;
+  executionSteps?: ExecutionStep[];
   notes: string[];
 }
 
@@ -119,6 +129,7 @@ export interface BareMetalMigration {
   migrationPath: 'vpc-bare-metal' | 'vpc-vsi' | 'not-migratable' | 'powervs' | 'powervs-sap';
   recommendedProfile?: VPCProfile | null;
   migrationApproach?: MigrationApproach;
+  executionSteps?: ExecutionStep[];
   notes: string[];
 }
 

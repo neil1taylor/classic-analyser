@@ -165,6 +165,22 @@ const VSI_DOWNTIME: PreRequisiteCheck = {
   ],
 };
 
+const VSI_WINDOWS_CLOUDBASE_INIT: PreRequisiteCheck = {
+  id: 'vsi-windows-cloudbase-init',
+  name: 'Windows Cloudbase-Init & VirtIO Drivers',
+  category: 'compute',
+  description: 'Windows servers migrating to VPC require Cloudbase-Init (not cloud-init) and VirtIO drivers. Without these, the VPC instance cannot initialize networking or metadata services. Cannot be verified from API data.',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-about-images#about-cloud-init',
+  remediationSteps: [
+    'Install Cloudbase-Init on the Windows server (https://cloudbase.it/cloudbase-init/).',
+    'Install VirtIO drivers (Red Hat virtio-win package).',
+    'Configure Cloudbase-Init for ConfigDrive and HTTP metadata services.',
+    'Set serial port COM1 for Cloudbase-Init logging.',
+    'Run Sysprep with Cloudbase-Init before creating the image template.',
+    'Test the custom image on a VPC instance before production migration.',
+  ],
+};
+
 // ── Bare Metal Check Definitions ────────────────────────────────────────
 
 const BM_GATEWAY_MEMBER: PreRequisiteCheck = {
@@ -518,6 +534,19 @@ export function runComputeChecks(collectedData: Record<string, unknown[]>): Chec
   results.push(unknownCheck(VSI_CLOUD_INIT, vsiCount));
   results.push(unknownCheck(VSI_VIRTIO, vsiCount));
   results.push(unknownCheck(VSI_DOWNTIME, vsiCount));
+
+  // Windows-specific Cloudbase-Init + VirtIO (conditional — only when Windows servers present)
+  const windowsVsis = vsis.filter((vsi) => {
+    const osDesc = str(vsi, 'operatingSystem.softwareDescription.longDescription')
+      || str(vsi, 'softwareDescription')
+      || str(vsi, 'operatingSystemReferenceCode')
+      || str(vsi, 'os')
+      || '';
+    return /windows/i.test(osDesc);
+  });
+  if (windowsVsis.length > 0) {
+    results.push(unknownCheck(VSI_WINDOWS_CLOUDBASE_INIT, windowsVsis.length));
+  }
 
   // Bare Metal checks
   const bmCount = bms.length;

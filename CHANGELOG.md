@@ -6,6 +6,11 @@ Format based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- Migration execution step templates per approach — structured guidance for lift-and-shift (image export → COS → VPC), rebuild, re-platform (VMware RMM, PowerVS), and re-architect (Velero for IKS/ROKS) with IBM tool references and documentation links
+- Windows Cloudbase-Init & VirtIO pre-requisite check (`vsi-windows-cloudbase-init`) — flags Windows servers needing Cloudbase-Init and VirtIO drivers before VPC migration
+- VPC Network ACL rule estimate check (`net-acl-rule-estimate`) — warns when Classic firewall rules exceed VPC NACL limits (25 inbound + 25 outbound per ACL)
+- Documentation links (`docsUrl`) on all 12 feature gap definitions, linking to relevant IBM Cloud VPC documentation
+- Expanded Classic-to-VPC migration links in Help docs — compute, network, storage, IKS/ROKS, and VMware domain-specific migration guides
 - Migration approach recommendation per workload — classifies each VSI and Bare Metal as Lift & Shift, Rebuild, Re-platform, or Re-architect based on OS, hypervisor, IKS/ROKS, and blocker status. New "Approach" column in Compute Assessment tables.
 - 6 new migration pre-requisite checks from IBM classic-to-vpc docs analysis: VRF Enablement (manual verification), Reserved Capacity (active commitments), Storage Utilization (right-sizing via bytesUsed), Software Add-on Detection (cPanel/Plesk/antivirus/monitoring), GPU Workload Detection, and migration approach classification
 - Software Add-ons feature gap entry in Feature Gap Analysis

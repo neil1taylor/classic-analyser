@@ -84,7 +84,7 @@ src/                              # React frontend
                                   storageAnalysis.ts, securityAnalysis.ts, featureGapAnalysis.ts,
                                   complexityScoring.ts, costComparison.ts, wavePlanning.ts,
                                   dependencyMapping.ts
-      checks/                     index.ts, computeChecks.ts (26), networkChecks.ts (10),
+      checks/                     index.ts, computeChecks.ts (27), networkChecks.ts (11),
                                   storageChecks.ts (8), securityChecks.ts (3), checkUtils.ts
       data/                       datacenterMapping.ts, osCompatibility.ts, vpcProfiles.ts,
                                   vpcCostEstimates.ts, featureGaps.ts, storageTiers.ts
@@ -157,7 +157,7 @@ npm run lint            # Lint
 
 ## Migration Assessment
 
-**Pre-requisite checks (49 total):** Compute (26), Network (10), Storage (8), Security (3), plus 12 feature gap definitions. Each check produces a severity: blocker, warning, info, unknown, or passed. Check logic lives in `src/services/migration/checks/`. The `runAllPreReqChecks()` function in `checks/index.ts` orchestrates all four check categories.
+**Pre-requisite checks (51 total):** Compute (27), Network (11), Storage (8), Security (3), plus 12 feature gap definitions. Each check produces a severity: blocker, warning, info, unknown, or passed. Check logic lives in `src/services/migration/checks/`. The `runAllPreReqChecks()` function in `checks/index.ts` orchestrates all four check categories.
 
 **Migration approach classification:** Each VSI and Bare Metal server receives a recommended migration approach — `lift-and-shift`, `rebuild`, `re-platform`, or `re-architect` — based on OS compatibility, hypervisor detection, IKS/ROKS presence, and blocker status. The decision tree is in `computeAnalysis.ts` (`classifyMigrationApproach` / `classifyBareMetalApproach`). IBM's official guidance recommends "Rebuild" as the default approach (provision fresh VPC instances with latest OS).
 

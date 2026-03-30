@@ -134,6 +134,11 @@ const MigrationSection: React.FC = () => (
         <li><Link href="https://cloud.ibm.com/docs/classic-to-vpc" target="_blank" rel="noopener noreferrer" inline>IBM Classic-to-VPC Migration Guide</Link> &mdash; official end-to-end migration documentation</li>
         <li><Link href="https://cloud.ibm.com/docs/account?topic=account-vrf-service-endpoint" target="_blank" rel="noopener noreferrer" inline>VRF Enablement</Link> &mdash; required for private network connectivity between Classic and VPC</li>
         <li><Link href="https://cloud.ibm.com/docs/vpc?topic=vpc-quotas" target="_blank" rel="noopener noreferrer" inline>VPC Quotas and Service Limits</Link> &mdash; verify quota availability before provisioning</li>
+        <li><Link href="https://cloud.ibm.com/docs/vpc?topic=vpc-migrate-vsi-to-vpc" target="_blank" rel="noopener noreferrer" inline>Compute Migration</Link> &mdash; image export, COS transfer, and VPC import workflow</li>
+        <li><Link href="https://cloud.ibm.com/docs/vpc?topic=vpc-about-networking-for-vpc" target="_blank" rel="noopener noreferrer" inline>Network Migration</Link> &mdash; VPC networking model, security groups, ACLs, and routing</li>
+        <li><Link href="https://cloud.ibm.com/docs/cloud-infrastructure?topic=cloud-infrastructure-data-migration-classic-to-vpc" target="_blank" rel="noopener noreferrer" inline>Storage &amp; Data Migration</Link> &mdash; block, file, and object storage migration strategies</li>
+        <li><Link href="https://cloud.ibm.com/docs/containers?topic=containers-vpc-migrate" target="_blank" rel="noopener noreferrer" inline>IKS/ROKS Migration</Link> &mdash; Kubernetes and OpenShift cluster migration using Velero</li>
+        <li><Link href="https://cloud.ibm.com/docs/cloud-infrastructure?topic=cloud-infrastructure-migrating-images-vmware-vpc-classic" target="_blank" rel="noopener noreferrer" inline>VMware Migration</Link> &mdash; migrating Classic VMware VMs to VPC using RMM</li>
       </ul>
 
       <h4 style={subHeadingStyle}>Migration Documentation</h4>

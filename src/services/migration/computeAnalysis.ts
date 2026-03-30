@@ -1,4 +1,4 @@
-import type { ComputeAssessment, VSIMigration, BareMetalMigration, VPCProfile, MigrationPreferences, MigrationStatus, MigrationApproach } from '@/types/migration';
+import type { ComputeAssessment, VSIMigration, BareMetalMigration, VPCProfile, MigrationPreferences, MigrationStatus, MigrationApproach, ExecutionStep } from '@/types/migration';
 import { VPC_PROFILES, VPC_BARE_METAL_PROFILES, isBurstableProfile, isGen3Profile, hasInstanceStorage } from './data/vpcProfiles';
 import { matchOS } from './data/osCompatibility';
 import { mapDatacenterToVPC } from './data/datacenterMapping';
@@ -179,6 +179,42 @@ function classifyBareMetalApproach(
   return 'rebuild'; // IBM docs recommend rebuild as default for bare metal
 }
 
+// ── Execution Step Templates per Migration Approach ─────────────────────
+// Structured guidance aligned with IBM classic-to-vpc migration docs
+
+const EXECUTION_STEP_TEMPLATES: Record<MigrationApproach, ExecutionStep[]> = {
+  'lift-and-shift': [
+    { order: 1, title: 'Pre-flight checks', description: 'Verify cloud-init (Linux) or Cloudbase-Init + VirtIO drivers (Windows) are installed and configured.', docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-about-images#about-cloud-init' },
+    { order: 2, title: 'Create Classic image template', description: 'Create a standard image template from the running Classic VSI using the SoftLayer API or IBM Cloud CLI.', docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-migrate-vsi-to-vpc' },
+    { order: 3, title: 'Export image to Cloud Object Storage', description: 'Export the image template to a COS bucket in the target VPC region.', docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-migrate-vsi-to-vpc' },
+    { order: 4, title: 'Import image to VPC', description: 'Import the COS-hosted image as a VPC custom image using ibmcloud is image-create.', docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-managing-images' },
+    { order: 5, title: 'Provision VPC instance', description: 'Create a VPC instance from the custom image with the recommended profile, subnet, and security groups.', docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-creating-virtual-servers' },
+    { order: 6, title: 'Validate and cutover', description: 'Verify application functionality, update DNS records, and decommission the Classic instance.', docsUrl: 'https://cloud.ibm.com/docs/classic-to-vpc' },
+    { order: 7, title: 'Alternative: RackWare CloudMotion', description: 'Use RackWare CloudMotion for automated live migration with minimal downtime.', tool: 'RackWare CloudMotion', docsUrl: 'https://www.rackwareinc.com/ibm' },
+  ],
+  'rebuild': [
+    { order: 1, title: 'Provision fresh VPC instance', description: 'Create a new VPC instance with the latest OS stock image and recommended profile.', docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-creating-virtual-servers' },
+    { order: 2, title: 'Configure VPC networking', description: 'Set up security groups, subnets, floating IPs, and any required VPN connectivity.', docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-about-networking-for-vpc' },
+    { order: 3, title: 'Install application stack', description: 'Reinstall the application using automation tools (Ansible, Terraform, or scripts). Rebuild from source or deployment artifacts.', docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-about-images' },
+    { order: 4, title: 'Restore data from backup', description: 'Migrate data via Cloud Object Storage, block storage snapshots, or application-level replication.', docsUrl: 'https://cloud.ibm.com/docs/cloud-infrastructure?topic=cloud-infrastructure-data-migration-classic-to-vpc' },
+    { order: 5, title: 'Validate and cutover', description: 'Test application functionality, update DNS records, and decommission the Classic instance.', docsUrl: 'https://cloud.ibm.com/docs/classic-to-vpc' },
+  ],
+  're-platform': [
+    { order: 1, title: 'Inventory workloads on host', description: 'For hypervisor hosts: inventory all guest VMs running on the VMware/XenServer/Hyper-V host.', docsUrl: 'https://cloud.ibm.com/docs/cloud-infrastructure?topic=cloud-infrastructure-migrating-images-vmware-vpc-classic' },
+    { order: 2, title: 'Export VM disk images', description: 'Export individual VM disk images (VMDK/VHD) from the hypervisor for import to VPC.', docsUrl: 'https://cloud.ibm.com/docs/cloud-infrastructure?topic=cloud-infrastructure-migrating-images-vmware-vpc-classic' },
+    { order: 3, title: 'Import as VPC custom images', description: 'Convert and import VM images to VPC, or deploy on OpenShift Virtualization for complex workloads.', docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-managing-images' },
+    { order: 4, title: 'For Oracle/SAP: provision PowerVS', description: 'For Oracle or SAP workloads, provision IBM Power Virtual Server and migrate data to the new environment.', tool: 'IBM Power Virtual Server', docsUrl: 'https://cloud.ibm.com/docs/power-iaas?topic=power-iaas-use-case-oracle' },
+    { order: 5, title: 'Validate and cutover', description: 'Verify all workloads are operational, update DNS and network routing, decommission Classic resources.', docsUrl: 'https://cloud.ibm.com/docs/classic-to-vpc' },
+  ],
+  're-architect': [
+    { order: 1, title: 'Create VPC-based IKS/ROKS cluster', description: 'Provision a new IKS or ROKS cluster on VPC infrastructure in the target region.', docsUrl: 'https://cloud.ibm.com/docs/containers?topic=containers-vpc-migrate' },
+    { order: 2, title: 'Backup workloads with Velero', description: 'Install Velero with Restic on the Classic cluster and back up namespaces, persistent volumes, and configurations.', tool: 'Velero', docsUrl: 'https://cloud.ibm.com/docs/containers?topic=containers-vpc-migrate' },
+    { order: 3, title: 'Restore workloads to VPC cluster', description: 'Restore Velero backups to the new VPC-based cluster. Verify pod scheduling and persistent volume claims.', tool: 'Velero', docsUrl: 'https://cloud.ibm.com/docs/containers?topic=containers-vpc-migrate' },
+    { order: 4, title: 'Update ingress and DNS', description: 'Reconfigure ingress controllers, load balancers, and DNS records for the VPC cluster endpoints.', docsUrl: 'https://cloud.ibm.com/docs/containers?topic=containers-vpc-migrate' },
+    { order: 5, title: 'Validate and cutover', description: 'Run integration tests, verify monitoring and logging, then switch traffic to the VPC cluster.', docsUrl: 'https://cloud.ibm.com/docs/classic-to-vpc' },
+  ],
+};
+
 function assessVSI(item: unknown, _preferences: MigrationPreferences): VSIMigration {
   const id = num(item, 'id');
   const hostname = str(item, 'hostname');
@@ -239,6 +275,7 @@ function assessVSI(item: unknown, _preferences: MigrationPreferences): VSIMigrat
   }
 
   const migrationApproach = classifyMigrationApproach(hostname, os, status, osCompatible, osUpgradeTarget);
+  const executionSteps = EXECUTION_STEP_TEMPLATES[migrationApproach];
 
   return {
     id,
@@ -256,6 +293,7 @@ function assessVSI(item: unknown, _preferences: MigrationPreferences): VSIMigrat
     osCompatible,
     osUpgradeTarget,
     migrationApproach,
+    executionSteps,
     notes,
   };
 }
@@ -378,8 +416,9 @@ function assessBareMetal(item: unknown, _preferences: MigrationPreferences): Bar
   }
 
   const migrationApproach = classifyBareMetalApproach(hostname, os, migrationPath);
+  const executionSteps = EXECUTION_STEP_TEMPLATES[migrationApproach];
 
-  return { id, hostname, datacenter, cores, memoryGB, os, currentFee, status, migrationPath, recommendedProfile, migrationApproach, notes };
+  return { id, hostname, datacenter, cores, memoryGB, os, currentFee, status, migrationPath, recommendedProfile, migrationApproach, executionSteps, notes };
 }
 
 export function analyzeCompute(

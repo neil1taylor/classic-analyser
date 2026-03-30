@@ -7,6 +7,7 @@ export const FEATURE_GAP_DEFINITIONS: FeatureGapDefinition[] = [
     workaround: 'Use VPC Security Groups + NACLs, or deploy third-party NFV appliance (vSRX, FortiGate)',
     severity: 'high',
     detectionKey: 'firewalls',
+    docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-using-acls',
   },
   {
     classicFeature: 'Gateway Appliance (Vyatta/vSRX)',
@@ -14,18 +15,21 @@ export const FEATURE_GAP_DEFINITIONS: FeatureGapDefinition[] = [
     workaround: 'VPC native routing + Security Groups for basic use; third-party appliance on VPC for advanced features',
     severity: 'high',
     detectionKey: 'gateways',
+    docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-about-networking-for-vpc',
   },
   {
     classicFeature: 'Portable Private IPs',
     vpcStatus: 'not-available',
     workaround: 'Use VPC Reserved IPs within subnets',
     severity: 'medium',
+    docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-about-networking-for-vpc',
   },
   {
     classicFeature: 'Portable Public IPs',
     vpcStatus: 'partial',
     workaround: 'Use VPC Floating IPs (similar but different allocation model)',
     severity: 'medium',
+    docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-fip-about',
   },
   {
     classicFeature: 'NFS v3 File Storage',
@@ -33,30 +37,35 @@ export const FEATURE_GAP_DEFINITIONS: FeatureGapDefinition[] = [
     workaround: 'VPC File Storage supports NFS v4.1 only — verify application compatibility',
     severity: 'medium',
     detectionKey: 'fileStorage',
+    docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-file-storage-vpc-about',
   },
   {
     classicFeature: 'EVault Backup',
     vpcStatus: 'not-available',
     workaround: 'Use IBM Cloud Backup, Veeam for VPC, IBM Storage Protect or another 3rd party product',
     severity: 'medium',
+    docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-backups-vpc-best-practices',
   },
   {
     classicFeature: 'Monthly Billing (VSI)',
     vpcStatus: 'not-available',
     workaround: 'VPC is hourly only — use Reserved Capacity for cost savings',
     severity: 'low',
+    docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-pricing-for-vpc',
   },
   {
     classicFeature: 'Auto Scale Groups',
     vpcStatus: 'partial',
     workaround: 'VPC Instance Groups with auto-scale policies (different API)',
     severity: 'low',
+    docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-creating-auto-scale-instance-group',
   },
   {
     classicFeature: 'Legacy Datacenters (che01)',
     vpcStatus: 'not-available',
     workaround: 'Migrate to a supported VPC region',
     severity: 'high',
+    docsUrl: 'https://cloud.ibm.com/docs/classic-to-vpc',
   },
   {
     classicFeature: 'Bare Metal Hourly Billing',
@@ -64,6 +73,7 @@ export const FEATURE_GAP_DEFINITIONS: FeatureGapDefinition[] = [
     workaround: 'VPC Bare Metal is monthly billing only',
     severity: 'low',
     detectionKey: 'bareMetal',
+    docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-bare-metal-servers-profile',
   },
   {
     classicFeature: 'Bare Metal with VMware vSphere/ESXi',
@@ -71,6 +81,7 @@ export const FEATURE_GAP_DEFINITIONS: FeatureGapDefinition[] = [
     workaround: 'VMs must be migrated individually to VPC VSIs or OpenShift Virtualization. Consider IBM Cloud for VMware Solutions for like-for-like VMware environments.',
     severity: 'high',
     detectionKey: 'bareMetal',
+    docsUrl: 'https://cloud.ibm.com/docs/cloud-infrastructure?topic=cloud-infrastructure-migrating-images-vmware-vpc-classic',
   },
   {
     classicFeature: 'Software Add-ons (cPanel, Plesk, etc.)',
@@ -78,5 +89,6 @@ export const FEATURE_GAP_DEFINITIONS: FeatureGapDefinition[] = [
     workaround: 'Install and license software add-ons manually on VPC instances. Purchase licenses directly from vendors.',
     severity: 'medium',
     detectionKey: 'billingItems',
+    docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-about-images',
   },
 ];

@@ -139,6 +139,21 @@ const VRRP_HA_PATTERN: PreRequisiteCheck = {
   ],
 };
 
+const ACL_RULE_ESTIMATE: PreRequisiteCheck = {
+  id: 'net-acl-rule-estimate',
+  name: 'Estimated VPC Network ACL Rule Count',
+  category: 'network',
+  description: 'Classic firewall rules translate to VPC Network ACL (NACL) rules during migration. VPC NACLs support a maximum of 25 inbound and 25 outbound rules per ACL. Firewalls exceeding this need rule consolidation or subnet splitting.',
+  threshold: '25 inbound + 25 outbound rules per ACL',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-using-acls',
+  remediationSteps: [
+    'Review Classic firewall rules and identify which translate to ACL vs. security group rules.',
+    'Consolidate rules using CIDR aggregation to reduce rule count.',
+    'Split workloads across multiple subnets if a single ACL would exceed 25 rules per direction.',
+    'Use VPC security groups for instance-level rules — ACLs for subnet-level policy only.',
+  ],
+};
+
 /** Convert a dotted-quad IP string to a 32-bit numeric value. */
 function ipToLong(ip: string): number {
   const parts = ip.split('.');
@@ -185,6 +200,28 @@ export function runNetworkChecks(collectedData: Record<string, unknown[]>): Chec
     }
   }
   results.push(evaluateCheck(FIREWALL_RULE_COUNT, 'warning', firewalls.length, fwAffected));
+
+  // Estimated ACL rule count from firewall translation
+  const aclAffected: AffectedResource[] = [];
+  for (const fw of firewalls) {
+    const rules = fw['rules'] ?? fw['firewallRules'];
+    if (!Array.isArray(rules)) continue;
+    let inbound = 0;
+    let outbound = 0;
+    for (const rule of rules as Record<string, unknown>[]) {
+      const direction = toStr(rule['direction']) || toStr(rule['action']) || '';
+      if (/out|egress/i.test(direction)) outbound++;
+      else inbound++; // default to inbound if direction unknown
+    }
+    if (inbound > 25 || outbound > 25) {
+      aclAffected.push({
+        id: toNum(fw['id']),
+        hostname: toStr(fw['name']) || toStr(fw['fullyQualifiedDomainName']) || `Firewall ${toNum(fw['id'])}`,
+        detail: `Estimated ACL rules: ${inbound} inbound, ${outbound} outbound (max 25 each)`,
+      });
+    }
+  }
+  results.push(evaluateCheck(ACL_RULE_ESTIMATE, 'warning', firewalls.length, aclAffected));
 
   // Security group rule count > 25
   const sgAffected: AffectedResource[] = [];
