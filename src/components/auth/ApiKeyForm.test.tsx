@@ -22,6 +22,14 @@ vi.mock('@/components/auth/ImportButton', () => ({
   default: () => <div data-testid="import-button">Import</div>,
 }));
 
+vi.mock('@/components/auth/ImportReportButton', () => ({
+  default: () => <div data-testid="import-report-button">Import Report</div>,
+}));
+
+vi.mock('@/components/auth/ImportMdlButton', () => ({
+  default: () => <div data-testid="import-mdl-button">Import MDL</div>,
+}));
+
 describe('ApiKeyForm', () => {
   beforeEach(() => {
     vi.clearAllMocks();

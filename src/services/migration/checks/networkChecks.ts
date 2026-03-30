@@ -2,6 +2,21 @@ import type { CheckResult, PreRequisiteCheck, AffectedResource } from '@/types/m
 import { evaluateCheck, unknownCheck } from './checkUtils';
 import { mapDatacenterToVPC } from '../data/datacenterMapping';
 
+const VRF_ENABLEMENT: PreRequisiteCheck = {
+  id: 'net-vrf-enablement',
+  name: 'VRF Enablement (Manual Verification)',
+  category: 'network',
+  description: 'Virtual Routing and Forwarding (VRF) must be enabled on the account for private network connectivity between Classic and VPC via Transit Gateway. This is the most critical pre-requisite for Classic-to-VPC migration. VRF status cannot be determined from SoftLayer API data — manual verification required.',
+  docsUrl: 'https://cloud.ibm.com/docs/account?topic=account-vrf-service-endpoint',
+  remediationSteps: [
+    'Verify VRF status in the IBM Cloud console under Account > Account settings.',
+    'If VRF is not enabled, contact IBM Cloud Support to initiate VRF migration.',
+    'Enable service endpoints after VRF is active.',
+    'Note: VRF migration may cause a brief private network interruption for existing Classic resources.',
+    'VRF is required for Transit Gateway connectivity between Classic and VPC.',
+  ],
+};
+
 const FIREWALL_RULE_COUNT: PreRequisiteCheck = {
   id: 'net-firewall-rules',
   name: 'Firewall Rule Count',
@@ -309,6 +324,9 @@ export function runNetworkChecks(collectedData: Record<string, unknown[]>): Chec
 
   // VRRP HA pattern — unknown (not determinable from API)
   results.push(unknownCheck(VRRP_HA_PATTERN, allServers.length));
+
+  // VRF enablement — unknown (not determinable from API, always flag for manual check)
+  results.push(unknownCheck(VRF_ENABLEMENT, allServers.length));
 
   return results;
 }

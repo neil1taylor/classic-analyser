@@ -6,6 +6,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- VRF Enablement migration pre-requisite check (manual verification flag for Classic-to-VPC Transit Gateway connectivity)
 - Storage discovery gaps closed — portable storage distinction on VSIs, file storage `bytesUsed`, `hasEncryptionAtRest`, datacenter name, per-volume snapshot collection in Phase 3
 - 9 new migration pre-requisite checks: 32-bit OS, EOL OS, hypervisor detection (VMware/XenServer/Hyper-V), Oracle/SAP workload detection, IKS/ROKS worker node detection, single-socket high clock speed
 - Hidden API fields surfaced in VSI and Bare Metal detail panels
@@ -25,6 +26,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/).
 - Documentation updated for storage discovery gaps across CLAUDE.md, PRD.md, MIGRATION.md, and in-app docs
 
 ### Fixed
+- ApiKeyForm test failures — added missing mocks for ImportReportButton and ImportMdlButton
 - `blockDevices` crash on IMS report import guarded with `Array.isArray`
 - Replaced abandoned `react-simple-maps` with `d3-geo` for React 19 compatibility
 
