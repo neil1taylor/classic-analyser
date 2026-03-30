@@ -39,7 +39,7 @@ jobs:
           ibmcloud plugin install code-engine
 
       - name: Login to IBM Cloud
-        run: ibmcloud login --apikey ${{ secrets.IBM_CLOUD_API_KEY }} -r us-south
+        run: ibmcloud login --apikey ${{ secrets.IBM_CLOUD_API_KEY }} -r us-south -g infra-explorer-rg
 
       - name: Build and push container image
         run: |
