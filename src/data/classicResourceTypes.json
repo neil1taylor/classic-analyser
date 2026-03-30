@@ -1151,6 +1151,13 @@
         "sortable": true
       },
       {
+        "field": "replicationStatus",
+        "header": "Replication Status",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
         "field": "allowedSubnets",
         "header": "Allowed Subnets",
         "dataType": "string",
@@ -1302,6 +1309,13 @@
         "field": "snapshotCount",
         "header": "Snapshot Count",
         "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "replicationStatus",
+        "header": "Replication Status",
+        "dataType": "string",
         "defaultVisible": false,
         "sortable": true
       },

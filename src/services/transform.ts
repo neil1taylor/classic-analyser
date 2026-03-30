@@ -509,6 +509,7 @@ function transformBlockStorage(raw: RawItem): RawItem {
     datacenter: nested(raw, 'serviceResource', 'datacenter', 'name') ?? '',
     snapshotSizeBytes: nested(raw, 'parentVolume', 'snapshotSizeBytes') ?? '',
     snapshotCount: Array.isArray(raw.snapshots) ? (raw.snapshots as unknown[]).length : '',
+    replicationStatus: raw.replicationStatus ?? '',
   };
 }
 
@@ -535,6 +536,7 @@ function transformFileStorage(raw: RawItem): RawItem {
     datacenter: nested(raw, 'serviceResource', 'datacenter', 'name') ?? '',
     snapshotSizeBytes: nested(raw, 'parentVolume', 'snapshotSizeBytes') ?? '',
     snapshotCount: Array.isArray(raw.snapshots) ? (raw.snapshots as unknown[]).length : '',
+    replicationStatus: raw.replicationStatus ?? '',
   };
 }
 

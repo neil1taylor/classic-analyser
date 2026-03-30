@@ -536,6 +536,7 @@ export async function generateExcelExport(
     { header: 'Datacenter', key: 'datacenter', width: 14 },
     { header: 'Snapshot Used (Bytes)', key: 'snapshotSizeBytes', width: 18 },
     { header: 'Snapshot Count', key: 'snapshotCount', width: 14 },
+    { header: 'Replication Status', key: 'replicationStatus', width: 16 },
     { header: 'Allowed Subnets', key: 'allowedSubnets', width: 30 },
   ];
   addHeaderStyle(wsBS);
@@ -562,6 +563,7 @@ export async function generateExcelExport(
       datacenter: vol.serviceResource?.datacenter?.name ?? r.datacenter ?? '',
       snapshotSizeBytes: vol.parentVolume?.snapshotSizeBytes ?? r.snapshotSizeBytes ?? '',
       snapshotCount: Array.isArray((vol as Record<string, unknown>).snapshots) ? ((vol as Record<string, unknown>).snapshots as unknown[]).length : (r.snapshotCount ?? ''),
+      replicationStatus: r.replicationStatus ?? '',
       allowedSubnets: r.allowedSubnets ?? '',
     });
   }
@@ -590,6 +592,7 @@ export async function generateExcelExport(
     { header: 'Datacenter', key: 'datacenter', width: 14 },
     { header: 'Snapshot Used (Bytes)', key: 'snapshotSizeBytes', width: 18 },
     { header: 'Snapshot Count', key: 'snapshotCount', width: 14 },
+    { header: 'Replication Status', key: 'replicationStatus', width: 16 },
     { header: 'Allowed Subnets', key: 'allowedSubnets', width: 30 },
   ];
   addHeaderStyle(wsFS);
@@ -617,6 +620,7 @@ export async function generateExcelExport(
       datacenter: vol.serviceResource?.datacenter?.name ?? r.datacenter ?? '',
       snapshotSizeBytes: vol.parentVolume?.snapshotSizeBytes ?? r.snapshotSizeBytes ?? '',
       snapshotCount: Array.isArray((vol as Record<string, unknown>).snapshots) ? ((vol as Record<string, unknown>).snapshots as unknown[]).length : (r.snapshotCount ?? ''),
+      replicationStatus: r.replicationStatus ?? '',
       allowedSubnets: r.allowedSubnets ?? '',
     });
   }

@@ -9,7 +9,7 @@ import logger from '../../utils/logger.js';
 
 export async function getIscsiNetworkStorage(client: SoftLayerClient): Promise<SLBlockStorage[]> {
   const objectMask =
-    'mask[id,username,capacityGb,iops,storageType,storageTierLevel,serviceResourceBackendIpAddress,lunId,allowedVirtualGuests[id,hostname],allowedHardware[id,hostname],allowedSubnets,snapshotCapacityGb,schedules,replicationPartners[id,username,serviceResourceBackendIpAddress],billingItem[recurringFee],createDate,notes,hasEncryptionAtRest,serviceResource[datacenter[name]],parentVolume[snapshotSizeBytes]]';
+    'mask[id,username,capacityGb,iops,storageType,storageTierLevel,serviceResourceBackendIpAddress,lunId,allowedVirtualGuests[id,hostname],allowedHardware[id,hostname],allowedSubnets,snapshotCapacityGb,schedules,replicationPartners[id,username,serviceResourceBackendIpAddress],billingItem[recurringFee],createDate,notes,hasEncryptionAtRest,serviceResource[datacenter[name]],parentVolume[snapshotSizeBytes],replicationStatus]';
 
   // Try both iSCSI and general network storage endpoints to capture all block storage types
   const results: SLBlockStorage[] = [];
@@ -62,7 +62,7 @@ export async function getIscsiNetworkStorage(client: SoftLayerClient): Promise<S
 
 export async function getNasNetworkStorage(client: SoftLayerClient): Promise<SLFileStorage[]> {
   const objectMask =
-    'mask[id,username,capacityGb,iops,storageType,storageTierLevel,serviceResourceBackendIpAddress,fileNetworkMountAddress,allowedVirtualGuests[id,hostname],allowedHardware[id,hostname],allowedSubnets,snapshotCapacityGb,schedules,replicationPartners[id,username,serviceResourceBackendIpAddress],billingItem[recurringFee],createDate,notes,bytesUsed,hasEncryptionAtRest,serviceResource[datacenter[name]],parentVolume[snapshotSizeBytes]]';
+    'mask[id,username,capacityGb,iops,storageType,storageTierLevel,serviceResourceBackendIpAddress,fileNetworkMountAddress,allowedVirtualGuests[id,hostname],allowedHardware[id,hostname],allowedSubnets,snapshotCapacityGb,schedules,replicationPartners[id,username,serviceResourceBackendIpAddress],billingItem[recurringFee],createDate,notes,bytesUsed,hasEncryptionAtRest,serviceResource[datacenter[name]],parentVolume[snapshotSizeBytes],replicationStatus]';
 
   try {
     const result = await client.requestAllPages<SLFileStorage>({
