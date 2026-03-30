@@ -50,6 +50,18 @@ jobs:
       - name: Deploy to Code Engine
         run: |
           ibmcloud ce project select --name ${{ secrets.CE_PROJECT }}
-          ibmcloud ce app update \
-            --name infrastructure-explorer \
-            --image us.icr.io/${{ secrets.ICR_NAMESPACE }}/infrastructure-explorer:${{ github.sha }}
+          if ibmcloud ce app get --name infrastructure-explorer > /dev/null 2>&1; then
+            ibmcloud ce app update \
+              --name infrastructure-explorer \
+              --image us.icr.io/${{ secrets.ICR_NAMESPACE }}/infrastructure-explorer:${{ github.sha }}
+          else
+            ibmcloud ce app create \
+              --name infrastructure-explorer \
+              --image us.icr.io/${{ secrets.ICR_NAMESPACE }}/infrastructure-explorer:${{ github.sha }} \
+              --port 3000 \
+              --cpu 0.5 \
+              --memory 1G \
+              --min-scale 0 \
+              --max-scale 10 \
+              --request-timeout 300
+          fi
