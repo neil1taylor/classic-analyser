@@ -3085,5 +3085,62 @@
         "sortable": false
       }
     ]
+  },
+  {
+    "key": "vmwareCrossReferences",
+    "label": "VMware Cross References",
+    "category": "VMware",
+    "worksheetName": "vVMwareCrossReferences",
+    "columns": [
+      {
+        "field": "classicResourceType",
+        "header": "Classic Resource Type",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "classicResourceId",
+        "header": "Classic Resource ID",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "classicResourceName",
+        "header": "Classic Resource Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "vmwareRole",
+        "header": "VMware Role",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "vmwareResourceType",
+        "header": "VMware Resource Type",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "vmwareResourceId",
+        "header": "VMware Resource ID",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "vmwareResourceName",
+        "header": "VMware Resource Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      }
+    ]
   }
 ]
