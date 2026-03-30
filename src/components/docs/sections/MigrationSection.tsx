@@ -35,7 +35,7 @@ const MigrationSection: React.FC = () => (
       <ul style={listStyle}>
         <li><strong>Compute:</strong> VSI and Bare Metal readiness &mdash; boot disk limits, vCPU/memory maximums, OS compatibility, 32-bit/EOL OS detection, hypervisor detection (VMware, XenServer, Hyper-V), IKS/ROKS worker node detection, local disk usage.</li>
         <li><strong>Network:</strong> VLAN, subnet, and gateway assessment &mdash; IP address compatibility, public IP detection, VPC reserved IP conflicts, IPv6 subnet detection, VRRP HA pattern.</li>
-        <li><strong>Storage:</strong> Block and file storage analysis &mdash; volume sizes, IOPS tiers, snapshot requirements, multi-attach volume detection.</li>
+        <li><strong>Storage:</strong> Block and file storage analysis &mdash; volume sizes, IOPS tiers, datacenter location, encryption status, per-volume snapshots, NFS usage, multi-attach volume detection, portable storage identification on VSIs.</li>
         <li><strong>Security:</strong> Security group rules, SSL certificates, SSH key compatibility, and HSM device detection.</li>
         <li><strong>Feature Gaps:</strong> Features available in Classic but not yet in VPC (e.g., specific hardware configurations).</li>
         <li><strong>Costs:</strong> Classic vs VPC monthly and 3-year cost projections with break-even analysis.</li>

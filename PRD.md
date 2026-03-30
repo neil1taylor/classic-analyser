@@ -325,6 +325,7 @@ Many SoftLayer API responses include nested arrays (e.g., `tagReferences`, `netw
 | `tagReferences[].tag.name` | Tags | `"web, production, critical"` |
 | `networkVlans[].vlanNumber + networkSpace` | VLANs | `"123 (PUBLIC), 456 (PRIVATE)"` |
 | `blockDevices[].diskImage.capacity` | Disk (GB) | Sum of all capacities |
+| `blockDevices[].diskImage.localDiskFlag` | Local/Portable Storage (GB) | Split by local vs portable |
 | `hardDrives[].hardwareComponentModel.capacity` | Hard Drives | `"500GB, 500GB"` |
 | `networkComponents[].name:primaryIpAddress:speed` | Network Components | `"eth0:10.1.2.3:1000Mbps, eth1:10.1.2.4:100Mbps"` |
 | `allowedVirtualGuests[].hostname` | Allowed VSIs | `"vsi01, vsi02"` |
@@ -369,7 +370,7 @@ Many SoftLayer API responses include nested arrays (e.g., `tagReferences`, `netw
 | billingItem.children | Array | Child billing items (CPU, RAM, OS, network, etc.) |
 | billingItem.children[].hourlyRecurringFee | Decimal | Hourly rate per child component |
 | networkVlans | Array | Associated VLANs |
-| blockDevices | Array | Attached storage devices |
+| blockDevices | Array | Attached storage devices (includes bootableFlag, device, diskImage.capacity, diskImage.units, diskImage.localDiskFlag, diskImage.description — used to distinguish local vs portable SAN storage) |
 | tagReferences | Array | User-defined tags |
 | notes | String | User notes |
 | dedicatedAccountHostOnlyFlag | Boolean | Dedicated host indicator |
@@ -550,7 +551,9 @@ The estimated cost is flagged via `estimatedCost: true` and `noBillingItem: true
 
 **API Endpoint:** `SoftLayer_Account/getIscsiNetworkStorage`
 
-**Object Mask:** `mask[id,username,capacityGb,iops,storageType,storageTierLevel,serviceResourceBackendIpAddress,lunId,allowedVirtualGuests[id,hostname],allowedHardware[id,hostname],allowedSubnets,snapshotCapacityGb,schedules,replicationPartners[id,username,serviceResourceBackendIpAddress],billingItem[recurringFee],createDate,notes]`
+**Object Mask:** `mask[id,username,capacityGb,iops,storageType,storageTierLevel,serviceResourceBackendIpAddress,lunId,allowedVirtualGuests[id,hostname],allowedHardware[id,hostname],allowedSubnets,snapshotCapacityGb,schedules,replicationPartners[id,username,serviceResourceBackendIpAddress],billingItem[recurringFee],createDate,notes,hasEncryptionAtRest,serviceResource[datacenter[name]],parentVolume[snapshotSizeBytes]]`
+
+**Per-Volume API:** `SoftLayer_Network_Storage/{id}/getSnapshots` — collected in Phase 3 with concurrency limit of 5
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -565,12 +568,16 @@ The estimated cost is flagged via `estimatedCost: true` and `noBillingItem: true
 | allowedVirtualGuests | Array | Authorized VSIs |
 | allowedHardware | Array | Authorized bare metal |
 | allowedSubnets | Array | Authorized subnets |
-| snapshotCapacityGb | Integer | Snapshot space |
+| snapshotCapacityGb | Integer | Snapshot space allocation |
 | schedules | Array | Snapshot schedules |
 | replicationPartners | Array | Replication targets |
 | billingItem.recurringFee | Decimal | Monthly cost |
 | createDate | DateTime | Creation timestamp |
 | notes | String | User notes |
+| hasEncryptionAtRest | Boolean | Encryption at rest status |
+| serviceResource.datacenter.name | String | Datacenter location |
+| parentVolume.snapshotSizeBytes | Integer | Actual snapshot bytes used |
+| snapshots | Array | Per-volume snapshot list (collected in Phase 3) |
 
 **Worksheet Name:** vBlockStorage
 
@@ -578,7 +585,9 @@ The estimated cost is flagged via `estimatedCost: true` and `noBillingItem: true
 
 **API Endpoint:** `SoftLayer_Account/getNasNetworkStorage`
 
-**Object Mask:** `mask[id,username,capacityGb,iops,storageType,storageTierLevel,serviceResourceBackendIpAddress,fileNetworkMountAddress,allowedVirtualGuests[id,hostname],allowedHardware[id,hostname],allowedSubnets,snapshotCapacityGb,schedules,replicationPartners,billingItem[recurringFee],createDate,notes]`
+**Object Mask:** `mask[id,username,capacityGb,iops,storageType,storageTierLevel,serviceResourceBackendIpAddress,fileNetworkMountAddress,allowedVirtualGuests[id,hostname],allowedHardware[id,hostname],allowedSubnets,snapshotCapacityGb,schedules,replicationPartners[id,username,serviceResourceBackendIpAddress],billingItem[recurringFee],createDate,notes,bytesUsed,hasEncryptionAtRest,serviceResource[datacenter[name]],parentVolume[snapshotSizeBytes]]`
+
+**Per-Volume API:** `SoftLayer_Network_Storage/{id}/getSnapshots` — collected in Phase 3 with concurrency limit of 5
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -592,10 +601,18 @@ The estimated cost is flagged via `estimatedCost: true` and `noBillingItem: true
 | fileNetworkMountAddress | String | NFS mount path |
 | allowedVirtualGuests | Array | Authorized VSIs |
 | allowedHardware | Array | Authorized bare metal |
-| snapshotCapacityGb | Integer | Snapshot space |
+| allowedSubnets | Array | Authorized subnets |
+| snapshotCapacityGb | Integer | Snapshot space allocation |
 | schedules | Array | Snapshot schedules |
-| replicationPartners | Array | Replication targets |
+| replicationPartners | Array | Replication targets (id, username, IP) |
 | billingItem.recurringFee | Decimal | Monthly cost |
+| createDate | DateTime | Creation timestamp |
+| notes | String | User notes |
+| bytesUsed | Integer | Current NFS usage in bytes |
+| hasEncryptionAtRest | Boolean | Encryption at rest status |
+| serviceResource.datacenter.name | String | Datacenter location |
+| parentVolume.snapshotSizeBytes | Integer | Actual snapshot bytes used |
+| snapshots | Array | Per-volume snapshot list (collected in Phase 3) |
 
 **Worksheet Name:** vFileStorage
 
@@ -2049,7 +2066,14 @@ Phase 2 — Deep Scan (13 slow resources re-fetched with full masks):
   ├── SoftLayer_Account/getDomains            (full mask)
   └── SoftLayer_Account/getAllBillingItems     (full mask)
 
-Post-Deep:
+Phase 3 — Nested + Billing (parallel):
+  ├── SoftLayer_Account/getAllBillingItems     (full mask)
+  ├── SoftLayer_Network_Storage/{id}/getSnapshots (per block+file volume, concurrency 5)
+  ├── Transit Gateway Connections (per TG from Phase 2)
+  ├── VMware nested (cluster hosts, VLANs, PVDCs, PVDC clusters)
+  └── Merge snapshots back onto storage volumes, re-send via SSE
+
+Post-Collection:
   ├── Flatten DNS records from deep domains
   ├── Build relationship map from deep data
   └── Send complete event
@@ -3645,7 +3669,7 @@ The exported XLSX file will contain the following worksheets:
 | Worksheet | Content |
 |-----------|---------|
 | Summary | Collection metadata, resource counts, account info |
-| vVirtualServers | Virtual server inventory (includes Start CPUs, Modified, Dedicated, Placement Group, Tags, Disk GB, VLANs) |
+| vVirtualServers | Virtual server inventory (includes Start CPUs, Modified, Dedicated, Placement Group, Tags, Disk GB, Local Storage GB, Portable Storage GB, Portable Storage Details, VLANs) |
 | vBareMetal | Bare metal server inventory (includes Hard Drives, Network Components, VLANs, Tags) |
 | vVLANs | VLAN inventory |
 | vSubnets | Subnet inventory |
@@ -3653,8 +3677,8 @@ The exported XLSX file will contain the following worksheets:
 | vFirewalls | Firewall inventory |
 | vSecurityGroups | Security group inventory (includes Modified) |
 | vLoadBalancers | Load balancer inventory (includes Virtual Servers) |
-| vBlockStorage | Block storage inventory (includes Allowed VSIs, Allowed Hardware, Replication Partners) |
-| vFileStorage | File storage inventory (includes Allowed VSIs, Allowed Hardware, Replication Partners) |
+| vBlockStorage | Block storage inventory (includes Allowed VSIs, Allowed Hardware, Replication Partners, Datacenter, Encrypted, Snapshot Count, Snapshot Used, Allowed Subnets) |
+| vFileStorage | File storage inventory (includes Allowed VSIs, Allowed Hardware, Replication Partners, Bytes Used, Datacenter, Encrypted, Snapshot Count, Snapshot Used, Allowed Subnets) |
 | vObjectStorage | Object storage inventory |
 | vSSLCertificates | SSL certificate inventory |
 | vSSHKeys | SSH key inventory |

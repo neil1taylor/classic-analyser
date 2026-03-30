@@ -24,7 +24,7 @@ Browser → Express.js (/api/* proxy routes + / static SPA) → SoftLayer REST A
 - No server-side sessions, no sticky sessions, no database
 - 60-minute inactivity timeout clears the key in the browser
 
-**Data collection** uses Server-Sent Events (SSE) to stream progress. Classic collection runs in two phases (shallow scan + deep scan) with 10 concurrent API calls per phase. VPC collection runs as a single phase across all auto-discovered regions with 10 concurrent resource tasks. PowerVS collection discovers workspaces via the Resource Controller API, collects Networks first (dependency), then Network Ports, then all remaining resources concurrently with 10 concurrent tasks.
+**Data collection** uses Server-Sent Events (SSE) to stream progress. Classic collection runs in three phases (shallow scan + deep scan + nested/billing) with 10 concurrent API calls per phase. Phase 3 includes per-volume snapshot collection for block and file storage (5 concurrent calls), billing items, VMware nested resources, and Transit Gateway connections. VPC collection runs as a single phase across all auto-discovered regions with 10 concurrent resource tasks. PowerVS collection discovers workspaces via the Resource Controller API, collects Networks first (dependency), then Network Ports, then all remaining resources concurrently with 10 concurrent tasks.
 
 **IMS Report Import** provides three alternative data input methods (no API key required):
 - **Import XLSX** — re-imports a previously exported XLSX file (cloud-harvester output)

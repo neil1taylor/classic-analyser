@@ -708,6 +708,8 @@ interface NetworkAssessment {
 | Snapshot schedules | VPC snapshots | Recreate schedules |
 | Replication | Cross-region replication | Configure in VPC |
 | Access control (IP) | VPC security groups | Reconfigure |
+| Encryption at rest | VPC provider-managed encryption | Verify key management |
+| NFS usage (bytesUsed) | Capacity planning | Right-size VPC file shares |
 
 ### 5.3 Storage Assessment Output
 
@@ -716,24 +718,37 @@ interface StorageAssessment {
   blockStorage: {
     totalVolumes: number;
     totalCapacityTB: number;
+    encryptedCount: number;
+    snapshotCount: number;
+    totalSnapshotSizeBytes: number;
     volumeAssessments: BlockVolumeAssessment[];
     migrationStrategy: 'snapshot' | 'replication' | 'hybrid';
     estimatedMigrationTime: string;
   };
-  
+
   fileStorage: {
     totalVolumes: number;
     totalCapacityTB: number;
+    totalBytesUsed: number;
+    encryptedCount: number;
+    snapshotCount: number;
+    totalSnapshotSizeBytes: number;
     volumeAssessments: FileStorageAssessment[];
     estimatedMigrationTime: string;
   };
-  
+
   objectStorage: {
     bucketsFound: number;
     migrationRequired: false;
     configurationChanges: string[];
   };
-  
+
+  portableStorage: {
+    totalVolumes: number;
+    totalCapacityGB: number;
+    affectedVSIs: number;
+  };
+
   summary: {
     totalDataTB: number;
     estimatedTransferTime: string;
@@ -830,7 +845,8 @@ interface SecurityAssessment {
 | **Dedicated Firewall** | Not available | Third-party appliances (vSRX, FortiGate) |
 | **Portable Private IPs** | Not available | Reserved IPs within subnet |
 | **Portable Public IPs** | Not available | Floating IPs (similar) |
-| **File Storage (NFS v3)** | NFS v4.1 only | Application compatibility check |
+| **File Storage (NFS v3)** | NFS v4.1 only | Application compatibility check (bytesUsed now collected for capacity planning) |
+| **Portable SAN Storage** | VPC Block Storage | Convert portable volumes to VPC block storage volumes |
 | **EVault Backup** | Not available | Veeam, IBM Spectrum Protect |
 | **Monthly Billing VSI** | Hourly only | Reserved capacity for savings |
 | **Bare Metal Hourly** | Monthly only | Different billing model |

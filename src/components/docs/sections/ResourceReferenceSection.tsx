@@ -86,8 +86,8 @@ const ResourceReferenceSection: React.FC = () => (
           </tr>
         </thead>
         <tbody>
-          <tr><td style={tdStyle}>Block Storage</td><td style={tdStyle}>vBlockStorage</td><td style={tdStyle}>iSCSI block storage volumes</td></tr>
-          <tr><td style={tdStyle}>File Storage</td><td style={tdStyle}>vFileStorage</td><td style={tdStyle}>NFS file storage volumes</td></tr>
+          <tr><td style={tdStyle}>Block Storage</td><td style={tdStyle}>vBlockStorage</td><td style={tdStyle}>iSCSI block storage volumes (includes datacenter, encryption, snapshots)</td></tr>
+          <tr><td style={tdStyle}>File Storage</td><td style={tdStyle}>vFileStorage</td><td style={tdStyle}>NFS file storage volumes (includes datacenter, encryption, bytes used, snapshots)</td></tr>
           <tr><td style={tdStyle}>Object Storage</td><td style={tdStyle}>vObjectStorage</td><td style={tdStyle}>S3-compatible object storage</td></tr>
         </tbody>
       </table>
