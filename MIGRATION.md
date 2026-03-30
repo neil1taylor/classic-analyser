@@ -330,31 +330,27 @@ Bare metal servers require special consideration.
 ### 3.4 Compute Assessment Output
 
 ```typescript
+type MigrationApproach = 'lift-and-shift' | 'rebuild' | 're-platform' | 're-architect';
+
 interface ComputeAssessment {
   totalInstances: number;
-  
-  vsiAnalysis: {
-    directMigration: VSIMigration[];      // Can migrate as-is
-    profileUpgrade: VSIMigration[];       // Need larger profile
-    osUpgradeRequired: VSIMigration[];    // OS not available
-    notMigratable: VSIMigration[];        // Cannot migrate
-  };
-  
-  bareMetalAnalysis: {
-    toVPCBareMetal: BareMetalMigration[];
-    toVPCVSI: BareMetalMigration[];       // Can virtualise
-    notMigratable: BareMetalMigration[];
-  };
-  
+  vsiMigrations: VSIMigration[];       // Each with migrationApproach field
+  bareMetalMigrations: BareMetalMigration[];  // Each with migrationApproach field
+
   summary: {
     readyToMigrate: number;
     needsWork: number;
     blocked: number;
-    estimatedEffort: string;
   };
-  
+  score: number;       // 0-100 readiness score
   recommendations: string[];
 }
+
+// Per-workload migration approach classification (based on IBM classic-to-vpc docs):
+// - lift-and-shift: Modern OS, no blockers, clean VPC profile match
+// - rebuild: EOL OS or OS requiring upgrade (IBM docs default recommendation)
+// - re-platform: VMware/hypervisor hosts, Oracle/SAP, multiple blockers
+// - re-architect: IKS/ROKS managed K8s worker nodes
 ```
 
 ---
@@ -851,6 +847,8 @@ interface SecurityAssessment {
 | **Monthly Billing VSI** | Hourly only | Reserved capacity for savings |
 | **Bare Metal Hourly** | Monthly only | Different billing model |
 | **Legacy Datacenters** | Limited DCs | DC mapping required |
+| **Software Add-ons (cPanel, Plesk, etc.)** | Not available | Install and license add-ons manually on VPC |
+| **Bare Metal with VMware vSphere/ESXi** | Not available | VMs must migrate individually to VPC VSIs or OpenShift Virtualization |
 
 ### 7.2 Datacenter Availability
 
@@ -1347,11 +1345,15 @@ interface MigrationWave {
 | Gateway Appliance | Third-party or VPC native | ⚠️ Depends on features |
 | Local Load Balancer | Application Load Balancer | ✅ Full |
 | Block Storage | Block Storage | ✅ Full |
-| File Storage | File Storage | ✅ Full |
+| File Storage | File Storage (NFS v4.1) | ⚠️ NFS v3 not supported |
 | Object Storage | Object Storage | ✅ Same service |
 | IPsec VPN | VPN Gateway | ✅ Full |
 | Direct Link | Direct Link | ✅ Same service |
 | Security Groups | Security Groups | ✅ Enhanced |
+| Software Add-ons (cPanel, Plesk) | Self-install & license | ❌ Not available |
+| EVault Backup | Veeam / IBM Backup for VPC | ⚠️ Different product |
+| Reserved Capacity | — | ⚠️ No equivalent — use Savings Plans |
+| GPU Instances | VPC GPU profiles (gx2/gx3d) | ⚠️ Different hardware |
 
 ---
 
@@ -1369,6 +1371,8 @@ interface MigrationWave {
 | **Instance Profile** | Predefined vCPU/memory configuration in VPC |
 | **Migration Wave** | Group of resources migrated together |
 | **Complexity Score** | 0-100 rating of migration difficulty |
+| **Migration Approach** | Per-workload recommendation: Lift-and-Shift, Rebuild, Re-platform, or Re-architect |
+| **VRF** | Virtual Routing and Forwarding — required for Classic-to-VPC private connectivity |
 | **watsonx.ai** | IBM's enterprise AI platform |
 
 ---

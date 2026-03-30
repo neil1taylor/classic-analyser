@@ -6,6 +6,11 @@ Format based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- Migration approach recommendation per workload — classifies each VSI and Bare Metal as Lift & Shift, Rebuild, Re-platform, or Re-architect based on OS, hypervisor, IKS/ROKS, and blocker status. New "Approach" column in Compute Assessment tables.
+- 6 new migration pre-requisite checks from IBM classic-to-vpc docs analysis: VRF Enablement (manual verification), Reserved Capacity (active commitments), Storage Utilization (right-sizing via bytesUsed), Software Add-on Detection (cPanel/Plesk/antivirus/monitoring), GPU Workload Detection, and migration approach classification
+- Software Add-ons feature gap entry in Feature Gap Analysis
+- Post-migration troubleshooting section in Help docs (internet access, SSH connectivity, performance)
+- Expanded IBM migration resource links: Classic-to-VPC Migration Guide, VRF docs, VPC Quotas, ConvertIO/PrimaryIO
 - VRF Enablement migration pre-requisite check (manual verification flag for Classic-to-VPC Transit Gateway connectivity)
 - Storage discovery gaps closed — portable storage distinction on VSIs, file storage `bytesUsed`, `hasEncryptionAtRest`, datacenter name, per-volume snapshot collection in Phase 3
 - 9 new migration pre-requisite checks: 32-bit OS, EOL OS, hypervisor detection (VMware/XenServer/Hyper-V), Oracle/SAP workload detection, IKS/ROKS worker node detection, single-socket high clock speed

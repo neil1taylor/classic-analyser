@@ -2853,7 +2853,7 @@ The VPC Migration Analysis feature provides rule-based analysis capabilities to 
 
 Each migration assessment tab (Compute, Network, Storage, Security) includes a remediation checklist panel that evaluates per-resource-type pre-requisite checks against the collected Classic data. Checks produce one of five severity levels: **blocker**, **warning**, **info**, **unknown** (cannot determine from API), or **passed**.
 
-**Compute checks (23):**
+**Compute checks (26):**
 
 | Check | Severity | Logic |
 |---|---|---|
@@ -2880,8 +2880,11 @@ Each migration assessment tab (Compute, Network, Storage, Security) includes a r
 | End-of-Life Operating System | warning | OS matches EOL versions (CentOS 5-7, RHEL 5-6, Win 2003/2008, Debian 8-9, Ubuntu 14/16, SLES 11-12) |
 | Single-Socket High Clock Speed (BM) | unknown | Processor model/speed not in API mask — cannot determine |
 | Possible IKS/ROKS Worker Node | warning | Hostname contains "kube" — likely IKS or ROKS worker node, cluster must be recreated on VPC |
+| Software Add-on Detected | warning | Billing item `categoryCode` matches `cpanel\|plesk_billing\|anti_virus\|monitoring_agent\|software_license\|control_panel\|cdp\|evault` or description matches add-on patterns. IBM-provisioned add-ons not available on VPC — self-install and license required. |
+| GPU Workload Detected | warning | Billing item `categoryCode` starts with `gpu` or description matches `gpu\|tesla\|nvidia\|cuda`. VPC GPU profiles (gx2/gx3d) use different hardware — driver compatibility must be verified. |
+| Active Reserved Capacity | warning | `collectedData['reservedCapacity']` has entries. Active 1yr/3yr reserved capacity commitments have cost/contractual implications — plan migration timeline around reservation expiry. |
 
-**Storage checks (7):**
+**Storage checks (8):**
 
 | Check | Severity | Logic |
 |---|---|---|
@@ -2892,8 +2895,9 @@ Each migration assessment tab (Compute, Network, Storage, Security) includes a r
 | Replication Partners | info | Has replication configured |
 | Volume Attachment Count | info | VSI with > 12 attached volumes |
 | Multi-Attach Block Storage | warning | Block volume authorized for > 1 host or > 1 subnet (false positives possible — authorization ≠ active mount) |
+| Storage Utilization (Right-Sizing) | info | Compares `bytesUsed` to `capacityGb` — flags over-provisioned (<25% used, right-size to smaller VPC volume) and near-capacity (>90% used, provision larger VPC volume). Only evaluated for volumes with `bytesUsed > 0`. |
 
-**Network checks (9):**
+**Network checks (10):**
 
 | Check | Severity | Logic |
 |---|---|---|
@@ -2906,6 +2910,7 @@ Each migration assessment tab (Compute, Network, Storage, Security) includes a r
 | VPC Reserved IP Conflict | warning | Private IP falls on a VPC reserved address (network, gateway, DNS, future, broadcast) |
 | IPv6 Address Usage | warning | Subnet `networkIdentifier` contains `:` or `subnetType` contains IPv6 (false positives possible — IPv6 often auto-assigned) |
 | VRRP High Availability Pattern | unknown | VRRP config not exposed by SoftLayer API — cannot determine |
+| VRF Enablement (Manual Verification) | unknown | VRF must be enabled on the account for Classic-to-VPC private network connectivity via Transit Gateway. VRF status not collected by the SoftLayer API mask — always flagged for manual verification. |
 
 **Security checks (3):**
 

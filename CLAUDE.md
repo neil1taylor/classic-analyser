@@ -80,7 +80,16 @@ src/                              # React frontend
     report-parsers/               types.ts, csv-utils.ts, csv-parsers.ts, html-parsers.ts,
                                   drawio-parser.ts, json-parser.ts, xlsx-parsers.ts,
                                   merger.ts, index.ts
-  types/                          resources.ts, vpc-resources.ts, powervs-resources.ts
+    migration/                    index.ts, computeAnalysis.ts, networkAnalysis.ts,
+                                  storageAnalysis.ts, securityAnalysis.ts, featureGapAnalysis.ts,
+                                  complexityScoring.ts, costComparison.ts, wavePlanning.ts,
+                                  dependencyMapping.ts
+      checks/                     index.ts, computeChecks.ts (26), networkChecks.ts (10),
+                                  storageChecks.ts (8), securityChecks.ts (3), checkUtils.ts
+      data/                       datacenterMapping.ts, osCompatibility.ts, vpcProfiles.ts,
+                                  vpcCostEstimates.ts, featureGaps.ts, storageTiers.ts
+  types/                          resources.ts, vpc-resources.ts, powervs-resources.ts,
+                                  migration.ts
   utils/                          formatters.ts, relationships.ts, logger.ts, retry.ts
   data/                           ibmCloudDataCenters.json, ibmCloudRegions.json,
                                   classicResourceTypes.json, classicRelationships.json,
@@ -145,3 +154,13 @@ npm run lint            # Lint
 **IMS Report Types:** 2 additional types added for IMS report import: Report Warnings (`reportWarnings` — priority, issue, type, recommendation) and Health Checks (`reportChecks` — checks performed with priority and rationale). These appear in Classic tables when importing IMS report files.
 
 **IMS Report Import Formats:** The app supports importing data from IBM's IMS reporting tool in multiple formats: CSV (warnings, gateways, NAS, security groups), HTML (warnings with embedded JS arrays, overview with Chart.js data, summary tables, inventory with nested DOM trees), drawio (XML network topology), report XLSX (assessment with VPC mapping, device inventory with physical location), JSON (converted from .mdl), and .mdl (serialized SoftLayer API responses, converted server-side via Python). The merger deduplicates across all sources using `id` as primary key and `hostname` as fallback.
+
+## Migration Assessment
+
+**Pre-requisite checks (49 total):** Compute (26), Network (10), Storage (8), Security (3), plus 12 feature gap definitions. Each check produces a severity: blocker, warning, info, unknown, or passed. Check logic lives in `src/services/migration/checks/`. The `runAllPreReqChecks()` function in `checks/index.ts` orchestrates all four check categories.
+
+**Migration approach classification:** Each VSI and Bare Metal server receives a recommended migration approach — `lift-and-shift`, `rebuild`, `re-platform`, or `re-architect` — based on OS compatibility, hypervisor detection, IKS/ROKS presence, and blocker status. The decision tree is in `computeAnalysis.ts` (`classifyMigrationApproach` / `classifyBareMetalApproach`). IBM's official guidance recommends "Rebuild" as the default approach (provision fresh VPC instances with latest OS).
+
+**Analysis services** in `src/services/migration/`: computeAnalysis (profile matching, approach classification), networkAnalysis, storageAnalysis, securityAnalysis, featureGapAnalysis, complexityScoring (5-dimension 0-100), costComparison (3-year projections), wavePlanning (dependency-grouped waves), dependencyMapping (resource graph).
+
+**Reference data** in `src/services/migration/data/`: datacenterMapping (Classic DC → VPC region/zones), osCompatibility (20 OS patterns), vpcProfiles (200+ VSI + 20 BM profiles), featureGaps (12 Classic-only features), storageTiers (IOPS mappings).

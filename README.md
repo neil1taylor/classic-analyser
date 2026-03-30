@@ -20,6 +20,7 @@ A web-based inventory and analysis tool for IBM Cloud Classic (SoftLayer), VPC, 
 - **Guided tour** onboarding for first-time users
 - **Section error boundaries** — chart/section errors don't crash the whole dashboard
 - **Retry with exponential backoff** on transient API failures
+- **VPC migration assessment** — 49 automated pre-requisite checks, per-workload migration approach recommendation (Lift & Shift / Rebuild / Re-platform / Re-architect), cost comparison, wave planning, Terraform export, and DOCX reports
 - **AI-powered insights** — optional watsonx.ai integration for chat, cost optimization, and report enhancement
 - **Account-scoped settings** — AI and preference persistence scoped per IBM Cloud account
 - **Stateless security** — API keys live only in browser memory, never persisted
