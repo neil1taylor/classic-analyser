@@ -48,16 +48,32 @@ jobs:
           docker push us.icr.io/${{ secrets.ICR_NAMESPACE }}/infrastructure-explorer:${{ github.sha }}
 
       - name: Deploy to Code Engine
+        env:
+          IBM_CLOUD_API_KEY: ${{ secrets.IBM_CLOUD_API_KEY }}
         run: |
           ibmcloud ce project select --name ${{ secrets.CE_PROJECT }}
+          # Ensure registry secret exists for Code Engine to pull from ICR
+          if ibmcloud ce registry get --name icr-secret > /dev/null 2>&1; then
+            ibmcloud ce registry update --name icr-secret \
+              --server us.icr.io \
+              --username iamapikey \
+              --password "$IBM_CLOUD_API_KEY"
+          else
+            ibmcloud ce registry create --name icr-secret \
+              --server us.icr.io \
+              --username iamapikey \
+              --password "$IBM_CLOUD_API_KEY"
+          fi
           if ibmcloud ce app get --name infrastructure-explorer > /dev/null 2>&1; then
             ibmcloud ce app update \
               --name infrastructure-explorer \
-              --image us.icr.io/${{ secrets.ICR_NAMESPACE }}/infrastructure-explorer:${{ github.sha }}
+              --image us.icr.io/${{ secrets.ICR_NAMESPACE }}/infrastructure-explorer:${{ github.sha }} \
+              --registry-secret icr-secret
           else
             ibmcloud ce app create \
               --name infrastructure-explorer \
               --image us.icr.io/${{ secrets.ICR_NAMESPACE }}/infrastructure-explorer:${{ github.sha }} \
+              --registry-secret icr-secret \
               --port 3000 \
               --cpu 0.5 \
               --memory 1G \
