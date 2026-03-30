@@ -44,12 +44,12 @@ jobs:
       - name: Build and push container image
         run: |
           ibmcloud cr login
-          docker build -t icr.io/${{ secrets.ICR_NAMESPACE }}/infrastructure-explorer:${{ github.sha }} .
-          docker push icr.io/${{ secrets.ICR_NAMESPACE }}/infrastructure-explorer:${{ github.sha }}
+          docker build -t us.icr.io/${{ secrets.ICR_NAMESPACE }}/infrastructure-explorer:${{ github.sha }} .
+          docker push us.icr.io/${{ secrets.ICR_NAMESPACE }}/infrastructure-explorer:${{ github.sha }}
 
       - name: Deploy to Code Engine
         run: |
           ibmcloud ce project select --name ${{ secrets.CE_PROJECT }}
           ibmcloud ce app update \
             --name infrastructure-explorer \
-            --image icr.io/${{ secrets.ICR_NAMESPACE }}/infrastructure-explorer:${{ github.sha }}
+            --image us.icr.io/${{ secrets.ICR_NAMESPACE }}/infrastructure-explorer:${{ github.sha }}
