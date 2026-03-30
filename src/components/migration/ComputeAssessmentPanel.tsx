@@ -12,6 +12,13 @@ interface Props {
   prereqChecks?: CheckResult[];
 }
 
+const APPROACH_LABELS: Record<string, string> = {
+  'lift-and-shift': 'Lift & Shift',
+  'rebuild': 'Rebuild',
+  're-platform': 'Re-platform',
+  're-architect': 'Re-architect',
+};
+
 function statusTag(status: string): React.ReactNode {
   switch (status) {
     case 'ready': return <Tag type="green" size="sm">Ready</Tag>;
@@ -34,6 +41,7 @@ const vsiColumns: MigrationColumnDef[] = [
   { key: 'fee', header: 'Classic Monthly', group: 'classic' },
   { key: 'profile', header: 'VPC Profile', group: 'vpc' },
   { key: 'vpcFee', header: 'VPC Monthly', group: 'vpc' },
+  { key: 'approach', header: 'Approach', group: 'vpc', headerTooltip: 'Recommended migration approach: Lift-and-Shift, Rebuild, Re-platform, or Re-architect' },
   { key: 'status', header: 'Status', group: 'vpc', render: (val) => statusTag(val as string) },
 ];
 
@@ -48,6 +56,7 @@ const bmColumns: MigrationColumnDef[] = [
   { key: 'specs', header: 'Classic Specs', group: 'classic' },
   { key: 'fee', header: 'Classic Monthly', group: 'classic' },
   { key: 'path', header: 'Migration Path', group: 'migration' },
+  { key: 'approach', header: 'Approach', group: 'migration', headerTooltip: 'Recommended migration approach: Lift-and-Shift, Rebuild, Re-platform, or Re-architect' },
   { key: 'status', header: 'Status', group: 'migration', render: (val) => statusTag(val as string) },
 ];
 
@@ -61,6 +70,7 @@ const ComputeAssessmentPanel: React.FC<Props> = ({ assessment, prereqChecks }) =
     profile: v.recommendedProfile?.name ?? 'N/A',
     fee: v.noBillingItem ? 'No billing item' : `$${v.currentFee.toFixed(2)}${v.isEstimatedCost ? ' (est.)' : ''}`,
     vpcFee: v.recommendedProfile ? `$${v.recommendedProfile.estimatedCost.toFixed(2)}` : 'N/A',
+    approach: APPROACH_LABELS[v.migrationApproach ?? ''] ?? 'Unknown',
     status: v.status,
   }));
 
@@ -71,6 +81,7 @@ const ComputeAssessmentPanel: React.FC<Props> = ({ assessment, prereqChecks }) =
     specs: `${b.cores} cores / ${b.memoryGB} GB`,
     fee: `$${b.currentFee.toFixed(2)}`,
     path: b.migrationPath === 'powervs' ? 'PowerVS (Oracle)' : b.migrationPath === 'powervs-sap' ? 'PowerVS (SAP)' : b.migrationPath.replace(/-/g, ' '),
+    approach: APPROACH_LABELS[b.migrationApproach ?? ''] ?? 'Unknown',
     status: b.status,
   }));
 

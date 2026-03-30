@@ -1,4 +1,4 @@
-import type { ComputeAssessment, VSIMigration, BareMetalMigration, VPCProfile, MigrationPreferences, MigrationStatus } from '@/types/migration';
+import type { ComputeAssessment, VSIMigration, BareMetalMigration, VPCProfile, MigrationPreferences, MigrationStatus, MigrationApproach } from '@/types/migration';
 import { VPC_PROFILES, VPC_BARE_METAL_PROFILES, isBurstableProfile, isGen3Profile, hasInstanceStorage } from './data/vpcProfiles';
 import { matchOS } from './data/osCompatibility';
 import { mapDatacenterToVPC } from './data/datacenterMapping';
@@ -134,6 +134,51 @@ function mapToBareMetalProfile(cores: number, memoryGB: number): VPCProfile | nu
   return candidates[0] ?? null;
 }
 
+// ── Migration Approach Classification ──────────────────────────────────────
+// Decision tree based on IBM's classic-to-vpc migration docs:
+// Re-architect → IKS/ROKS managed K8s
+// Re-platform  → VMware/hypervisor hosts, Oracle/SAP workloads, complex blockers
+// Rebuild      → EOL OS or OS requiring upgrade (IBM docs default recommendation)
+// Lift-and-Shift → modern OS, no blockers, clean VPC profile match
+
+const hypervisorRe = /vmware|vsphere|esxi|xenserver|xen\s*server|citrix\s*hypervisor|hyper[\s-]?v/i;
+const kubeRe = /kube/i;
+
+function classifyMigrationApproach(
+  hostname: string,
+  os: string,
+  status: MigrationStatus,
+  osCompatible: boolean,
+  osUpgradeTarget?: string,
+): MigrationApproach {
+  // IKS/ROKS worker nodes → re-architect to VPC-based clusters
+  if (kubeRe.test(hostname)) return 're-architect';
+
+  // Hypervisor hosts → re-platform (individual VM extraction)
+  if (hypervisorRe.test(os)) return 're-platform';
+
+  // Multiple blockers or non-migratable → re-platform
+  if (status === 'blocked' && !osUpgradeTarget) return 're-platform';
+
+  // EOL OS or OS requiring upgrade → rebuild (IBM docs default recommendation)
+  if (osUpgradeTarget || !osCompatible) return 'rebuild';
+
+  // Modern OS, clean match → lift-and-shift
+  return 'lift-and-shift';
+}
+
+function classifyBareMetalApproach(
+  hostname: string,
+  os: string,
+  migrationPath: BareMetalMigration['migrationPath'],
+): MigrationApproach {
+  if (kubeRe.test(hostname)) return 're-architect';
+  if (hypervisorRe.test(os)) return 're-platform';
+  if (migrationPath === 'powervs' || migrationPath === 'powervs-sap') return 're-platform';
+  if (migrationPath === 'not-migratable') return 're-platform';
+  return 'rebuild'; // IBM docs recommend rebuild as default for bare metal
+}
+
 function assessVSI(item: unknown, _preferences: MigrationPreferences): VSIMigration {
   const id = num(item, 'id');
   const hostname = str(item, 'hostname');
@@ -193,6 +238,8 @@ function assessVSI(item: unknown, _preferences: MigrationPreferences): VSIMigrat
     status = 'needs-work';
   }
 
+  const migrationApproach = classifyMigrationApproach(hostname, os, status, osCompatible, osUpgradeTarget);
+
   return {
     id,
     hostname,
@@ -208,6 +255,7 @@ function assessVSI(item: unknown, _preferences: MigrationPreferences): VSIMigrat
     alternativeProfiles: alternatives,
     osCompatible,
     osUpgradeTarget,
+    migrationApproach,
     notes,
   };
 }
@@ -329,7 +377,9 @@ function assessBareMetal(item: unknown, _preferences: MigrationPreferences): Bar
     }
   }
 
-  return { id, hostname, datacenter, cores, memoryGB, os, currentFee, status, migrationPath, recommendedProfile, notes };
+  const migrationApproach = classifyBareMetalApproach(hostname, os, migrationPath);
+
+  return { id, hostname, datacenter, cores, memoryGB, os, currentFee, status, migrationPath, recommendedProfile, migrationApproach, notes };
 }
 
 export function analyzeCompute(

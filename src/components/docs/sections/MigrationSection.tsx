@@ -33,9 +33,9 @@ const MigrationSection: React.FC = () => (
         The migration view contains 9 assessment tabs:
       </p>
       <ul style={listStyle}>
-        <li><strong>Compute:</strong> VSI and Bare Metal readiness &mdash; boot disk limits, vCPU/memory maximums, OS compatibility, 32-bit/EOL OS detection, hypervisor detection (VMware, XenServer, Hyper-V), IKS/ROKS worker node detection, local disk usage.</li>
-        <li><strong>Network:</strong> VLAN, subnet, and gateway assessment &mdash; IP address compatibility, public IP detection, VPC reserved IP conflicts, IPv6 subnet detection, VRRP HA pattern.</li>
-        <li><strong>Storage:</strong> Block and file storage analysis &mdash; volume sizes, IOPS tiers, datacenter location, encryption status, per-volume snapshots, NFS usage, multi-attach volume detection, portable storage identification on VSIs.</li>
+        <li><strong>Compute:</strong> VSI and Bare Metal readiness &mdash; boot disk limits, vCPU/memory maximums, OS compatibility, 32-bit/EOL OS detection, hypervisor detection (VMware, XenServer, Hyper-V), IKS/ROKS worker node detection, local disk usage, active reserved capacity commitments, software add-on detection, GPU workloads.</li>
+        <li><strong>Network:</strong> VLAN, subnet, and gateway assessment &mdash; IP address compatibility, public IP detection, VPC reserved IP conflicts, IPv6 subnet detection, VRRP HA pattern, VRF enablement verification.</li>
+        <li><strong>Storage:</strong> Block and file storage analysis &mdash; volume sizes, IOPS tiers, datacenter location, encryption status, per-volume snapshots, NFS usage, multi-attach volume detection, portable storage identification on VSIs, storage utilization right-sizing.</li>
         <li><strong>Security:</strong> Security group rules, SSL certificates, SSH key compatibility, and HSM device detection.</li>
         <li><strong>Feature Gaps:</strong> Features available in Classic but not yet in VPC (e.g., specific hardware configurations).</li>
         <li><strong>Costs:</strong> Classic vs VPC monthly and 3-year cost projections with break-even analysis.</li>
@@ -49,7 +49,7 @@ const MigrationSection: React.FC = () => (
       <h3 style={headingStyle}>Readiness Scoring</h3>
       <p style={paragraphStyle}>
         Each resource receives a 0&ndash;100% readiness score across 5 dimensions. The score
-        reflects 43 automated checks including:
+        reflects 49 automated checks including:
       </p>
       <ul style={listStyle}>
         <li>Boot disk size within VPC limits</li>
@@ -89,6 +89,35 @@ const MigrationSection: React.FC = () => (
     </section>
 
     <section style={sectionStyle}>
+      <h3 style={headingStyle}>Post-Migration Troubleshooting</h3>
+      <p style={paragraphStyle}>
+        Common issues encountered after migrating workloads from Classic to VPC:
+      </p>
+
+      <h4 style={subHeadingStyle}>Internet Access</h4>
+      <ul style={listStyle}>
+        <li>VPC instances have no public internet access by default. Either associate a <strong>floating IP</strong> (for inbound and outbound) or attach a <strong>public gateway</strong> to the subnet (outbound only).</li>
+        <li>Verify security group rules allow outbound traffic on required ports.</li>
+        <li>Check network ACL rules if custom ACLs are configured on the subnet.</li>
+      </ul>
+
+      <h4 style={subHeadingStyle}>SSH Connectivity</h4>
+      <ul style={listStyle}>
+        <li>Ensure the security group allows inbound TCP on <strong>port 22</strong>.</li>
+        <li>If connecting via public IP, verify a floating IP is associated with the instance.</li>
+        <li>SSH keys must be in the correct format &mdash; VPC supports RSA (2048/4096-bit) and Ed25519 keys.</li>
+        <li>If the SSH key was not configured at provisioning time, the instance may need to be re-created.</li>
+      </ul>
+
+      <h4 style={subHeadingStyle}>Performance</h4>
+      <ul style={listStyle}>
+        <li>If the application runs slower than expected, check that the <strong>VSI profile</strong> is appropriately sized (CPU and memory).</li>
+        <li>Block storage IOPS may be insufficient &mdash; use custom IOPS profiles for high-IO workloads.</li>
+        <li>Consider profiles with higher network bandwidth for network-intensive applications.</li>
+      </ul>
+    </section>
+
+    <section style={sectionStyle}>
       <h3 style={headingStyle}>IBM Migration Resources</h3>
 
       <h4 style={subHeadingStyle}>Virtualization Solutions Guide</h4>
@@ -100,6 +129,13 @@ const MigrationSection: React.FC = () => (
         <li><Link href="https://cloud.ibm.com/docs/virtualization-solutions?topic=virtualization-solutions-migration-design-3-postmigration" target="_blank" rel="noopener noreferrer" inline>Post-migration</Link></li>
       </ul>
 
+      <h4 style={subHeadingStyle}>Classic-to-VPC Migration Guide</h4>
+      <ul style={linkListStyle}>
+        <li><Link href="https://cloud.ibm.com/docs/classic-to-vpc" target="_blank" rel="noopener noreferrer" inline>IBM Classic-to-VPC Migration Guide</Link> &mdash; official end-to-end migration documentation</li>
+        <li><Link href="https://cloud.ibm.com/docs/account?topic=account-vrf-service-endpoint" target="_blank" rel="noopener noreferrer" inline>VRF Enablement</Link> &mdash; required for private network connectivity between Classic and VPC</li>
+        <li><Link href="https://cloud.ibm.com/docs/vpc?topic=vpc-quotas" target="_blank" rel="noopener noreferrer" inline>VPC Quotas and Service Limits</Link> &mdash; verify quota availability before provisioning</li>
+      </ul>
+
       <h4 style={subHeadingStyle}>Migration Documentation</h4>
       <ul style={linkListStyle}>
         <li><Link href="https://cloud.ibm.com/docs/vpc?topic=vpc-migrate-vsi-to-vpc" target="_blank" rel="noopener noreferrer" inline>Migrating VSI to VPC</Link></li>
@@ -109,8 +145,9 @@ const MigrationSection: React.FC = () => (
 
       <h4 style={subHeadingStyle}>Migration Tools</h4>
       <ul style={linkListStyle}>
-        <li><Link href="https://www.rackwareinc.com/ibm" target="_blank" rel="noopener noreferrer" inline>RackWare CloudMotion for IBM Cloud</Link> &mdash; automated live migration</li>
-        <li><Link href="https://cloud.ibm.com/catalog/services/vpc-cloud-migration" target="_blank" rel="noopener noreferrer" inline>Wanclouds VPC+ Cloud Migration</Link> &mdash; SaaS-based automated discovery and migration</li>
+        <li><Link href="https://www.rackwareinc.com/ibm" target="_blank" rel="noopener noreferrer" inline>RackWare CloudMotion for IBM Cloud</Link> &mdash; automated live migration of physical, virtual, and legacy systems</li>
+        <li><Link href="https://cloud.ibm.com/catalog/services/vpc-cloud-migration" target="_blank" rel="noopener noreferrer" inline>Wanclouds VPC+ Cloud Migration</Link> &mdash; SaaS-based automated discovery and migration (subnets, VSIs, storage, security groups, load balancers, VPNs)</li>
+        <li><Link href="https://cloud.ibm.com/catalog?search=primaryio" target="_blank" rel="noopener noreferrer" inline>ConvertIO (PrimaryIO)</Link> &mdash; VMware workload migration to IBM Cloud</li>
         <li><Link href="https://github.com/IBM-Cloud/vpc-migration-tools" target="_blank" rel="noopener noreferrer" inline>vpc-migration-tools</Link> &mdash; open-source pre-checks and scripts</li>
         <li><Link href="https://cloud.ibm.com/catalog?category=migration_tools" target="_blank" rel="noopener noreferrer" inline>IBM Cloud Migration Tools Catalog</Link></li>
       </ul>

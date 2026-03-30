@@ -84,6 +84,8 @@ export interface VPCCostEstimate {
   monthlyCost: number;
 }
 
+export type MigrationApproach = 'lift-and-shift' | 'rebuild' | 're-platform' | 're-architect';
+
 // ── Compute Assessment ───────────────────────────────────────────────────
 
 export interface VSIMigration {
@@ -101,6 +103,7 @@ export interface VSIMigration {
   alternativeProfiles: VPCProfile[];
   osCompatible: boolean;
   osUpgradeTarget?: string;
+  migrationApproach?: MigrationApproach;
   notes: string[];
 }
 
@@ -115,6 +118,7 @@ export interface BareMetalMigration {
   status: MigrationStatus;
   migrationPath: 'vpc-bare-metal' | 'vpc-vsi' | 'not-migratable' | 'powervs' | 'powervs-sap';
   recommendedProfile?: VPCProfile | null;
+  migrationApproach?: MigrationApproach;
   notes: string[];
 }
 

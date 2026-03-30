@@ -82,6 +82,19 @@ const VOLUME_ATTACHMENT_COUNT: PreRequisiteCheck = {
   ],
 };
 
+const STORAGE_UTILIZATION: PreRequisiteCheck = {
+  id: 'storage-utilization',
+  name: 'Storage Utilization (Right-Sizing)',
+  category: 'storage',
+  description: 'Compares actual storage usage (bytesUsed) to provisioned capacity to identify over-provisioned or near-capacity volumes. Right-sizing storage on VPC can reduce costs for over-provisioned volumes and prevent capacity issues for nearly-full volumes.',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-block-storage-profiles',
+  remediationSteps: [
+    'For over-provisioned volumes (<25% used): provision a smaller VPC volume to save costs.',
+    'For near-capacity volumes (>90% used): provision a larger VPC volume or plan data cleanup.',
+    'Review actual IO patterns to choose the right VPC storage tier.',
+  ],
+};
+
 const MULTI_ATTACH_STORAGE: PreRequisiteCheck = {
   id: 'storage-multi-attach',
   name: 'Multi-Attach Block Storage',
@@ -212,7 +225,40 @@ export function runStorageChecks(collectedData: Record<string, unknown[]>): Chec
   }
   results.push(evaluateCheck(MULTI_ATTACH_STORAGE, 'warning', blocks.length, multiAttachAffected));
 
+  // Storage utilization — right-sizing for VPC
+  const allVolumes = [...blocks, ...files];
+  const utilizationAffected: AffectedResource[] = [];
+  for (const vol of allVolumes) {
+    const cap = toNum(vol['capacityGb']) || toNum(vol['capacity']);
+    const bytesUsed = toNum(vol['bytesUsed']);
+    if (cap > 0 && bytesUsed > 0) {
+      const capBytes = cap * 1024 * 1024 * 1024;
+      const pct = (bytesUsed / capBytes) * 100;
+      if (pct < 25) {
+        utilizationAffected.push({
+          id: toNum(vol['id']),
+          hostname: toStr(vol['username']) || `Volume ${toNum(vol['id'])}`,
+          detail: `${pct.toFixed(1)}% used (${formatBytes(bytesUsed)} of ${cap} GB) — over-provisioned, consider smaller VPC volume`,
+        });
+      } else if (pct > 90) {
+        utilizationAffected.push({
+          id: toNum(vol['id']),
+          hostname: toStr(vol['username']) || `Volume ${toNum(vol['id'])}`,
+          detail: `${pct.toFixed(1)}% used (${formatBytes(bytesUsed)} of ${cap} GB) — near capacity, consider larger VPC volume`,
+        });
+      }
+    }
+  }
+  results.push(evaluateCheck(STORAGE_UTILIZATION, 'info', allVolumes.filter(v => toNum(v['bytesUsed']) > 0).length, utilizationAffected));
+
   return results;
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
 }
 
 function toNum(val: unknown): number {

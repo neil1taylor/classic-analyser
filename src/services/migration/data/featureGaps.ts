@@ -72,4 +72,11 @@ export const FEATURE_GAP_DEFINITIONS: FeatureGapDefinition[] = [
     severity: 'high',
     detectionKey: 'bareMetal',
   },
+  {
+    classicFeature: 'Software Add-ons (cPanel, Plesk, etc.)',
+    vpcStatus: 'not-available',
+    workaround: 'Install and license software add-ons manually on VPC instances. Purchase licenses directly from vendors.',
+    severity: 'medium',
+    detectionKey: 'billingItems',
+  },
 ];

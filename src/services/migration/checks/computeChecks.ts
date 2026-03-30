@@ -304,6 +304,49 @@ const BM_SAP_DETECTED: PreRequisiteCheck = {
   ],
 };
 
+const SOFTWARE_ADDON_DETECTED: PreRequisiteCheck = {
+  id: 'compute-software-addon',
+  name: 'Software Add-on Detected',
+  category: 'compute',
+  description: 'Classic software add-ons (cPanel, Plesk, antivirus, monitoring agents, R1Soft backup, etc.) provisioned through IBM Cloud are not available on VPC. These must be self-installed and licensed on VPC instances.',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-about-images',
+  remediationSteps: [
+    'Verify whether each add-on is still required for the migrated workload.',
+    'Plan to install and self-license software add-ons on VPC instances.',
+    'For cPanel/Plesk: purchase licenses directly from the vendor.',
+    'For monitoring: use IBM Cloud Monitoring or install agents manually.',
+    'For backup: use IBM Cloud Backup for VPC or third-party solutions.',
+  ],
+};
+
+const GPU_DETECTED: PreRequisiteCheck = {
+  id: 'compute-gpu-detected',
+  name: 'GPU Workload Detected',
+  category: 'compute',
+  description: 'Classic GPU instances use different GPU hardware than VPC. VPC offers GPU profiles (gx2, gx3d with NVIDIA A100/L40S) but Classic GPU types (K80, P100, V100) are different. GPU driver compatibility must be verified.',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-profiles#gpu',
+  remediationSteps: [
+    'Review VPC GPU profile options (gx2, gx3d families).',
+    'Validate GPU driver and CUDA version compatibility.',
+    'Test workload performance on VPC GPU profiles before migration.',
+    'Consider IBM Power Virtual Server for specialized GPU workloads.',
+  ],
+};
+
+const RESERVED_CAPACITY_ACTIVE: PreRequisiteCheck = {
+  id: 'compute-reserved-capacity',
+  name: 'Active Reserved Capacity',
+  category: 'compute',
+  description: 'Active reserved capacity commitments (1-year or 3-year terms) have cost and contractual implications for migration. Migrating VSIs before reservation expiry may result in wasted commitment costs.',
+  docsUrl: 'https://cloud.ibm.com/docs/virtual-servers?topic=virtual-servers-about-reserved-virtual-servers',
+  remediationSteps: [
+    'Review reservation terms and expiry dates before migrating associated VSIs.',
+    'Plan migration timeline around reservation expiry to avoid wasted costs.',
+    'Contact IBM Cloud Support about early termination options if needed.',
+    'Consider running Classic reserved instances alongside VPC during transition.',
+  ],
+};
+
 const BM_NIC_SPEED: PreRequisiteCheck = {
   id: 'bm-nic-speed',
   name: 'Network Speed Compatibility',
@@ -686,6 +729,60 @@ export function runComputeChecks(collectedData: Record<string, unknown[]>): Chec
     }
   }
   results.push(evaluateCheck(IKS_ROKS_DETECTED, 'warning', allServers.length, kubeAffected));
+
+  // Software add-on detection — scan billing items for non-OS software
+  const billingItems = (collectedData['billingItems'] ?? []) as Record<string, unknown>[];
+  const addonPattern = /cpanel|plesk|anti[\s_-]?virus|monitoring[\s_-]?agent|r1soft|control[\s_-]?panel|cdp|evault|backup[\s_-]?agent|citrix|veeam/i;
+  const addonCatPattern = /^(cpanel|plesk_billing|anti_virus|monitoring_agent|software_license|control_panel|cdp|evault)$/i;
+  const softwareAffected: AffectedResource[] = [];
+  for (const item of billingItems) {
+    const catCode = str(item, 'categoryCode');
+    const desc = str(item, 'description');
+    if (addonCatPattern.test(catCode) || addonPattern.test(desc)) {
+      softwareAffected.push({
+        id: num(item, 'id') || num(item, 'parentId'),
+        hostname: desc || catCode || `Billing item ${num(item, 'id')}`,
+        detail: `Category: ${catCode || 'unknown'} — ${desc || 'no description'}`,
+      });
+    }
+  }
+  results.push(evaluateCheck(SOFTWARE_ADDON_DETECTED, 'warning', billingItems.length, softwareAffected));
+
+  // GPU detection — scan billing items for GPU category codes or descriptions
+  const gpuPattern = /\bgpu\b|\btesla\b|\bnvidia\b|\bcuda\b|graphic/i;
+  const gpuCatPattern = /^gpu/i;
+  const gpuAffected: AffectedResource[] = [];
+  for (const item of billingItems) {
+    const catCode = str(item, 'categoryCode');
+    const desc = str(item, 'description');
+    if (gpuCatPattern.test(catCode) || gpuPattern.test(desc)) {
+      gpuAffected.push({
+        id: num(item, 'id') || num(item, 'parentId'),
+        hostname: desc || catCode || `Billing item ${num(item, 'id')}`,
+        detail: `Category: ${catCode || 'unknown'} — ${desc || 'no description'}`,
+      });
+    }
+  }
+  results.push(evaluateCheck(GPU_DETECTED, 'warning', billingItems.length, gpuAffected));
+
+  // Reserved Capacity — active reservations have cost/contractual implications
+  const reserved = (collectedData['reservedCapacity'] ?? []) as Record<string, unknown>[];
+  const reservedAffected: AffectedResource[] = [];
+  for (const rc of reserved) {
+    const name = str(rc, 'name') || str(rc, 'description') || `Reservation ${num(rc, 'id')}`;
+    const instances = num(rc, 'instanceCount') || num(rc, 'instancesCount') || 0;
+    const router = str(rc, 'backendRouter.hostname') || str(rc, 'backendRouter') || '';
+    const detail = [
+      instances > 0 ? `${instances} instance(s)` : '',
+      router ? `router: ${router}` : '',
+    ].filter(Boolean).join(', ');
+    reservedAffected.push({
+      id: num(rc, 'id'),
+      hostname: name,
+      detail: detail || 'Active reservation',
+    });
+  }
+  results.push(evaluateCheck(RESERVED_CAPACITY_ACTIVE, 'warning', reserved.length, reservedAffected));
 
   return results;
 }
