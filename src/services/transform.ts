@@ -150,6 +150,31 @@ function transformVirtualServer(raw: RawItem): RawItem {
         .join(', ')
     : '';
 
+  // Attached network storage (block & file)
+  const allowedNetworkStorage = raw.allowedNetworkStorage as RawItem[] | undefined;
+  const attachedBlockStorageGb = allowedNetworkStorage
+    ? allowedNetworkStorage
+        .filter((s) => s.nasType === 'ISCSI')
+        .reduce((sum, s) => sum + (Number(s.capacityGb) || 0), 0)
+    : 0;
+  const attachedFileStorageGb = allowedNetworkStorage
+    ? allowedNetworkStorage
+        .filter((s) => s.nasType === 'NAS')
+        .reduce((sum, s) => sum + (Number(s.capacityGb) || 0), 0)
+    : 0;
+  const volumeCount = allowedNetworkStorage ? allowedNetworkStorage.length : 0;
+
+  // Cost basis derivation
+  const costBasis = (() => {
+    const monthly = nested(raw, 'billingItem', 'recurringFee');
+    if (monthly && Number(monthly) > 0) return 'Monthly';
+    if (raw.hourlyBillingFlag) {
+      const totalHourly = sumHourlyFees(raw);
+      if (totalHourly > 0) return 'Estimated';
+    }
+    return '';
+  })();
+
   return {
     id: raw.id,
     hostname: raw.hostname,
@@ -210,6 +235,10 @@ function transformVirtualServer(raw: RawItem): RawItem {
           .filter(Boolean)
           .join(', ')
       : '',
+    attachedBlockStorageGb,
+    attachedFileStorageGb,
+    volumeCount,
+    costBasis,
     billingCategories: (() => {
       const billingItem = raw.billingItem as RawItem | undefined;
       const children = billingItem?.children as RawItem[] | undefined;

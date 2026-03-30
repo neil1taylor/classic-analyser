@@ -165,6 +165,10 @@ export async function generateExcelExport(
     { header: 'Local Storage (GB)', key: 'localStorageGb', width: 16 },
     { header: 'Portable Storage (GB)', key: 'portableStorageGb', width: 18 },
     { header: 'Portable Storage Details', key: 'portableStorageDetails', width: 40 },
+    { header: 'Block Device Details', key: 'blockDeviceDetails', width: 40 },
+    { header: 'Attached Block Storage (GB)', key: 'attachedBlockStorageGb', width: 24 },
+    { header: 'Attached File Storage (GB)', key: 'attachedFileStorageGb', width: 24 },
+    { header: 'Volume Count', key: 'volumeCount', width: 14 },
     { header: 'VLANs', key: 'networkVlans', width: 30 },
   ];
   addHeaderStyle(wsVSI);
@@ -221,6 +225,10 @@ export async function generateExcelExport(
       localStorageGb: r.localStorageGb ?? '',
       portableStorageGb: r.portableStorageGb ?? '',
       portableStorageDetails: r.portableStorageDetails ?? '',
+      blockDeviceDetails: r.blockDeviceDetails ?? '',
+      attachedBlockStorageGb: r.attachedBlockStorageGb ?? '',
+      attachedFileStorageGb: r.attachedFileStorageGb ?? '',
+      volumeCount: r.volumeCount ?? '',
       networkVlans: r.networkVlans ?? '',
     });
   }

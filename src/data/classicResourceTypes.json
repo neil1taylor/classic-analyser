@@ -209,6 +209,34 @@
         "sortable": false
       },
       {
+        "field": "attachedBlockStorageGb",
+        "header": "Attached Block Storage (GB)",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "attachedFileStorageGb",
+        "header": "Attached File Storage (GB)",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "volumeCount",
+        "header": "Volume Count",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "costBasis",
+        "header": "Cost Basis",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
         "field": "billingCategories",
         "header": "Billing Categories",
         "dataType": "string",
