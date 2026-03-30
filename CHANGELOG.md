@@ -6,6 +6,8 @@ Format based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- Cloud-harvester schema alignment — attached network storage fields (`attachedBlockStorageGb`, `attachedFileStorageGb`, `volumeCount`) on Virtual Servers and Bare Metal, `costBasis` on Virtual Servers, `replicationStatus` on Block and File Storage
+- VMware Cross References frontend table definition (backend already collected; now visible in UI)
 - Migration execution step templates per approach — structured guidance for lift-and-shift (image export → COS → VPC), rebuild, re-platform (VMware RMM, PowerVS), and re-architect (Velero for IKS/ROKS) with IBM tool references and documentation links
 - Windows Cloudbase-Init & VirtIO pre-requisite check (`vsi-windows-cloudbase-init`) — flags Windows servers needing Cloudbase-Init and VirtIO drivers before VPC migration
 - VPC Network ACL rule estimate check (`net-acl-rule-estimate`) — warns when Classic firewall rules exceed VPC NACL limits (25 inbound + 25 outbound per ACL)
@@ -34,6 +36,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/).
 - Deploy script (`code-engine.sh`) rewritten with `.env` loading, podman support, create-or-update pattern, min-scale 1
 - File storage `replicationPartners` mask now includes nested fields (matching block storage)
 - Documentation updated for storage discovery gaps across CLAUDE.md, PRD.md, MIGRATION.md, and in-app docs
+- CI/CD deploy workflow: use `us.icr.io` registry, target resource group, create-or-update app pattern, ICR registry secret for image pulls, `workflow_dispatch` trigger
 
 ### Fixed
 - ApiKeyForm test failures — added missing mocks for ImportReportButton and ImportMdlButton
