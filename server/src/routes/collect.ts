@@ -28,6 +28,32 @@ router.get('/stream', apiKeyMiddleware, async (req: Request, res: Response): Pro
     abortSignal.aborted = true;
   });
 
+    // C2: Global collection timeout (10 minutes) to prevent hung connections
+    const COLLECTION_TIMEOUT_MS = 10 * 60 * 1000;
+    const collectionTimeout = setTimeout(() => {
+      if (!abortSignal.aborted) {
+        abortSignal.aborted = true;
+        try {
+          res.write(`event: error\n`);
+          res.write(`data: ${JSON.stringify({ fatal: true, message: 'Collection timed out after 10 minutes' })}\n\n`);
+          res.end();
+        } catch {
+          // connection already closed
+        }
+      }
+    }, COLLECTION_TIMEOUT_MS);
+
+    // C2: Keepalive ping every 30 seconds
+    const keepaliveInterval = setInterval(() => {
+      if (!abortSignal.aborted) {
+        try {
+          res.write(`:keepalive\n\n`);
+        } catch {
+          // connection closed
+        }
+      }
+    }, 30_000);
+
   try {
     const auth = req.authMode === 'iam'
       ? { iamToken: req.iamToken! }
@@ -46,6 +72,8 @@ router.get('/stream', apiKeyMiddleware, async (req: Request, res: Response): Pro
       }
     }
   } finally {
+    clearTimeout(collectionTimeout);
+    clearInterval(keepaliveInterval);
     if (!abortSignal.aborted) {
       try {
         res.end();

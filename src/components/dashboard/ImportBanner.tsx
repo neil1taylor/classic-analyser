@@ -13,6 +13,12 @@ const ImportBanner: React.FC = () => {
     ? importTimestamp.toLocaleString()
     : '';
 
+  // IMS report/MDL imports don't include billing data
+  const isReportImport = importFilename?.startsWith('report:') || importFilename?.startsWith('mdl:');
+  const costNote = isReportImport
+    ? ' Cost data is not available — IMS reports do not include billing information.'
+    : '';
+
   const handleClear = () => {
     clearData();
     navigate('/');
@@ -22,7 +28,7 @@ const ImportBanner: React.FC = () => {
     <ActionableNotification
       kind="info"
       title="Imported data"
-      subtitle={`Viewing imported data from '${importFilename}'${timestamp ? ` — ${timestamp}` : ''}`}
+      subtitle={`Viewing imported data from '${importFilename}'${timestamp ? ` — ${timestamp}` : ''}.${costNote}`}
       lowContrast
       hideCloseButton
       actionButtonLabel="Clear & Return"

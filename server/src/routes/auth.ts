@@ -5,58 +5,10 @@ import { VpcClient } from '../services/vpc/client.js';
 import { PowerVsClient } from '../services/powervs/client.js';
 import type { SLAccount } from '../services/softlayer/types.js';
 import logger from '../utils/logger.js';
+import { getIamToken, extractAccountIdFromToken, getIbmCloudAccountName } from '../utils/iam.js';
+import { validateBody, PasscodeSchema, RefreshTokenSchema, RevokeTokenSchema } from '../utils/validation.js';
 
 const router = Router();
-
-/**
- * Exchange an IBM Cloud API key for an IAM access token.
- */
-async function getIamToken(apiKey: string): Promise<string> {
-  const resp = await fetch('https://iam.cloud.ibm.com/identity/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: `grant_type=urn:ibm:params:oauth:grant-type:apikey&apikey=${encodeURIComponent(apiKey)}`,
-  });
-  if (!resp.ok) {
-    throw new Error(`IAM token exchange failed: ${resp.status}`);
-  }
-  const data = (await resp.json()) as { access_token: string };
-  return data.access_token;
-}
-
-/**
- * Decode the JWT access token (without verification) and extract the BSS account ID.
- */
-function extractAccountIdFromToken(token: string): string | null {
-  try {
-    const parts = token.split('.');
-    if (parts.length < 2) return null;
-    const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf-8'));
-    return payload?.account?.bss ?? null;
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Fetch the IBM Cloud account name using the Accounts API.
- */
-async function getIbmCloudAccountName(
-  accountId: string,
-  iamToken: string,
-): Promise<string | null> {
-  try {
-    const resp = await fetch(
-      `https://accounts.cloud.ibm.com/coe/v2/accounts/${accountId}`,
-      { headers: { Authorization: `Bearer ${iamToken}` } },
-    );
-    if (!resp.ok) return null;
-    const data = (await resp.json()) as { entity?: { name?: string } };
-    return data?.entity?.name ?? null;
-  } catch {
-    return null;
-  }
-}
 
 router.post('/validate', async (req: Request, res: Response): Promise<void> => {
   const apiKey = req.headers['x-api-key'] as string | undefined;
@@ -154,13 +106,8 @@ router.post('/validate', async (req: Request, res: Response): Promise<void> => {
 
 // --- IAM Passcode exchange endpoint ---
 
-router.post('/passcode', async (req: Request, res: Response): Promise<void> => {
-  const { passcode } = req.body as { passcode?: string };
-
-  if (!passcode || passcode.trim().length === 0) {
-    res.status(400).json({ error: 'Missing passcode' });
-    return;
-  }
+router.post('/passcode', validateBody(PasscodeSchema), async (req: Request, res: Response): Promise<void> => {
+  const { passcode } = req.body as { passcode: string };
 
   try {
     const body = new URLSearchParams({
@@ -196,13 +143,8 @@ router.post('/passcode', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
-router.post('/oauth/refresh', async (req: Request, res: Response): Promise<void> => {
-  const { refresh_token } = req.body as { refresh_token?: string };
-
-  if (!refresh_token) {
-    res.status(400).json({ error: 'Missing refresh_token' });
-    return;
-  }
+router.post('/oauth/refresh', validateBody(RefreshTokenSchema), async (req: Request, res: Response): Promise<void> => {
+  const { refresh_token } = req.body as { refresh_token: string };
 
   const clientId = process.env.IBM_OAUTH_CLIENT_ID;
   if (!clientId) {
@@ -237,13 +179,8 @@ router.post('/oauth/refresh', async (req: Request, res: Response): Promise<void>
   }
 });
 
-router.post('/oauth/revoke', async (req: Request, res: Response): Promise<void> => {
-  const { token } = req.body as { token?: string };
-
-  if (!token) {
-    res.status(400).json({ error: 'Missing token' });
-    return;
-  }
+router.post('/oauth/revoke', validateBody(RevokeTokenSchema), async (req: Request, res: Response): Promise<void> => {
+  const { token } = req.body as { token: string };
 
   const clientId = process.env.IBM_OAUTH_CLIENT_ID;
   if (!clientId) {

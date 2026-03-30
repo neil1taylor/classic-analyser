@@ -6,16 +6,12 @@ import { VpcClient } from '../vpc/client.js';
 import { getTransitGateways, getTransitGatewayConnections } from '../vpc/resources.js';
 import logger from '../../utils/logger.js';
 import { runWithConcurrencyLimit } from '../../utils/concurrency.js';
+import { sendSSE } from '../../utils/sse.js';
 import type { PowerVsCollectionError, PowerVsWorkspace, PvsNetwork } from './types.js';
 
 const MAX_CONCURRENCY = 10;
 const TOTAL_RESOURCE_TYPES = 24;
 
-function sendSSE(res: Response, event: string, data: unknown): void {
-  if (!res.writableEnded) {
-    res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
-  }
-}
 
 interface CollectorTask {
   name: string;

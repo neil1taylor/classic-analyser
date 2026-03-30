@@ -2,28 +2,9 @@ import { Router } from 'express';
 import type { Request, Response } from 'express';
 import { VpcClient } from '../services/vpc/client.js';
 import logger from '../utils/logger.js';
+import { getIbmCloudAccountName } from '../utils/iam.js';
 
 const router = Router();
-
-/**
- * Fetch the IBM Cloud account name using the Accounts API.
- */
-async function getIbmCloudAccountName(
-  accountId: string,
-  iamToken: string,
-): Promise<string | null> {
-  try {
-    const resp = await fetch(
-      `https://accounts.cloud.ibm.com/coe/v2/accounts/${accountId}`,
-      { headers: { Authorization: `Bearer ${iamToken}` } },
-    );
-    if (!resp.ok) return null;
-    const data = (await resp.json()) as { entity?: { name?: string } };
-    return data?.entity?.name ?? null;
-  } catch {
-    return null;
-  }
-}
 
 router.post('/validate', async (req: Request, res: Response): Promise<void> => {
   const apiKey = req.headers['x-api-key'] as string | undefined;

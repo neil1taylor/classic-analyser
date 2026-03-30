@@ -3,6 +3,7 @@ import type { Request, Response } from 'express';
 import { apiKeyMiddleware } from '../middleware/apiKey.js';
 import { generateExcelExport } from '../services/export.js';
 import type { CollectedData } from '../services/softlayer/types.js';
+import { validateBody, ClassicExportSchema } from '../utils/validation.js';
 import logger from '../utils/logger.js';
 
 const router = Router();
@@ -73,7 +74,7 @@ function buildCollectedData(data: Record<string, unknown[]>): CollectedData {
   } as CollectedData;
 }
 
-router.post('/', apiKeyMiddleware, async (req: Request, res: Response): Promise<void> => {
+router.post('/', apiKeyMiddleware, validateBody(ClassicExportSchema), async (req: Request, res: Response): Promise<void> => {
   try {
     // Frontend sends { data: Record<string, unknown[]>, accountName: string }
     const rawData = req.body.data ?? req.body;

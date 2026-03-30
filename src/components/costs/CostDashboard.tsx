@@ -17,11 +17,23 @@ const CostDashboard: React.FC = () => {
   const chartsTheme = theme === 'g100' ? 'g90' : 'white';
   const { totalCost, costByCategory, stackedBarData, treemap } = useCostData();
 
+  const { dataSource, importFilename } = useData();
+  const isReportImport = dataSource === 'imported' && (importFilename?.startsWith('report:') || importFilename?.startsWith('mdl:'));
+
   if (!hasData) {
     return (
       <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--cds-text-secondary)' }}>
         <h3 style={{ marginBottom: '0.5rem' }}>Cost Analysis</h3>
         <p>Collect data first to view cost analysis.</p>
+      </div>
+    );
+  }
+
+  if (isReportImport && totalCost === 0) {
+    return (
+      <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--cds-text-secondary)' }}>
+        <h3 style={{ marginBottom: '0.5rem' }}>Cost Analysis</h3>
+        <p>Cost data is not available for IMS report imports. Billing information is only collected via live API connection.</p>
       </div>
     );
   }

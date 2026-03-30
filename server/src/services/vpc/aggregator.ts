@@ -32,19 +32,12 @@ import {
 } from './resources.js';
 import type { DirectLinkGateway, Vpc, VpcRoutingTable } from './types.js';
 import { runWithConcurrencyLimit } from '../../utils/concurrency.js';
+import { sendSSE } from '../../utils/sse.js';
 import type { VpcCollectionError } from './types.js';
 import logger from '../../utils/logger.js';
 
 const MAX_CONCURRENCY = 10;
 
-function sendSSE(res: Response, event: string, data: unknown): void {
-  try {
-    res.write(`event: ${event}\n`);
-    res.write(`data: ${JSON.stringify(data)}\n\n`);
-  } catch {
-    // connection may be closed
-  }
-}
 
 interface CollectorTask {
   name: string;
