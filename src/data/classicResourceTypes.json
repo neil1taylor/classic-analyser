@@ -418,6 +418,27 @@
         "dataType": "string",
         "defaultVisible": false,
         "sortable": false
+      },
+      {
+        "field": "attachedBlockStorageGb",
+        "header": "Attached Block Storage (GB)",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "attachedFileStorageGb",
+        "header": "Attached File Storage (GB)",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "volumeCount",
+        "header": "Volume Count",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
       }
     ]
   },

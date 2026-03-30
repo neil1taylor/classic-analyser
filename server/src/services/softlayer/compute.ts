@@ -33,7 +33,7 @@ export async function getVirtualGuests(client: SoftLayerClient): Promise<SLVirtu
 
 export async function getHardware(client: SoftLayerClient): Promise<SLHardware[]> {
   const objectMask =
-    'mask[id,hostname,domain,fullyQualifiedDomainName,manufacturerSerialNumber,primaryIpAddress,primaryBackendIpAddress,processorPhysicalCoreAmount,memoryCapacity,hardDrives[capacity,hardwareComponentModel[hardwareGenericComponentModel[hardwareComponentType]]],datacenter,operatingSystem[softwareDescription],networkComponents[primaryIpAddress,port,speed,status,macAddress],billingItem[recurringFee],provisionDate,powerSupplyCount,networkGatewayMemberFlag,networkVlans,tagReferences,notes]';
+    'mask[id,hostname,domain,fullyQualifiedDomainName,manufacturerSerialNumber,primaryIpAddress,primaryBackendIpAddress,processorPhysicalCoreAmount,memoryCapacity,hardDrives[capacity,hardwareComponentModel[hardwareGenericComponentModel[hardwareComponentType]]],datacenter,operatingSystem[softwareDescription],networkComponents[primaryIpAddress,port,speed,status,macAddress],billingItem[recurringFee],provisionDate,powerSupplyCount,networkGatewayMemberFlag,networkVlans,tagReferences,notes,allowedNetworkStorage[id,nasType,capacityGb,username]]';
 
   try {
     const result = await client.requestAllPages<SLHardware>({

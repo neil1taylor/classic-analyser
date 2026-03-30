@@ -284,6 +284,20 @@ function transformBareMetal(raw: RawItem): RawItem {
         .join(', ')
     : '';
 
+  // Attached network storage (block & file)
+  const allowedNetworkStorage = raw.allowedNetworkStorage as RawItem[] | undefined;
+  const attachedBlockStorageGb = allowedNetworkStorage
+    ? allowedNetworkStorage
+        .filter((s) => s.nasType === 'ISCSI')
+        .reduce((sum, s) => sum + (Number(s.capacityGb) || 0), 0)
+    : 0;
+  const attachedFileStorageGb = allowedNetworkStorage
+    ? allowedNetworkStorage
+        .filter((s) => s.nasType === 'NAS')
+        .reduce((sum, s) => sum + (Number(s.capacityGb) || 0), 0)
+    : 0;
+  const volumeCount = allowedNetworkStorage ? allowedNetworkStorage.length : 0;
+
   return {
     id: raw.id,
     hostname: raw.hostname,
@@ -336,6 +350,9 @@ function transformBareMetal(raw: RawItem): RawItem {
           .filter(Boolean)
           .join(', ')
       : '',
+    attachedBlockStorageGb,
+    attachedFileStorageGb,
+    volumeCount,
   };
 }
 
