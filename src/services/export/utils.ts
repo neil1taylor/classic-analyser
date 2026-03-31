@@ -4,6 +4,7 @@
 import { RESOURCE_TYPES } from '@/types/resources';
 import { VPC_RESOURCE_TYPES } from '@/types/vpc-resources';
 import { POWERVS_RESOURCE_TYPES } from '@/types/powervs-resources';
+import { PLATFORM_RESOURCE_TYPES } from '@/types/platform-resources';
 import type { ExportData, InfrastructureDomain, ResourceTypeMeta } from './types';
 
 export function getResourceTypesForDomain(domain: InfrastructureDomain): ResourceTypeMeta[] {
@@ -14,6 +15,8 @@ export function getResourceTypesForDomain(domain: InfrastructureDomain): Resourc
       return VPC_RESOURCE_TYPES;
     case 'powervs':
       return POWERVS_RESOURCE_TYPES;
+    case 'platform':
+      return PLATFORM_RESOURCE_TYPES;
   }
 }
 
@@ -25,6 +28,8 @@ export function getDomainLabel(domain: InfrastructureDomain): string {
       return 'VPC Infrastructure';
     case 'powervs':
       return 'PowerVS Infrastructure';
+    case 'platform':
+      return 'Platform Services';
   }
 }
 

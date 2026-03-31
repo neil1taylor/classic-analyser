@@ -14,9 +14,11 @@ import {
 import { useExport } from '@/hooks/useExport';
 import { useVpcExport } from '@/hooks/useVpcExport';
 import { usePowerVsExport } from '@/hooks/usePowerVsExport';
+import { usePlatformExport } from '@/hooks/usePlatformExport';
 import { useData } from '@/contexts/DataContext';
 import { useVpcData } from '@/contexts/VpcDataContext';
 import { usePowerVsData } from '@/contexts/PowerVsDataContext';
+import { usePlatformData } from '@/contexts/PlatformDataContext';
 import { useUI } from '@/contexts/UIContext';
 
 interface ExportOption {
@@ -24,7 +26,7 @@ interface ExportOption {
   label: string;
   description: string;
   icon: React.ComponentType<{ size: number }>;
-  domains: Array<'classic' | 'vpc' | 'powervs'>;
+  domains: Array<'classic' | 'vpc' | 'powervs' | 'platform'>;
   format?: string;
 }
 
@@ -34,7 +36,7 @@ const EXPORT_OPTIONS: ExportOption[] = [
     label: 'Excel Workbook (XLSX)',
     description: 'One worksheet per resource type with all collected data.',
     icon: DocumentExport,
-    domains: ['classic', 'vpc', 'powervs'],
+    domains: ['classic', 'vpc', 'powervs', 'platform'],
     format: 'xlsx',
   },
   {
@@ -42,7 +44,7 @@ const EXPORT_OPTIONS: ExportOption[] = [
     label: 'PDF Report',
     description: 'Summary report with charts and resource overviews.',
     icon: DocumentPdf,
-    domains: ['classic', 'vpc', 'powervs'],
+    domains: ['classic', 'vpc', 'powervs', 'platform'],
     format: 'pdf',
   },
   {
@@ -50,7 +52,7 @@ const EXPORT_OPTIONS: ExportOption[] = [
     label: 'Word Document (DOCX)',
     description: 'Editable report with branding, charts, and AI-enhanced narratives.',
     icon: DocumentWordProcessor,
-    domains: ['classic', 'vpc', 'powervs'],
+    domains: ['classic', 'vpc', 'powervs', 'platform'],
     format: 'docx',
   },
   {
@@ -58,7 +60,7 @@ const EXPORT_OPTIONS: ExportOption[] = [
     label: 'PowerPoint (PPTX)',
     description: 'Presentation slides with key metrics and distribution charts.',
     icon: PresentationFile,
-    domains: ['classic', 'vpc', 'powervs'],
+    domains: ['classic', 'vpc', 'powervs', 'platform'],
     format: 'pptx',
   },
 ];
@@ -67,23 +69,27 @@ const ExportPage: React.FC = () => {
   const { exportAll, isExporting } = useExport();
   const { exportVpcAll, isVpcExporting } = useVpcExport();
   const { exportPvsAll, isPvsExporting } = usePowerVsExport();
+  const { exportPlatformAll, isPlatformExporting } = usePlatformExport();
   const { collectedData } = useData();
   const { vpcCollectedData } = useVpcData();
   const { pvsCollectedData } = usePowerVsData();
+  const { platformCollectedData } = usePlatformData();
   const { activeDomain } = useUI();
   const [error, setError] = useState<string | null>(null);
 
   const hasClassicData = Object.keys(collectedData).length > 0;
   const hasVpcData = Object.keys(vpcCollectedData).length > 0;
   const hasPvsData = Object.keys(pvsCollectedData).length > 0;
+  const hasPlatformData = Object.keys(platformCollectedData).length > 0;
 
   const hasDataForDomain: Record<string, boolean> = {
     classic: hasClassicData,
     vpc: hasVpcData,
     powervs: hasPvsData,
+    platform: hasPlatformData,
   };
 
-  const anyExporting = isExporting || isVpcExporting || isPvsExporting;
+  const anyExporting = isExporting || isVpcExporting || isPvsExporting || isPlatformExporting;
 
   const handleExport = async (format: string) => {
     setError(null);
@@ -94,6 +100,8 @@ const ExportPage: React.FC = () => {
         await exportVpcAll(format as 'xlsx' | 'pdf' | 'docx' | 'pptx');
       } else if (activeDomain === 'powervs' && hasPvsData) {
         await exportPvsAll(format as 'xlsx' | 'pdf' | 'docx' | 'pptx');
+      } else if (activeDomain === 'platform' && hasPlatformData) {
+        await exportPlatformAll(format as 'xlsx' | 'pdf' | 'docx' | 'pptx');
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Export failed');
@@ -142,7 +150,7 @@ const ExportPage: React.FC = () => {
           marginBottom: '2rem',
         }}
       >
-        {EXPORT_OPTIONS.filter((opt) => opt.domains.includes(activeDomain as 'classic' | 'vpc' | 'powervs')).map((opt) => {
+        {EXPORT_OPTIONS.filter((opt) => opt.domains.includes(activeDomain as 'classic' | 'vpc' | 'powervs' | 'platform')).map((opt) => {
           const Icon = opt.icon;
           return (
             <Tile key={opt.id} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>

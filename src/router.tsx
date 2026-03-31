@@ -63,6 +63,8 @@ const PowerVsResourcePage = lazyWithRetry(() => import('@/pages/PowerVsResourceP
 const PowerVsTopologyPage = lazyWithRetry(() => import('@/pages/PowerVsTopologyPage'));
 const PowerVsCostsPage = lazyWithRetry(() => import('@/pages/PowerVsCostsPage'));
 const PowerVsGeographyPage = lazyWithRetry(() => import('@/pages/PowerVsGeographyPage'));
+const PlatformDashboardPage = lazyWithRetry(() => import('@/pages/PlatformDashboardPage'));
+const PlatformResourcePage = lazyWithRetry(() => import('@/pages/PlatformResourcePage'));
 const ExportPage = lazyWithRetry(() => import('@/pages/ExportPage'));
 const SettingsPage = lazyWithRetry(() => import('@/pages/SettingsPage'));
 const DocsHub = lazyWithRetry(() => import('@/components/docs/DocsHub'));
@@ -97,6 +99,9 @@ export const router = createBrowserRouter([
       { path: 'powervs/topology', element: <PageLoader><PowerVsTopologyPage /></PageLoader> },
       { path: 'powervs/costs', element: <PageLoader><PowerVsCostsPage /></PageLoader> },
       { path: 'powervs/geography', element: <PageLoader><PowerVsGeographyPage /></PageLoader> },
+      // Platform Services routes
+      { path: 'platform/dashboard', element: <PageLoader><PlatformDashboardPage /></PageLoader> },
+      { path: 'platform/resources/:type', element: <PageLoader><PlatformResourcePage /></PageLoader> },
       // Shared routes
       { path: 'export', element: <PageLoader><ExportPage /></PageLoader> },
       { path: 'settings', element: <PageLoader><SettingsPage /></PageLoader> },

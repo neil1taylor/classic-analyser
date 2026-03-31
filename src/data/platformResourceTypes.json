@@ -1,0 +1,21 @@
+[
+  {
+    "key": "serviceInstances",
+    "label": "Service Instances",
+    "category": "Platform Services",
+    "worksheetName": "sServiceInstances",
+    "columns": [
+      { "field": "name", "header": "Name", "dataType": "string", "defaultVisible": true, "sortable": true },
+      { "field": "_serviceType", "header": "Service", "dataType": "string", "defaultVisible": true, "sortable": true },
+      { "field": "_serviceCategory", "header": "Category", "dataType": "string", "defaultVisible": true, "sortable": true },
+      { "field": "state", "header": "State", "dataType": "string", "defaultVisible": true, "sortable": true },
+      { "field": "location", "header": "Location", "dataType": "string", "defaultVisible": true, "sortable": true },
+      { "field": "_resourceGroupName", "header": "Resource Group", "dataType": "string", "defaultVisible": true, "sortable": true },
+      { "field": "type", "header": "Type", "dataType": "string", "defaultVisible": false, "sortable": true },
+      { "field": "created_at", "header": "Created", "dataType": "date", "defaultVisible": true, "sortable": true },
+      { "field": "updated_at", "header": "Updated", "dataType": "date", "defaultVisible": false, "sortable": true },
+      { "field": "guid", "header": "GUID", "dataType": "string", "defaultVisible": false, "sortable": true },
+      { "field": "crn", "header": "CRN", "dataType": "string", "defaultVisible": false, "sortable": true }
+    ]
+  }
+]

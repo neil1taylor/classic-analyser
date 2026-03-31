@@ -4,7 +4,7 @@
 
 export type ExportFormat = 'xlsx' | 'pdf' | 'docx' | 'pptx' | 'handover';
 
-export type InfrastructureDomain = 'classic' | 'vpc' | 'powervs';
+export type InfrastructureDomain = 'classic' | 'vpc' | 'powervs' | 'platform';
 
 export interface ExportOptions {
   format: ExportFormat;

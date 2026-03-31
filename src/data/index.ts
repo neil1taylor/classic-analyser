@@ -4,6 +4,7 @@ import classicRelationships from './classicRelationships.json';
 import classicDisplayNames from './classicDisplayNames.json';
 import vpcResourceTypes from './vpcResourceTypes.json';
 import powerVsResourceTypes from './powerVsResourceTypes.json';
+import platformResourceTypes from './platformResourceTypes.json';
 import ibmCloudDataCenters from './ibmCloudDataCenters.json';
 import ibmCloudRegions from './ibmCloudRegions.json';
 
@@ -16,6 +17,7 @@ export {
   classicDisplayNames,
   vpcResourceTypes,
   powerVsResourceTypes,
+  platformResourceTypes,
   ibmCloudDataCenters,
   ibmCloudRegions,
 };

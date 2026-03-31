@@ -9,6 +9,7 @@ import { UIProvider, useUI } from '@/contexts/UIContext';
 import { MigrationProvider } from '@/contexts/MigrationContext';
 import { VpcDataProvider } from '@/contexts/VpcDataContext';
 import { PowerVsDataProvider } from '@/contexts/PowerVsDataContext';
+import { PlatformDataProvider } from '@/contexts/PlatformDataContext';
 import { AIProvider } from '@/contexts/AIContext';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { GuidedTour } from '@/components/common/GuidedTour';
@@ -22,12 +23,14 @@ const domainDashboard: Record<InfrastructureDomain, string> = {
   classic: '/dashboard',
   vpc: '/vpc/dashboard',
   powervs: '/powervs/dashboard',
+  platform: '/platform/dashboard',
 };
 
 const allDomainLabels: Record<InfrastructureDomain, string> = {
   classic: 'Classic Infrastructure',
   vpc: 'VPC Infrastructure',
   powervs: 'Power Virtual Server',
+  platform: 'Platform Services',
 };
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode; requiredMode?: InfrastructureDomain }> = ({ children, requiredMode }) => {
@@ -106,6 +109,7 @@ function getRouteRequirements(pathname: string): { requiresAuth: boolean; requir
 
   if (pathname.startsWith('/vpc/')) return { requiresAuth: true, requiredMode: 'vpc' };
   if (pathname.startsWith('/powervs/')) return { requiresAuth: true, requiredMode: 'powervs' };
+  if (pathname.startsWith('/platform/')) return { requiresAuth: true, requiredMode: 'platform' };
   if (pathname === '/settings' || pathname === '/export') return { requiresAuth: true };
   return { requiresAuth: true, requiredMode: 'classic' };
 }
@@ -174,13 +178,15 @@ export function AppLayout() {
       <DataProvider>
         <VpcDataProvider>
           <PowerVsDataProvider>
-            <MigrationProvider>
-              <AIProvider>
-                <UIProvider>
-                  <AppLayoutInner />
-                </UIProvider>
-              </AIProvider>
-            </MigrationProvider>
+            <PlatformDataProvider>
+              <MigrationProvider>
+                <AIProvider>
+                  <UIProvider>
+                    <AppLayoutInner />
+                  </UIProvider>
+                </AIProvider>
+              </MigrationProvider>
+            </PlatformDataProvider>
           </PowerVsDataProvider>
         </VpcDataProvider>
       </DataProvider>

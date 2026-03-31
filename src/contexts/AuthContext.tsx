@@ -15,7 +15,7 @@ const log = createLogger('Auth');
 
 const INACTIVITY_TIMEOUT_MS = 60 * 60 * 1000; // 60 minutes
 
-export type InfrastructureDomain = 'classic' | 'vpc' | 'powervs';
+export type InfrastructureDomain = 'classic' | 'vpc' | 'powervs' | 'platform';
 export type InfrastructureMode = InfrastructureDomain[];
 
 interface AuthContextValue {
@@ -168,6 +168,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!classicOk && !vpcOk) {
         info.companyName = pvsAccount?.ibmCloudAccountName || 'PowerVS Account';
       }
+    }
+
+    // Platform Services uses IAM tokens — available whenever VPC or PowerVS succeeds
+    if (vpcOk || powerVsOk) {
+      mode.push('platform');
     }
 
     setApiKey(key);

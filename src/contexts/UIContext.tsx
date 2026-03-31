@@ -40,6 +40,7 @@ function getInitialTheme(): CarbonTheme {
 function domainFromPath(pathname: string): InfrastructureDomain {
   if (pathname.startsWith('/vpc')) return 'vpc';
   if (pathname.startsWith('/powervs')) return 'powervs';
+  if (pathname.startsWith('/platform')) return 'platform';
   return 'classic';
 }
 

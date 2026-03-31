@@ -12,6 +12,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { CATEGORIES, getResourcesByCategory } from '@/types/resources';
 import { VPC_CATEGORIES, getVpcResourcesByCategory } from '@/types/vpc-resources';
 import { POWERVS_CATEGORIES, getPowerVsResourcesByCategory } from '@/types/powervs-resources';
+import { PLATFORM_RESOURCE_TYPES } from '@/types/platform-resources';
 import type { InfrastructureDomain } from '@/contexts/AuthContext';
 import {
   Dashboard,
@@ -47,6 +48,7 @@ const domainLabels: Record<InfrastructureDomain, string> = {
   classic: 'Classic',
   vpc: 'VPC',
   powervs: 'PowerVS',
+  platform: 'Platform',
 };
 
 const AppSideNav: React.FC = () => {
@@ -213,6 +215,30 @@ const AppSideNav: React.FC = () => {
     );
   };
 
+  // ── Platform Services nav items ──────────────────────────────
+  const renderPlatformNav = () => {
+    const isPlatformDashboard = currentPath === '/platform/dashboard';
+
+    return (
+      <>
+        <SideNavMenuItem onClick={() => navigate('/platform/dashboard')} isActive={isPlatformDashboard} aria-current={isPlatformDashboard ? 'page' : undefined}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Dashboard size={16} /> Summary</span>
+        </SideNavMenuItem>
+
+        <SideNavDivider />
+
+        {PLATFORM_RESOURCE_TYPES.map((resource) => {
+          const isActive = currentPath === `/platform/resources/${resource.key}`;
+          return (
+            <SideNavMenuItem key={resource.key} onClick={() => navigate(`/platform/resources/${resource.key}`)} isActive={isActive} aria-current={isActive ? 'page' : undefined}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><DataBase size={16} /> {resource.label}</span>
+            </SideNavMenuItem>
+          );
+        })}
+      </>
+    );
+  };
+
   const isExport = currentPath === '/export';
   const isDocs = currentPath === '/docs';
   const isSettings = currentPath === '/settings';
@@ -248,6 +274,7 @@ const AppSideNav: React.FC = () => {
         {activeDomain === 'classic' && renderClassicNav()}
         {activeDomain === 'vpc' && renderVpcNav()}
         {activeDomain === 'powervs' && renderPowerVsNav()}
+        {activeDomain === 'platform' && renderPlatformNav()}
 
         <SideNavDivider />
 

@@ -14,6 +14,8 @@ import aiProxyRouter from './routes/ai-proxy.js';
 import powerVsAuthRouter from './routes/powervs-auth.js';
 import powerVsCollectRouter from './routes/powervs-collect.js';
 import powerVsExportRouter from './routes/powervs-export.js';
+import platformCollectRouter from './routes/platform-collect.js';
+import platformExportRouter from './routes/platform-export.js';
 import convertRouter from './routes/convert.js';
 import { errorHandler, notFoundHandler } from './middleware/error.js';
 import logger from './utils/logger.js';
@@ -80,6 +82,8 @@ app.use('/api/ai', aiProxyRouter);
 app.use('/api/powervs/auth', powerVsAuthRouter);
 app.use('/api/powervs/collect', powerVsCollectRouter);
 app.use('/api/powervs/export', powerVsExportRouter);
+app.use('/api/platform/collect', platformCollectRouter);
+app.use('/api/platform/export', platformExportRouter);
 app.use('/api/convert', convertRouter);
 
 // Serve static files in production
