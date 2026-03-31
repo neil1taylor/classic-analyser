@@ -183,8 +183,8 @@ export async function getStorageSnapshots(
     return result;
   } catch (err) {
     const error = err as Error & { statusCode?: number };
-    if (error.statusCode === 403 || error.statusCode === 404) {
-      logger.warn('Could not collect snapshots for volume', { volumeId });
+    if (error.statusCode === 403 || error.statusCode === 404 || error.statusCode === 500) {
+      logger.warn('Could not collect snapshots for volume', { volumeId, statusCode: error.statusCode });
       return [];
     }
     throw error;

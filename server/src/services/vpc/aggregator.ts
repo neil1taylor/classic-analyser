@@ -29,6 +29,7 @@ import {
   getVpcRoutes,
   groupVpcsByRegion,
   groupRoutingTablesByRegion,
+  getCosInstances,
 } from './resources.js';
 import type { DirectLinkGateway, Vpc, VpcRoutingTable } from './types.js';
 import { runWithConcurrencyLimit } from '../../utils/concurrency.js';
@@ -387,6 +388,7 @@ export async function collectAllVpcData(
       }) },
       { name: 'directLinkVirtualConnections', fn: () => getDirectLinkVirtualConnections(client, dlRef) },
       { name: 'vpnGatewayConnections', fn: () => getVpnGatewayConnections(client, regions) },
+      { name: 'cosInstances', fn: () => getCosInstances(client) },
     ];
 
     // Run all tasks with concurrency limit

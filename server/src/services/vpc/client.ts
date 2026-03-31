@@ -7,6 +7,7 @@ const TRANSIT_GW_API_BASE = 'https://transit.cloud.ibm.com';
 const TRANSIT_GW_API_VERSION = '2024-01-01';
 const DIRECT_LINK_API_BASE = 'https://directlink.cloud.ibm.com';
 const DIRECT_LINK_API_VERSION = '2024-06-01';
+const RESOURCE_CONTROLLER_API_BASE = 'https://resource-controller.cloud.ibm.com';
 const MAX_RETRIES = 3;
 const RETRY_DELAYS = [1000, 2000, 4000];
 const REQUEST_TIMEOUT_MS = 30000; // 30 second timeout per request
@@ -467,6 +468,105 @@ export class VpcClient {
         } catch {
           break;
         }
+      } else {
+        break;
+      }
+    }
+
+    return allItems;
+  }
+
+  /**
+   * Make a request to the Resource Controller API.
+   */
+  async requestResourceController<T>(path: string): Promise<T> {
+    const url = `${RESOURCE_CONTROLLER_API_BASE}${path}`;
+
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+      try {
+        const token = await this.exchangeToken();
+
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json',
+          },
+          signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+        });
+
+        if (!response.ok) {
+          const statusCode = response.status;
+
+          if ((statusCode === 429 || statusCode === 503) && attempt < MAX_RETRIES) {
+            const delay = RETRY_DELAYS[attempt] || 4000;
+            logger.warn('Resource Controller API rate limited, retrying', {
+              url: path,
+              statusCode,
+              attempt: attempt + 1,
+              retryInMs: delay,
+            });
+            await this.sleep(delay);
+            continue;
+          }
+
+          let errorBody = '';
+          try {
+            errorBody = await response.text();
+          } catch {
+            // ignore
+          }
+
+          const error = new Error(
+            `Resource Controller API error: ${statusCode} ${response.statusText}`
+          ) as Error & { statusCode: number; body: string };
+          error.statusCode = statusCode;
+          error.body = errorBody;
+          throw error;
+        }
+
+        return await response.json() as T;
+      } catch (err) {
+        const error = err as Error & { statusCode?: number };
+        if (error.statusCode === 429 || error.statusCode === 503) {
+          if (attempt >= MAX_RETRIES) throw error;
+          continue;
+        }
+        if (attempt < MAX_RETRIES && !error.statusCode) {
+          const delay = RETRY_DELAYS[attempt] || 4000;
+          logger.warn('Resource Controller API network error, retrying', {
+            url: path,
+            message: error.message,
+            attempt: attempt + 1,
+          });
+          await this.sleep(delay);
+          continue;
+        }
+        throw error;
+      }
+    }
+
+    throw new Error('Max retries exceeded');
+  }
+
+  /**
+   * Fetch all pages for a paginated Resource Controller API endpoint.
+   * Resource Controller uses `next_url` (relative path) for pagination.
+   */
+  async requestAllResourceControllerPages<T>(path: string, itemsKey: string): Promise<T[]> {
+    const allItems: T[] = [];
+    let currentPath = path;
+
+    while (currentPath) {
+      const response = await this.requestResourceController<Record<string, unknown>>(currentPath);
+      const items = response[itemsKey] as T[] | undefined;
+      if (items && Array.isArray(items)) {
+        allItems.push(...items);
+      }
+
+      const nextUrl = response.next_url as string | undefined;
+      if (nextUrl) {
+        currentPath = nextUrl;
       } else {
         break;
       }

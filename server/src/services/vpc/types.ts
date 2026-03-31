@@ -483,6 +483,24 @@ export interface VpcRoute {
   [key: string]: unknown;
 }
 
+// ── Cloud Object Storage (Resource Controller) ─────────────────────
+export interface CosInstance {
+  id: string;
+  guid: string;
+  crn: string;
+  name: string;
+  resource_group_id: string;
+  resource_group_name?: string;
+  resource_plan_id: string;
+  type: string;
+  state: string;
+  location: string;
+  created_at: string;
+  updated_at: string;
+  extensions?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
 export interface VpcCollectionError {
   resourceType: string;
   message: string;

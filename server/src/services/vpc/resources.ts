@@ -1,5 +1,5 @@
 import type { VpcClient } from './client.js';
-import type { TransitGateway, TransitGatewayConnection, TransitGatewayPrefixFilter, DirectLinkGateway, DirectLinkVirtualConnection, TransitGatewayRouteReport, VpnGatewayConnection, VpcRoutingTable, VpcRoute, Vpc } from './types.js';
+import type { TransitGateway, TransitGatewayConnection, TransitGatewayPrefixFilter, DirectLinkGateway, DirectLinkVirtualConnection, TransitGatewayRouteReport, VpnGatewayConnection, VpcRoutingTable, VpcRoute, Vpc, CosInstance } from './types.js';
 import { runWithConcurrencyLimit } from '../../utils/concurrency.js';
 import logger from '../../utils/logger.js';
 
@@ -297,8 +297,8 @@ export interface TgwVpcVpnGateway {
   vpcRegion: string;
 }
 
-const ROUTE_REPORT_POLL_INTERVAL = 3000;  // 3 seconds between polls
-const ROUTE_REPORT_MAX_ATTEMPTS = 40;     // Up to 2 minutes total timeout
+const ROUTE_REPORT_POLL_INTERVAL = 5000;  // 5 seconds between polls
+const ROUTE_REPORT_MAX_ATTEMPTS = 60;     // Up to 5 minutes total timeout
 
 export type RouteReportProgressCallback = (message: string) => void;
 
@@ -916,4 +916,29 @@ export async function getVpcRoutes(
   }
 
   return allRoutes;
+}
+
+// ── Cloud Object Storage (Resource Controller API) ──────────────────
+
+const COS_RESOURCE_ID = 'dff97f5c-bc5e-4455-b470-411c3edbe49c';
+
+/**
+ * Collect all IBM Cloud Object Storage instances via the Resource Controller API.
+ */
+export async function getCosInstances(client: VpcClient): Promise<CosInstance[]> {
+  try {
+    const instances = await client.requestAllResourceControllerPages<CosInstance>(
+      `/v2/resource_instances?resource_id=${COS_RESOURCE_ID}&limit=100`,
+      'resources',
+    );
+    logger.info('Collected COS instances', { count: instances.length });
+    return instances;
+  } catch (err) {
+    const error = err as Error & { statusCode?: number };
+    if (error.statusCode === 403 || error.statusCode === 404) {
+      logger.warn('Insufficient permissions to collect COS instances', { statusCode: error.statusCode });
+      return [];
+    }
+    throw error;
+  }
 }
