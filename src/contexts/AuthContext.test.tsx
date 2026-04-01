@@ -74,11 +74,11 @@ describe('AuthContext', () => {
       mode = await result.current.login('test-key');
     });
 
-    expect(mode).toEqual(['classic', 'vpc']);
+    expect(mode).toEqual(['classic', 'vpc', 'platform']);
     expect(result.current.isAuthenticated).toBe(true);
     expect(result.current.apiKey).toBe('test-key');
     expect(result.current.accountInfo?.companyName).toBe('TestCo');
-    expect(result.current.infrastructureMode).toEqual(['classic', 'vpc']);
+    expect(result.current.infrastructureMode).toEqual(['classic', 'vpc', 'platform']);
   });
 
   it('logs in with VPC-only when Classic fails', async () => {
@@ -95,10 +95,10 @@ describe('AuthContext', () => {
       mode = await result.current.login('vpc-key');
     });
 
-    expect(mode).toEqual(['vpc']);
+    expect(mode).toEqual(['vpc', 'platform']);
     expect(result.current.isAuthenticated).toBe(true);
     expect(result.current.accountInfo?.companyName).toBe('VPC Co');
-    expect(result.current.infrastructureMode).toEqual(['vpc']);
+    expect(result.current.infrastructureMode).toEqual(['vpc', 'platform']);
   });
 
   it('logs out and clears state', async () => {
