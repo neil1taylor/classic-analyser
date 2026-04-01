@@ -1,8 +1,9 @@
-// Unified facade hook over the three domain data contexts
+// Unified facade hook over the four domain data contexts
 // Provides a consistent interface without merging the separate contexts
 import { useData } from '@/contexts/DataContext';
 import { useVpcData } from '@/contexts/VpcDataContext';
 import { usePowerVsData } from '@/contexts/PowerVsDataContext';
+import { usePlatformData } from '@/contexts/PlatformDataContext';
 import type { InfrastructureDomain } from '@/contexts/AuthContext';
 
 interface InfrastructureDataResult {
@@ -16,6 +17,7 @@ export function useInfrastructureData(domain: InfrastructureDomain): Infrastruct
   const classicCtx = useData();
   const vpcCtx = useVpcData();
   const pvsCtx = usePowerVsData();
+  const platformCtx = usePlatformData();
 
   switch (domain) {
     case 'classic':
@@ -38,6 +40,13 @@ export function useInfrastructureData(domain: InfrastructureDomain): Infrastruct
         isCollecting: pvsCtx.pvsCollectionStatus === 'collecting',
         status: pvsCtx.pvsCollectionStatus,
         collectionDuration: pvsCtx.pvsCollectionDuration,
+      };
+    case 'platform':
+      return {
+        data: platformCtx.platformCollectedData,
+        isCollecting: platformCtx.platformCollectionStatus === 'collecting',
+        status: platformCtx.platformCollectionStatus,
+        collectionDuration: platformCtx.platformCollectionDuration,
       };
   }
 }

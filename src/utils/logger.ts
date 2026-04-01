@@ -35,7 +35,10 @@ export type LogCategory =
   | 'ReportJSON'
   | 'ReportXLSX'
   | 'ImportReport'
-  | 'ImportMDL';
+  | 'ImportMDL'
+  | 'Platform-API'
+  | 'Platform-Collection'
+  | 'Platform-Export';
 
 export interface LogContext {
   [key: string]: unknown;

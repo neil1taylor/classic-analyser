@@ -101,7 +101,7 @@ const PlatformDashboard: React.FC = () => {
       )}
 
       {hasData && (
-        <SectionErrorBoundary name="Platform Metrics">
+        <SectionErrorBoundary sectionName="Platform Metrics">
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
             <ResourceCard resourceKey="serviceInstances" label="Service Instances" category="Platform Services" count={totalInstances} linkPrefix="/platform" />
             {categoryDist.slice(0, 6).map((cat) => (
@@ -150,7 +150,8 @@ const PlatformDashboard: React.FC = () => {
         onClose={() => setExportDialogOpen(false)}
         onExport={handleExport}
         isExporting={isPlatformExporting}
-        domain="platform"
+        hasSelectedRows={false}
+        hasCurrentTable={false}
       />
     </div>
   );
