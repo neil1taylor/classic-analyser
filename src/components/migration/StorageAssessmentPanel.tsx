@@ -22,17 +22,20 @@ const blockColumns: MigrationColumnDef[] = [
   { key: 'tier', header: 'Classic Tier', group: 'classic' },
   { key: 'fee', header: 'Classic Monthly', group: 'classic' },
   { key: 'vpcProfile', header: 'VPC Profile', group: 'vpc' },
+  { key: 'profileGen', header: 'Gen', group: 'vpc', headerTooltip: 'VPC storage profile generation. Gen 2 (sdp) offers higher IOPS/capacity but does not support boot volumes or consistency group snapshots.' },
   { key: 'strategy', header: 'Strategy', group: 'vpc', headerTooltip: 'Recommended migration strategy for this volume' },
 ];
 
 const fileColumnGroups: ColumnGroup[] = [
   { id: 'classic', label: 'Classic Storage', className: 'migration-table__group--classic' },
+  { id: 'vpc', label: 'VPC Storage', className: 'migration-table__group--vpc' },
 ];
 
 const fileColumns: MigrationColumnDef[] = [
   { key: 'username', header: 'Volume', group: 'classic' },
   { key: 'capacityGB', header: 'Capacity (GB)', group: 'classic' },
   { key: 'fee', header: 'Classic Monthly', group: 'classic' },
+  { key: 'vpcTarget', header: 'VPC Target', group: 'vpc', headerTooltip: 'VPC File Share with dp2 profile (NFS v4.1)' },
 ];
 
 const StorageAssessmentPanel: React.FC<Props> = ({ assessment, prereqChecks }) => {
@@ -43,6 +46,7 @@ const StorageAssessmentPanel: React.FC<Props> = ({ assessment, prereqChecks }) =
     iops: String(v.iops),
     tier: v.tier || 'N/A',
     vpcProfile: v.vpcProfile,
+    profileGen: v.profileGeneration === 2 ? 'Gen 2 (sdp)' : 'Gen 1',
     strategy: v.strategy === 'snapshot' ? 'Snapshot' : 'Replication',
     fee: `$${v.currentFee.toFixed(2)}`,
   }));
@@ -52,6 +56,7 @@ const StorageAssessmentPanel: React.FC<Props> = ({ assessment, prereqChecks }) =
     username: v.username || `File ${v.id}`,
     capacityGB: String(v.capacityGB),
     fee: `$${v.currentFee.toFixed(2)}`,
+    vpcTarget: 'File Share (dp2, NFS v4.1)',
   }));
 
   const totalGB = assessment.blockStorage.totalCapacityGB + assessment.fileStorage.totalCapacityGB;

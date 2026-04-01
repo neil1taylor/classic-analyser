@@ -1,0 +1,209 @@
+<mxfile host="app.diagrams.net" modified="2026-04-01T00:00:00.000Z" agent="Claude Code" version="24.0.0" type="device">
+  <diagram id="storage-migration-flow" name="Storage Migration Flow">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Title -->
+        <mxCell id="title" value="Classic to VPC Storage Migration — Selection Flow" style="text;html=1;fontSize=18;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="400" y="20" width="500" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- ENTRY: Classic Storage Source               -->
+        <!-- ═══════════════════════════════════════════ -->
+        <mxCell id="start" value="Classic Storage&#xa;Source" style="shape=doubleArrow;whiteSpace=wrap;html=1;rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;fontStyle=1;direction=south;arrowWidth=0.6;arrowSize=0.15;" vertex="1" parent="1">
+          <mxGeometry x="570" y="80" width="160" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- DECISION: What type of storage?             -->
+        <!-- ═══════════════════════════════════════════ -->
+        <mxCell id="d_type" value="What type of&#xa;Classic storage?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="540" y="170" width="220" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_start_type" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="start" target="d_type" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- BRANCH: Object Storage                      -->
+        <!-- ═══════════════════════════════════════════ -->
+        <mxCell id="obj_result" value="No migration required&#xa;&#xa;Same IBM COS service.&#xa;Update endpoint config only&#xa;(Classic → VPC private endpoint)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=0;align=center;" vertex="1" parent="1">
+          <mxGeometry x="900" y="175" width="240" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_type_obj" value="Object Storage&#xa;(COS)" style="edgeStyle=orthogonalEdgeStyle;fontSize=10;fontStyle=2;" edge="1" source="d_type" target="obj_result" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- BRANCH: File Storage                        -->
+        <!-- ═══════════════════════════════════════════ -->
+        <mxCell id="file_result" value="VPC File Share (NFS v4.1)&#xa;&#xa;Profile: dp2&#xa;(independent IOPS/capacity)&#xa;&#xa;⚠ Verify NFS v4.1 compatibility&#xa;(Classic uses NFS v3)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=0;align=center;" vertex="1" parent="1">
+          <mxGeometry x="140" y="175" width="250" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_type_file" value="File Storage&#xa;(NFS)" style="edgeStyle=orthogonalEdgeStyle;fontSize=10;fontStyle=2;" edge="1" source="d_type" target="file_result" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- BRANCH: Block Storage                       -->
+        <!-- ═══════════════════════════════════════════ -->
+
+        <!-- Decision: Boot volume? -->
+        <mxCell id="d_boot" value="Is this a&#xa;boot volume?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="555" y="330" width="190" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_type_block" value="Block Storage&#xa;(iSCSI)" style="edgeStyle=orthogonalEdgeStyle;fontSize=10;fontStyle=2;" edge="1" source="d_type" target="d_boot" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Boot = Yes → general-purpose -->
+        <mxCell id="boot_result" value="general-purpose&#xa;(Gen 1, 3 IOPS/GB)&#xa;&#xa;Only profile available&#xa;for boot volumes.&#xa;sdp cannot reliably detect&#xa;GPT — may boot BIOS not UEFI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=0;align=center;" vertex="1" parent="1">
+          <mxGeometry x="870" y="325" width="260" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_boot_yes" value="Yes" style="edgeStyle=orthogonalEdgeStyle;fontSize=11;fontStyle=1;fontColor=#009900;" edge="1" source="d_boot" target="boot_result" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Boot = No → Region check -->
+        <mxCell id="d_region" value="Is target region&#xa;supported by sdp?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="545" y="490" width="210" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_boot_no" value="No (data volume)" style="edgeStyle=orthogonalEdgeStyle;fontSize=11;fontStyle=1;fontColor=#cc0000;" edge="1" source="d_boot" target="d_region" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Region = No → Gen 1 mapping -->
+        <!-- Region = Yes → Consistency group check -->
+        <mxCell id="d_consistency" value="Does VM need&#xa;crash-consistent&#xa;multi-volume&#xa;snapshots?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="545" y="650" width="210" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_region_yes" value="Yes" style="edgeStyle=orthogonalEdgeStyle;fontSize=11;fontStyle=1;fontColor=#009900;" edge="1" source="d_region" target="d_consistency" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- RESULT: sdp profile                         -->
+        <!-- ═══════════════════════════════════════════ -->
+        <mxCell id="sdp_result" value="sdp (Gen 2)&#xa;&#xa;Set IOPS to match or exceed&#xa;Classic source IOPS.&#xa;Capacity: 1 GB – 32 TB&#xa;Max IOPS: 64,000&#xa;Max throughput: 8,192 Mbps&#xa;&#xa;⚠ Snapshot only per-volume&#xa;(no consistency groups)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=0;align=center;" vertex="1" parent="1">
+          <mxGeometry x="140" y="635" width="260" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_consistency_no" value="No" style="edgeStyle=orthogonalEdgeStyle;fontSize=11;fontStyle=1;fontColor=#cc0000;" edge="1" source="d_consistency" target="sdp_result" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- RESULT: Gen 1 Tier Mapping                  -->
+        <!-- ═══════════════════════════════════════════ -->
+        <mxCell id="gen1_header" value="Gen 1 Tier Mapping&#xa;(from Classic source tier)" style="text;html=1;fontSize=13;fontStyle=5;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="840" y="495" width="220" height="40" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="gen1_table" value="&lt;table style='font-size:11px;border-collapse:collapse;'&gt;&lt;tr style='background:#f0f0f0;font-weight:bold;'&gt;&lt;td style='padding:4px 8px;border:1px solid #ccc;'&gt;Classic Tier&lt;/td&gt;&lt;td style='padding:4px 8px;border:1px solid #ccc;'&gt;IOPS Range&lt;/td&gt;&lt;td style='padding:4px 8px;border:1px solid #ccc;'&gt;VPC Profile&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style='padding:4px 8px;border:1px solid #ccc;'&gt;0.25 IOPS/GB&lt;/td&gt;&lt;td style='padding:4px 8px;border:1px solid #ccc;'&gt;≤500&lt;/td&gt;&lt;td style='padding:4px 8px;border:1px solid #ccc;'&gt;general-purpose&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style='padding:4px 8px;border:1px solid #ccc;'&gt;2 IOPS/GB&lt;/td&gt;&lt;td style='padding:4px 8px;border:1px solid #ccc;'&gt;501–3,000&lt;/td&gt;&lt;td style='padding:4px 8px;border:1px solid #ccc;'&gt;5iops-tier&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style='padding:4px 8px;border:1px solid #ccc;'&gt;4 IOPS/GB&lt;/td&gt;&lt;td style='padding:4px 8px;border:1px solid #ccc;'&gt;3,001–6,000&lt;/td&gt;&lt;td style='padding:4px 8px;border:1px solid #ccc;'&gt;10iops-tier&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style='padding:4px 8px;border:1px solid #ccc;'&gt;10 IOPS/GB&lt;/td&gt;&lt;td style='padding:4px 8px;border:1px solid #ccc;'&gt;6,001–10,000&lt;/td&gt;&lt;td style='padding:4px 8px;border:1px solid #ccc;'&gt;10iops-tier&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style='padding:4px 8px;border:1px solid #ccc;'&gt;Custom&lt;/td&gt;&lt;td style='padding:4px 8px;border:1px solid #ccc;'&gt;&amp;gt;10,000&lt;/td&gt;&lt;td style='padding:4px 8px;border:1px solid #ccc;'&gt;custom&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;" style="text;html=1;overflow=fill;rounded=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="830" y="535" width="320" height="170" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e_region_no" value="No&#xa;(e.g. Montreal)" style="edgeStyle=orthogonalEdgeStyle;fontSize=11;fontStyle=1;fontColor=#cc0000;" edge="1" source="d_region" target="gen1_table" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_consistency_yes" value="Yes" style="edgeStyle=orthogonalEdgeStyle;fontSize=11;fontStyle=1;fontColor=#009900;" edge="1" source="d_consistency" target="gen1_table" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="790" y="710"/>
+              <mxPoint x="790" y="620"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- MIGRATION STRATEGY                          -->
+        <!-- ═══════════════════════════════════════════ -->
+        <mxCell id="strat_header" value="Migration Strategy (all block volumes)" style="text;html=1;fontSize=13;fontStyle=5;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="460" y="850" width="380" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="d_capacity" value="Volume&#xa;capacity?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="570" y="900" width="160" height="90" as="geometry"/>
+        </mxCell>
+
+        <!-- Arrows from both sdp and gen1 results into strategy -->
+        <mxCell id="e_sdp_strat" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#999999;" edge="1" source="sdp_result" target="d_capacity" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="270" y="830"/>
+              <mxPoint x="650" y="830"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_gen1_strat" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#999999;" edge="1" source="gen1_table" target="d_capacity" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="990" y="830"/>
+              <mxPoint x="650" y="830"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_boot_strat" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#999999;" edge="1" source="boot_result" target="d_capacity" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1200" y="380"/>
+              <mxPoint x="1200" y="830"/>
+              <mxPoint x="650" y="830"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="strat_snapshot" value="Snapshot-based&#xa;(via COS)&#xa;&#xa;Export snapshot → COS → import to VPC" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;align=center;" vertex="1" parent="1">
+          <mxGeometry x="310" y="920" width="200" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_cap_small" value="&lt; 2 TB" style="edgeStyle=orthogonalEdgeStyle;fontSize=11;fontStyle=1;" edge="1" source="d_capacity" target="strat_snapshot" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="strat_repl" value="Replication-based&#xa;&#xa;Minimises downtime&#xa;for large volumes" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;align=center;" vertex="1" parent="1">
+          <mxGeometry x="790" y="920" width="200" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_cap_large" value="≥ 2 TB" style="edgeStyle=orthogonalEdgeStyle;fontSize=11;fontStyle=1;" edge="1" source="d_capacity" target="strat_repl" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- LEGEND                                      -->
+        <!-- ═══════════════════════════════════════════ -->
+        <mxCell id="legend_box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#999999;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="900" width="200" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend_title" value="Legend" style="text;html=1;fontSize=12;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="50" y="905" width="80" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend_decision" value="" style="rhombus;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="55" y="930" width="20" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend_decision_t" value="Decision" style="text;html=1;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="85" y="930" width="80" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend_result" value="" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="55" y="955" width="20" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend_result_t" value="VPC Target Profile" style="text;html=1;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="85" y="955" width="130" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend_strat" value="" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="55" y="980" width="20" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend_strat_t" value="Migration Strategy" style="text;html=1;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="85" y="980" width="130" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend_ref" value="" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="55" y="1005" width="20" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend_ref_t" value="Reference Data" style="text;html=1;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="85" y="1005" width="130" height="20" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

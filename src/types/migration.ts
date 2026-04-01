@@ -73,12 +73,16 @@ export interface FeatureGapDefinition {
 
 // ── Storage Tier ─────────────────────────────────────────────────────────
 
+export type StorageProfileGeneration = 1 | 2;
+
 export interface StorageTierMapping {
   classicTier: string;
   classicIOPS: string;
   vpcProfile: string;
   vpcIOPS: string;
+  generation: StorageProfileGeneration;
   notes: string;
+  limitations?: string[];
 }
 
 // ── VPC Cost Estimates ───────────────────────────────────────────────────
@@ -241,6 +245,8 @@ export interface BlockVolumeAssessment {
   tier: string;
   vpcProfile: string;
   vpcIOPS: string;
+  profileGeneration: StorageProfileGeneration;
+  profileNotes: string[];
   currentFee: number;
   strategy: StorageMigrationStrategy;
   notes: string[];

@@ -25,12 +25,13 @@ export function buildStorageAssessment(
   );
 
   if (assessment.blockStorage.volumeAssessments.length > 0) {
-    const bsHeaders = ['Username', 'Capacity (GB)', 'IOPS', 'VPC Profile', 'Strategy', 'Fee'];
+    const bsHeaders = ['Username', 'Capacity (GB)', 'IOPS', 'VPC Profile', 'Gen', 'Strategy', 'Fee'];
     const bsRows = assessment.blockStorage.volumeAssessments.map((vol) => [
       vol.username,
       String(vol.capacityGB),
       String(vol.iops),
       vol.vpcProfile,
+      vol.profileGeneration === 2 ? 'Gen 2 (sdp)' : 'Gen 1',
       vol.strategy,
       fmt(vol.currentFee),
     ]);

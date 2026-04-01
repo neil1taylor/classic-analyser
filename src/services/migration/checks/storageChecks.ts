@@ -3,13 +3,14 @@ import { evaluateCheck } from './checkUtils';
 
 const BLOCK_VOLUME_SIZE: PreRequisiteCheck = {
   id: 'storage-block-size',
-  name: 'Block Volume Size (16 TB max)',
+  name: 'Block Volume Size (32 TB max)',
   category: 'storage',
-  description: 'VPC block storage volumes have a maximum capacity of 16 TB (16384 GB). Larger Classic volumes cannot be directly migrated.',
-  threshold: '16384 GB',
+  description: 'VPC Gen 1 profiles support up to 16 TB; Gen 2 sdp profile supports up to 32 TB (32768 GB). Volumes exceeding 16 TB require the sdp profile. Volumes exceeding 32 TB cannot be directly migrated.',
+  threshold: '32768 GB (sdp) / 16384 GB (Gen 1)',
   docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-block-storage-profiles',
   remediationSteps: [
-    'Split the volume data across multiple VPC block storage volumes.',
+    'Volumes 16–32 TB: use the Gen 2 sdp profile (check regional availability).',
+    'Volumes >32 TB: split the volume data across multiple VPC block storage volumes.',
     'Archive infrequently accessed data to IBM Cloud Object Storage.',
     'Use application-level data migration to redistribute data.',
   ],
@@ -32,13 +33,27 @@ const IOPS_COMPAT: PreRequisiteCheck = {
   id: 'storage-iops-compat',
   name: 'IOPS Compatibility',
   category: 'storage',
-  description: 'VPC block storage supports up to 48,000 IOPS with custom profiles. Volumes configured with higher IOPS may see reduced performance.',
-  threshold: '48,000 IOPS',
+  description: 'VPC Gen 1 profiles support up to 48,000 IOPS. Gen 2 sdp profile supports up to 64,000 IOPS. Volumes exceeding 48K IOPS require the sdp profile.',
+  threshold: '64,000 IOPS (sdp) / 48,000 IOPS (Gen 1)',
   docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-block-storage-profiles',
   remediationSteps: [
     'Evaluate actual IOPS utilization — provisioned IOPS often exceed usage.',
-    'Use VPC custom IOPS profiles for up to 48,000 IOPS.',
+    'Volumes ≤48K IOPS: use VPC Gen 1 custom IOPS or tiered profiles.',
+    'Volumes 48–64K IOPS: use the Gen 2 sdp profile (check regional availability).',
     'Consider distributing IO across multiple volumes with striping.',
+  ],
+};
+
+const SDP_REQUIRED: PreRequisiteCheck = {
+  id: 'storage-sdp-required',
+  name: 'Gen 2 SDP Profile Required',
+  category: 'storage',
+  description: 'Volumes that exceed Gen 1 limits (>16 TB capacity or >48K IOPS) require the Gen 2 sdp profile. The sdp profile is not available in all regions and does not support consistency group snapshots or boot volumes.',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-block-storage-profiles',
+  remediationSteps: [
+    'Verify sdp profile is available in your target VPC region.',
+    'Plan individual snapshot strategy (consistency groups not supported with sdp).',
+    'For volumes needing consistency group snapshots, split or resize to fit Gen 1 limits.',
   ],
 };
 
@@ -115,15 +130,15 @@ export function runStorageChecks(collectedData: Record<string, unknown[]>): Chec
   const files = (collectedData['fileStorage'] ?? []) as Record<string, unknown>[];
   const vsis = (collectedData['virtualServers'] ?? []) as Record<string, unknown>[];
 
-  // Block volume size > 16384 GB
+  // Block volume size > 32768 GB (absolute blocker)
   const blockSizeAffected: AffectedResource[] = [];
   for (const vol of blocks) {
     const cap = toNum(vol['capacityGb']) || toNum(vol['capacity']);
-    if (cap > 16384) {
+    if (cap > 32768) {
       blockSizeAffected.push({
         id: toNum(vol['id']),
         hostname: toStr(vol['username']) || `Block ${toNum(vol['id'])}`,
-        detail: `${cap} GB`,
+        detail: `${cap} GB — exceeds sdp 32 TB max`,
       });
     }
   }
@@ -143,19 +158,38 @@ export function runStorageChecks(collectedData: Record<string, unknown[]>): Chec
   }
   results.push(evaluateCheck(FILE_VOLUME_SIZE, 'blocker', files.length, fileSizeAffected));
 
-  // IOPS > 48000
+  // IOPS > 64000 (exceeds even sdp max)
   const iopsAffected: AffectedResource[] = [];
   for (const vol of blocks) {
     const iops = toNum(vol['provisionedIops']) || toNum(vol['iops']);
-    if (iops > 48000) {
+    if (iops > 64000) {
       iopsAffected.push({
         id: toNum(vol['id']),
         hostname: toStr(vol['username']) || `Block ${toNum(vol['id'])}`,
-        detail: `${iops} IOPS`,
+        detail: `${iops} IOPS — exceeds sdp 64K max`,
       });
     }
   }
   results.push(evaluateCheck(IOPS_COMPAT, 'warning', blocks.length, iopsAffected));
+
+  // Volumes requiring sdp (>16 TB or >48K IOPS but within sdp limits)
+  const sdpRequiredAffected: AffectedResource[] = [];
+  for (const vol of blocks) {
+    const cap = toNum(vol['capacityGb']) || toNum(vol['capacity']);
+    const iops = toNum(vol['provisionedIops']) || toNum(vol['iops']);
+    const needsSdp = (cap > 16384 && cap <= 32768) || (iops > 48000 && iops <= 64000);
+    if (needsSdp) {
+      const reasons: string[] = [];
+      if (cap > 16384) reasons.push(`${cap} GB (>16 TB Gen 1 max)`);
+      if (iops > 48000) reasons.push(`${iops} IOPS (>48K Gen 1 max)`);
+      sdpRequiredAffected.push({
+        id: toNum(vol['id']),
+        hostname: toStr(vol['username']) || `Block ${toNum(vol['id'])}`,
+        detail: `Requires sdp: ${reasons.join(', ')}`,
+      });
+    }
+  }
+  results.push(evaluateCheck(SDP_REQUIRED, 'warning', blocks.length, sdpRequiredAffected));
 
   // Snapshot schedules
   const snapshotAffected: AffectedResource[] = [];
