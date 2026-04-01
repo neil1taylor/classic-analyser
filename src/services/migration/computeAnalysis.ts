@@ -246,6 +246,9 @@ function assessVSI(item: unknown, _preferences: MigrationPreferences): VSIMigrat
   if (osMatch && !osMatch.vpcAvailable && !osMatch.upgradeRequired) {
     notes.push(`OS ${os}: ${osMatch.notes}`);
   }
+  if (osMatch?.imageType === 'byol') {
+    notes.push(`${osMatch.classicOS}: BYOL custom image only on VPC (no stock image)`);
+  }
 
   // Profile mapping (gen3-preferred, d-suffix avoided)
   const { primary, alternatives } = mapToVPCProfile(cpu, memoryMB);

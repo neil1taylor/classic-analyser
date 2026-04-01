@@ -250,17 +250,32 @@ const OS_32BIT: PreRequisiteCheck = {
   ],
 };
 
+const OS_UNSUPPORTED: PreRequisiteCheck = {
+  id: 'os-unsupported',
+  name: 'Unsupported Operating System',
+  category: 'compute',
+  description: 'Servers running operating systems that cannot run on IBM Cloud VPC. Windows 2003/2008 lack VirtIO drivers required by VPC — VMs will not boot. Other OSes (Solaris, AIX, HP-UX, FreeBSD) are not x86-compatible or have no VPC support path.',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-about-images',
+  remediationSteps: [
+    'Windows 2003: No VirtIO drivers exist — upgrade to Windows Server 2019/2022 or re-platform the application.',
+    'Windows 2008/R2: VirtIO drivers dropped from virtio-win 0.1.215+. IBM Cloud VPC requires virtio-win 1.9.24+ which has no 2008 drivers. Upgrade to Windows Server 2019/2022.',
+    'RHEL 6/CentOS 5-6: Upgrade to RHEL 8/9 or Rocky Linux 8/9.',
+    'Solaris/AIX/HP-UX/FreeBSD: Re-platform to a supported Linux distribution, or use PowerVS for AIX workloads.',
+  ],
+};
+
 const OS_EOL: PreRequisiteCheck = {
   id: 'os-eol',
   name: 'End-of-Life Operating System',
   category: 'compute',
-  description: 'Servers running end-of-life OS versions should be upgraded before migration. EOL operating systems may not have VPC stock images available and pose security risks. For bare metal servers, OS detection relies on the reported OS string.',
+  description: 'Servers running end-of-life OS versions should be upgraded before or during migration. EOL operating systems may still be available on VPC as BYOL custom images but pose security risks.',
   docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-about-images',
   remediationSteps: [
-    'Upgrade to a supported OS version before migration (e.g., CentOS 6/7 → RHEL 8/9, Windows 2008 → Windows 2022, Ubuntu 14/16 → Ubuntu 22/24).',
-    'For CentOS 7, consider migrating to RHEL, AlmaLinux, or Rocky Linux.',
+    'Upgrade to a supported OS version before migration.',
+    'For CentOS 7, consider migrating to RHEL 8/9, AlmaLinux 8/9, or Rocky Linux 8/9.',
+    'For RHEL 7, upgrade to RHEL 8 or 9.',
+    'For BYOL operating systems (RHEL 7, Windows 2012), create a custom image for VPC import.',
     'Test application compatibility with the target OS version.',
-    'Create VPC custom images for the upgraded OS.',
   ],
 };
 
@@ -726,8 +741,30 @@ export function runComputeChecks(collectedData: Record<string, unknown[]>): Chec
   }
   results.push(evaluateCheck(OS_32BIT, 'blocker', allServers.length, os32bitAffected));
 
-  // End-of-life OS detection (warning) — checks both VSIs and BMs
-  const eolPattern = /centos\s*[567]\b|red\s*hat.*[56]\b|rhel\s*[56]\b|windows.*(2003|2008|2008\s*r2)\b|debian\s*[89]\b|ubuntu\s*(14|16)\b|sles?\s*(11|12)\b|suse.*(11|12)\b/i;
+  // Unsupported OS detection (blocker) — OSes with no VPC path (no VirtIO drivers, no image)
+  const unsupportedAffected: AffectedResource[] = [];
+  for (const server of allServers) {
+    const osDesc = str(server, 'operatingSystem.softwareDescription.longDescription')
+      || str(server, 'softwareDescription')
+      || str(server, 'operatingSystemReferenceCode')
+      || str(server, 'os')
+      || '';
+    if (osDesc) {
+      const match = matchOS(osDesc);
+      if (match && match.imageType === 'none') {
+        unsupportedAffected.push({
+          id: num(server, 'id'),
+          hostname: str(server, 'hostname') || str(server, 'fullyQualifiedDomainName') || `Server ${num(server, 'id')}`,
+          detail: `${match.classicOS}: ${match.notes}`,
+        });
+      }
+    }
+  }
+  results.push(evaluateCheck(OS_UNSUPPORTED, 'blocker', allServers.length, unsupportedAffected));
+
+  // End-of-life OS detection (warning) — EOL but still available on VPC (e.g. BYOL)
+  // Excludes OSes already caught by the unsupported check above
+  const eolFallbackPattern = /centos\s*[567]\b|red\s*hat.*[56]\b|rhel\s*[56]\b|windows.*(2003|2008|2008\s*r2)\b|debian\s*[89]\b|ubuntu\s*(14|16|18)\b|sles?\s*(11|12)\b|suse.*(11|12)\b/i;
   const eolAffected: AffectedResource[] = [];
   for (const server of allServers) {
     const osDesc = str(server, 'operatingSystem.softwareDescription.longDescription')
@@ -735,7 +772,21 @@ export function runComputeChecks(collectedData: Record<string, unknown[]>): Chec
       || str(server, 'operatingSystemReferenceCode')
       || str(server, 'os')
       || '';
-    if (osDesc && eolPattern.test(osDesc)) {
+    if (!osDesc) continue;
+    const match = matchOS(osDesc);
+    if (match) {
+      // Skip if already caught by unsupported check (imageType === 'none')
+      if (match.imageType === 'none') continue;
+      // Flag if the OS has an EOL date in the past
+      if (match.eolDate && new Date(match.eolDate) < new Date()) {
+        eolAffected.push({
+          id: num(server, 'id'),
+          hostname: str(server, 'hostname') || str(server, 'fullyQualifiedDomainName') || `Server ${num(server, 'id')}`,
+          detail: `${match.classicOS} (EOL ${match.eolDate}): ${match.notes}`,
+        });
+      }
+    } else if (eolFallbackPattern.test(osDesc)) {
+      // Fallback for OS strings not in the compatibility table
       eolAffected.push({
         id: num(server, 'id'),
         hostname: str(server, 'hostname') || str(server, 'fullyQualifiedDomainName') || `Server ${num(server, 'id')}`,

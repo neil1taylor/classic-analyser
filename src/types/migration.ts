@@ -4,6 +4,7 @@ export type MigrationStatus = 'ready' | 'needs-work' | 'blocked' | 'not-applicab
 export type ComplexityCategory = 'Low' | 'Medium' | 'High' | 'Very High';
 export type ProfileFamily = 'balanced' | 'compute' | 'memory' | 'very-high-memory' | 'ultra-high-memory' | 'gpu';
 export type OSEffort = 'none' | 'minimal' | 'moderate' | 'significant';
+export type ImageType = 'stock' | 'byol' | 'none';
 export type StorageMigrationStrategy = 'snapshot' | 'replication' | 'application-level';
 export type NetworkComplexity = 'low' | 'medium' | 'high' | 'very-high';
 
@@ -43,6 +44,9 @@ export interface OSCompatibility {
   upgradeTarget?: string;
   effort: OSEffort;
   notes: string;
+  eolDate?: string;
+  imageType?: ImageType;
+  docsUrl?: string;
 }
 
 // ── Datacenter Mapping ───────────────────────────────────────────────────
