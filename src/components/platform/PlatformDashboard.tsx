@@ -103,9 +103,9 @@ const PlatformDashboard: React.FC = () => {
       {hasData && (
         <SectionErrorBoundary name="Platform Metrics">
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
-            <ResourceCard title="Service Instances" count={totalInstances} href="/platform/resources/serviceInstances" />
+            <ResourceCard resourceKey="serviceInstances" label="Service Instances" category="Platform Services" count={totalInstances} linkPrefix="/platform" />
             {categoryDist.slice(0, 6).map((cat) => (
-              <ResourceCard key={cat.name} title={cat.name} count={cat.count} />
+              <ResourceCard key={cat.name} resourceKey="serviceInstances" label={cat.name} category={cat.name} count={cat.count} linkPrefix="/platform" />
             ))}
           </div>
 

@@ -33,7 +33,7 @@ const ResourceReferenceSection: React.FC = () => (
       Resource Reference
     </h2>
     <p style={{ fontSize: '0.875rem', color: 'var(--cds-text-secondary)', marginBottom: '2rem' }}>
-      Complete list of all Classic and VPC resource types collected
+      Complete list of all Classic, VPC, and Platform Services resource types collected
     </p>
 
     <section style={sectionStyle}>
@@ -142,7 +142,7 @@ const ResourceReferenceSection: React.FC = () => (
     </section>
 
     <section style={sectionStyle}>
-      <h3 style={headingStyle}>VPC Resource Types (21)</h3>
+      <h3 style={headingStyle}>VPC Resource Types (26)</h3>
 
       <h4 style={subHeadingStyle}>Compute</h4>
       <table style={tableStyle}>
@@ -219,11 +219,32 @@ const ResourceReferenceSection: React.FC = () => (
     </section>
 
     <section style={sectionStyle}>
+      <h3 style={headingStyle}>Platform Services</h3>
+      <table style={tableStyle}>
+        <thead>
+          <tr>
+            <th style={thStyle}>Resource Type</th>
+            <th style={thStyle}>Worksheet Name</th>
+            <th style={thStyle}>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style={tdStyle}>Service Instances</td>
+            <td style={tdStyle}><code>sServiceInstances</code></td>
+            <td style={tdStyle}>All IBM Cloud service instances (COS, Key Protect, SCC, databases, etc.) with service type identification and resource group name resolution</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section style={sectionStyle}>
       <h3 style={headingStyle}>Notes</h3>
       <ul style={listStyle}>
-        <li>All worksheet names use the &quot;v&quot; prefix convention for spreadsheet compatibility.</li>
+        <li>Classic worksheet names use the &quot;v&quot; prefix, PowerVS uses &quot;p&quot; prefix, and Platform Services uses &quot;s&quot; prefix.</li>
         <li>VPC resources include a <code>_region</code> field indicating the source region.</li>
         <li>Transit Gateways are global resources collected via <code>transit.cloud.ibm.com</code>.</li>
+        <li>Platform Services instances include computed <code>_serviceType</code> and <code>_serviceCategory</code> fields from a known services map.</li>
         <li>The exact number of Classic resource types may vary as new types are added.</li>
       </ul>
     </section>

@@ -7,7 +7,7 @@ function transformServiceInstance(raw: RawItem): RawItem {
     _serviceType: raw._serviceType,
     _serviceCategory: raw._serviceCategory,
     state: raw.state,
-    location: raw.location,
+    location: raw._location ?? raw.location ?? '',
     _resourceGroupName: raw._resourceGroupName ?? raw.resource_group_id,
     type: raw.type,
     resource_id: raw.resource_id,

@@ -23,14 +23,15 @@ const GettingStartedSection: React.FC = () => (
       <h3 style={headingStyle}>Overview</h3>
       <p style={paragraphStyle}>
         The IBM Cloud Infrastructure Explorer is a web-based inventory and analysis tool for
-        IBM Cloud Classic (SoftLayer) and VPC infrastructure. It collects data from 27+ Classic
-        API resource types and 21 VPC resource types (across all VPC regions), displays them in
-        interactive tables, and exports to XLSX.
+        IBM Cloud Classic (SoftLayer), VPC, PowerVS, and Platform Services infrastructure. It collects
+        data from 27+ Classic API resource types, 26 VPC resource types (across all VPC regions),
+        22 PowerVS resource types (across all workspaces), and all Platform Services instances
+        (COS, Key Protect, SCC, etc.), displays them in interactive tables, and exports to XLSX.
       </p>
       <p style={paragraphStyle}>
         <strong>Who it&apos;s for:</strong> IBM Tech Sellers, Client Engineers, and Infrastructure
-        Admins who need visibility into Classic and VPC infrastructure for inventory, migration
-        planning, and cost analysis.
+        Admins who need visibility into Classic, VPC, PowerVS, and Platform Services infrastructure
+        for inventory, migration planning, and cost analysis.
       </p>
     </section>
 

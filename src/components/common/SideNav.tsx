@@ -66,6 +66,7 @@ const AppSideNav: React.FC = () => {
       classic: '/dashboard',
       vpc: '/vpc/dashboard',
       powervs: '/powervs/dashboard',
+      platform: '/platform/dashboard',
     };
     navigate(dashboards[domain]);
   };
