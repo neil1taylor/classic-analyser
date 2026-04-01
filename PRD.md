@@ -2787,7 +2787,7 @@ The VPC Migration Analysis feature provides rule-based analysis capabilities to 
 #### 13.2.1 Compute Assessment
 - Classic VSI → VPC instance profile mapping using 71 predefined profiles (bx2/bx3d/cx2/cx3d/mx2/mx3d/vx2d/ux2d families)
 - Profile selection algorithm based on vCPU/memory ratio (compute ≤2.5, balanced ≤5, memory ≤10, very-high-memory ≤14, ultra-high-memory >14) and closest-fit matching
-- OS compatibility checking against 15-entry matrix (RHEL, Ubuntu, CentOS, Debian, Windows, FreeBSD)
+- OS compatibility checking against 43-entry matrix (RHEL, CentOS, Ubuntu, Debian, SLES, Rocky Linux, AlmaLinux, Oracle Linux, Fedora, Windows, FreeBSD, OpenBSD, Solaris, AIX, HP-UX, VMware) with EOL dates, VPC image type (stock/BYOL/none), and VirtIO driver availability
 - Bare metal migration path assessment (virtualise, VPC bare metal, PowerVS for Oracle, PowerVS for SAP, or not migratable)
 - Oracle bare metal detection: hardware profile matching against 3 IBM Oracle-certified HCL configurations (4c/64GB, 16c/384GB, 48c/768GB) combined with "No OS" / Oracle Linux detection. Matched servers are recommended for migration to IBM Power Virtual Server (PowerVS) running Oracle on AIX. See [IBM Bare Metal Servers for Oracle](https://www.ibm.com/products/bare-metal-servers-oracle) and [PowerVS Oracle deployment](https://cloud.ibm.com/docs/power-iaas?topic=power-iaas-use-case-oracle)
 - SAP HANA bare metal detection: hardware profile matching against 9 IBM SAP-certified configurations (36c/192GB, 36c/384GB, 36c/768GB, 32c/192GB, 32c/384GB, 40c/768GB, 56c/1536GB, 56c/3072GB, 112c/3072GB) combined with SAP-specific OS (SLES for SAP / RHEL for SAP) or hostname pattern detection. Configs ≤768 GB are directed to SAP-certified VPC Bare Metal profiles (bx2d-metal-96x384, mx2d-metal-96x768); configs >768 GB are directed to IBM Power Virtual Server (PowerVS). See [SAP HANA Classic BM profiles](https://cloud.ibm.com/docs/sap?topic=sap-hana-iaas-offerings-profiles-intel-bm)
@@ -2853,7 +2853,7 @@ The VPC Migration Analysis feature provides rule-based analysis capabilities to 
 
 Each migration assessment tab (Compute, Network, Storage, Security) includes a remediation checklist panel that evaluates per-resource-type pre-requisite checks against the collected Classic data. Checks produce one of five severity levels: **blocker**, **warning**, **info**, **unknown** (cannot determine from API), or **passed**.
 
-**Compute checks (26):**
+**Compute checks (28):**
 
 | Check | Severity | Logic |
 |---|---|---|
@@ -2877,7 +2877,8 @@ Each migration assessment tab (Compute, Network, Storage, Security) includes a r
 | Potential Oracle Workload (BM) | warning | Hardware matches Oracle HCL config (4c/64GB, 16c/384GB, 48c/768GB) + No OS / Oracle Linux |
 | Potential SAP Workload (BM) | warning | Hardware matches SAP HANA-certified config (9 profiles) + SLES/RHEL for SAP OS or SAP hostname pattern |
 | 32-bit Operating System | blocker | OS string matches 32-bit pattern (`32-bit`, `i386`, `x86` non-64) |
-| End-of-Life Operating System | warning | OS matches EOL versions (CentOS 5-7, RHEL 5-6, Win 2003/2008, Debian 8-9, Ubuntu 14/16, SLES 11-12) |
+| Unsupported Operating System | blocker | OS matched in compatibility table with `imageType: 'none'` — no VPC path exists. Windows 2003 (no VirtIO drivers), Windows 2008 (VirtIO dropped from virtio-win 0.1.215+), RHEL 6, CentOS 5-6/8, Ubuntu 14-18, Debian 9, SLES 11, Solaris, AIX, HP-UX, FreeBSD, OpenBSD |
+| End-of-Life Operating System | warning | OS matched in compatibility table with `eolDate` in the past and `imageType` != `'none'` (i.e. still available as BYOL). Covers RHEL 7, CentOS 7, Windows 2012. Fallback regex for unrecognised OS strings. |
 | Single-Socket High Clock Speed (BM) | unknown | Processor model/speed not in API mask — cannot determine |
 | Possible IKS/ROKS Worker Node | warning | Hostname contains "kube" — likely IKS or ROKS worker node, cluster must be recreated on VPC |
 | Software Add-on Detected | warning | Billing item `categoryCode` matches `cpanel\|plesk_billing\|anti_virus\|monitoring_agent\|software_license\|control_panel\|cdp\|evault` or description matches add-on patterns. IBM-provisioned add-ons not available on VPC — self-install and license required. |

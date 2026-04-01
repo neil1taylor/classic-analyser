@@ -248,25 +248,40 @@ function mapToVPCProfile(classic: ClassicVSI): VPCProfileRecommendation {
 
 ### 3.2 Operating System Compatibility
 
-**OS Availability Matrix:**
+**OS Availability Matrix (43 entries — see `osCompatibility.ts` for full data):**
 
-| Classic OS | VPC Available | VPC Image | Migration Notes |
+| Classic OS | VPC Image Type | VPC Image | Migration Notes |
 |------------|---------------|-----------|-----------------|
-| RHEL 7.x | ✅ Yes | ibm-redhat-7-9-minimal-amd64-x | Direct migration |
-| RHEL 8.x | ✅ Yes | ibm-redhat-8-8-minimal-amd64-x | Direct migration |
-| RHEL 9.x | ✅ Yes | ibm-redhat-9-2-minimal-amd64-x | Direct migration |
-| Ubuntu 18.04 | ✅ Yes | ibm-ubuntu-18-04-6-minimal-amd64-x | Direct migration |
-| Ubuntu 20.04 | ✅ Yes | ibm-ubuntu-20-04-6-minimal-amd64-x | Direct migration |
-| Ubuntu 22.04 | ✅ Yes | ibm-ubuntu-22-04-3-minimal-amd64-x | Direct migration |
-| CentOS 7.x | ⚠️ Limited | Community images | Consider RHEL migration |
-| CentOS 8.x | ❌ EOL | N/A | **Must upgrade** to RHEL/Rocky |
-| Debian 10 | ✅ Yes | ibm-debian-10-13-minimal-amd64-x | Direct migration |
-| Debian 11 | ✅ Yes | ibm-debian-11-7-minimal-amd64-x | Direct migration |
-| Windows 2016 | ✅ Yes | ibm-windows-server-2016-full-standard-amd64-x | Direct migration |
-| Windows 2019 | ✅ Yes | ibm-windows-server-2019-full-standard-amd64-x | Direct migration |
-| Windows 2022 | ✅ Yes | ibm-windows-server-2022-full-standard-amd64-x | Direct migration |
-| Windows 2012 R2 | ❌ No | N/A | **Must upgrade** to 2019/2022 |
-| FreeBSD | ❌ No | N/A | Custom image required |
+| RHEL 6.x | ❌ None | N/A | EOL Nov 2020 — **must upgrade** to RHEL 8/9 |
+| RHEL 7.x | ⚠️ BYOL | Custom image | EOL June 2024 — upgrade to RHEL 8/9 recommended |
+| RHEL 8.x | ✅ Stock | ibm-redhat-8-8-minimal-amd64 | Direct migration |
+| RHEL 9.x | ✅ Stock | ibm-redhat-9-2-minimal-amd64 | Direct migration |
+| CentOS 5–6 | ❌ None | N/A | Long EOL — **must upgrade** to RHEL/Rocky 8/9 |
+| CentOS 7.x | ⚠️ BYOL | Custom image | EOL June 2024 — migrate to Rocky/Alma/RHEL |
+| CentOS 8.x | ❌ None | N/A | EOL Dec 2021 — **must upgrade** to RHEL/Rocky |
+| Ubuntu 14–18 | ❌ None | N/A | EOL — **must upgrade** to Ubuntu 22.04/24.04 |
+| Ubuntu 20.04 | ✅ Stock | ibm-ubuntu-20-04-6-minimal-amd64 | Direct migration |
+| Ubuntu 22.04 | ✅ Stock | ibm-ubuntu-22-04-3-minimal-amd64 | Direct migration |
+| Ubuntu 24.04 | ✅ Stock | ibm-ubuntu-24-04-minimal-amd64 | Direct migration |
+| Debian 9 | ❌ None | N/A | EOL Jun 2022 — **must upgrade** to Debian 11/12 |
+| Debian 10–12 | ✅ Stock | ibm-debian-*-minimal-amd64 | Direct migration |
+| SLES 11 | ❌ None | N/A | EOL Mar 2022 — **must upgrade** to SLES 15 |
+| SLES 12/15 | ✅ Stock | ibm-sles-*-amd64 | Direct migration |
+| Rocky Linux 8/9 | ✅ Stock | ibm-rocky-linux-*-amd64 | Direct migration |
+| AlmaLinux 8/9 | ⚠️ BYOL | Custom image | RHEL-compatible distribution |
+| Oracle Linux 7–9 | ⚠️ BYOL | Custom image | RHEL-compatible distribution |
+| Windows Server 2003 | ❌ **Blocker** | N/A | No VirtIO drivers exist — VMs cannot boot on VPC. Requires re-platforming. |
+| Windows Server 2008/R2 | ❌ **Blocker** | N/A | VirtIO drivers dropped after virtio-win 0.1.173. VPC requires 1.9.24+ — VMs will not boot. |
+| Windows Server 2012/R2 | ⚠️ BYOL | Custom image | EOL Oct 2023 — upgrade to 2019/2022 recommended |
+| Windows Server 2016 | ✅ Stock | ibm-windows-server-2016-full-standard-amd64 | Direct migration |
+| Windows Server 2019 | ✅ Stock | ibm-windows-server-2019-full-standard-amd64 | Direct migration |
+| Windows Server 2022 | ✅ Stock | ibm-windows-server-2022-full-standard-amd64 | Direct migration |
+| Fedora CoreOS | ✅ Stock | ibm-fedora-coreos-stable-amd64 | Container-optimized workloads |
+| FreeBSD / OpenBSD | ❌ None | N/A | Not supported on VPC |
+| Solaris | ❌ None | N/A | Not supported on VPC — re-platform to Linux |
+| AIX | ❌ None | N/A | Not supported on VPC — use PowerVS |
+| HP-UX | ❌ None | N/A | Not supported on VPC |
+| VMware ESXi | ❌ None | N/A | Hypervisor — VMs must be migrated individually |
 
 **OS Assessment Output:**
 

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-IBM Cloud Infrastructure Explorer — a web-based inventory and analysis tool for IBM Cloud Classic (SoftLayer), VPC, and PowerVS infrastructure. It collects data from 27+ Classic API resource types, 26 VPC resource types (across all VPC regions), and 22 PowerVS resource types (across all workspaces), displays them in interactive tables, and exports to XLSX. Deployed as a single container on IBM Code Engine.
+IBM Cloud Infrastructure Explorer — a web-based inventory and analysis tool for IBM Cloud Classic (SoftLayer), VPC, PowerVS, and Platform Services infrastructure. It collects data from 27+ Classic API resource types, 26 VPC resource types (across all VPC regions), 22 PowerVS resource types (across all workspaces), and all Platform Services instances (COS, Key Protect, SCC, databases, etc. via the Resource Controller API), displays them in interactive tables, and exports to XLSX. Deployed as a single container on IBM Code Engine.
 
 The project specification lives in `PRD.md`. The application is fully implemented.
 
@@ -16,6 +16,7 @@ The project specification lives in `PRD.md`. The application is fully implemente
 Browser → Express.js (/api/* proxy routes + / static SPA) → SoftLayer REST API
                                                            → VPC REST API ({region}.iaas.cloud.ibm.com)
                                                            → PowerVS REST API ({region}.power-iaas.cloud.ibm.com)
+                                                           → Resource Controller API (resource-controller.cloud.ibm.com)
 ```
 
 **Stateless API key handling (critical security requirement):**
@@ -31,7 +32,7 @@ Browser → Express.js (/api/* proxy routes + / static SPA) → SoftLayer REST A
 - **Import IMS Reports** — multi-file import of CSVs, HTMLs, drawio, report XLSXs (assessment/device inventory) from IBM's IMS reporting tool. Parsers in `src/services/report-parsers/` handle each format. The merger deduplicates by `id` with `hostname` fallback.
 - **Import MDL** — uploads an IMS `.mdl` file to `POST /api/convert/mdl`, which runs `scripts/mdl-to-json.py` (Python) server-side to convert the serialized SoftLayer data model to JSON. This is the most complete data source (~13K+ resources per large account).
 
-**Navigation** uses a 3-domain tab switcher (Carbon ContentSwitcher) in the SideNav. The `InfrastructureMode` is an array of `InfrastructureDomain` values (`'classic' | 'vpc' | 'powervs'`). Login validates all three domains in parallel via `Promise.allSettled` and builds the mode array from whichever succeed. Only domains the user has access to appear as tabs.
+**Navigation** uses a 4-domain tab switcher (Carbon ContentSwitcher) in the SideNav. The `InfrastructureMode` is an array of `InfrastructureDomain` values (`'classic' | 'vpc' | 'powervs' | 'platform'`). Login validates Classic, VPC, and PowerVS in parallel via `Promise.allSettled` and builds the mode array from whichever succeed. Platform Services is implicitly enabled whenever VPC or PowerVS auth succeeds (all use IAM tokens). Only domains the user has access to appear as tabs.
 
 ## Tech Stack
 
@@ -55,16 +56,18 @@ src/                              # React frontend
     geography/                    GeographyMap
     topology/                     TopologyDiagram, TopologyNodes
     vpc/                          VpcDashboard
+    platform/                     PlatformDashboard
     help/                         HelpPage
   contexts/                       AuthContext, DataContext, UIContext, VpcDataContext, PowerVsDataContext,
-                                  MigrationContext, AIContext,
-                                  dataReducer, vpcDataReducer, powerVsDataReducer
+                                  PlatformDataContext, MigrationContext, AIContext,
+                                  dataReducer, vpcDataReducer, powerVsDataReducer, platformDataReducer
   hooks/                          useDataCollection, useExport, useTableState,
                                   useDashboardMetrics, useCostData, useGeographyData, useTopologyData,
                                   useVpcDataCollection, useVpcExport, useVpcDashboardMetrics,
                                   useVpcCostData, useVpcTopologyData, useVpcGeographyData,
                                   usePowerVsDataCollection, usePowerVsExport, usePowerVsDashboardMetrics,
                                   usePowerVsCostData, usePowerVsTopologyData, usePowerVsGeographyData,
+                                  usePlatformDataCollection, usePlatformExport, usePlatformDashboardMetrics,
                                   useAISettings, useAIInsights, useAICostAnalysis, useAIChat, useAIReport,
                                   useTour, useLocalPreferences
   pages/                          AuthPage, DashboardPage, ResourcePage,
@@ -73,10 +76,12 @@ src/                              # React frontend
                                   VpcCostsPage, VpcGeographyPage,
                                   PowerVsDashboardPage, PowerVsResourcePage, PowerVsTopologyPage,
                                   PowerVsCostsPage, PowerVsGeographyPage,
+                                  PlatformDashboardPage, PlatformResourcePage,
                                   ExportPage, SettingsPage, MigrationPage
   services/                       api.ts, import.ts, report-import.ts, transform.ts,
                                   vpc-api.ts, vpc-transform.ts,
-                                  powervs-api.ts, powervs-transform.ts
+                                  powervs-api.ts, powervs-transform.ts,
+                                  platform-api.ts, platform-transform.ts
     report-parsers/               types.ts, csv-utils.ts, csv-parsers.ts, html-parsers.ts,
                                   drawio-parser.ts, json-parser.ts, xlsx-parsers.ts,
                                   merger.ts, index.ts
@@ -84,23 +89,24 @@ src/                              # React frontend
                                   storageAnalysis.ts, securityAnalysis.ts, featureGapAnalysis.ts,
                                   complexityScoring.ts, costComparison.ts, wavePlanning.ts,
                                   dependencyMapping.ts
-      checks/                     index.ts, computeChecks.ts (27), networkChecks.ts (11),
+      checks/                     index.ts, computeChecks.ts (28), networkChecks.ts (11),
                                   storageChecks.ts (8), securityChecks.ts (3), checkUtils.ts
       data/                       datacenterMapping.ts, osCompatibility.ts, vpcProfiles.ts,
                                   vpcCostEstimates.ts, featureGaps.ts, storageTiers.ts
   types/                          resources.ts, vpc-resources.ts, powervs-resources.ts,
-                                  migration.ts
+                                  platform-resources.ts, migration.ts
   utils/                          formatters.ts, relationships.ts, logger.ts, retry.ts
   data/                           ibmCloudDataCenters.json, ibmCloudRegions.json,
                                   classicResourceTypes.json, classicRelationships.json,
                                   classicDisplayNames.json, vpcResourceTypes.json,
-                                  powerVsResourceTypes.json, index.ts
+                                  powerVsResourceTypes.json, platformResourceTypes.json, index.ts
   styles/                         SCSS files
 
 server/src/                       # Express backend
   routes/                         auth.ts, collect.ts, export.ts, convert.ts,
                                   vpc-auth.ts, vpc-collect.ts, vpc-export.ts,
-                                  powervs-auth.ts, powervs-collect.ts, powervs-export.ts
+                                  powervs-auth.ts, powervs-collect.ts, powervs-export.ts,
+                                  platform-collect.ts, platform-export.ts
   services/
     softlayer/                    client.ts, compute.ts, network.ts, storage.ts,
                                   security.ts, dns.ts, account.ts, types.ts
@@ -108,6 +114,7 @@ server/src/                       # Express backend
                                   aggregator.ts, export.ts, types.ts
     powervs/                      client.ts, workspaces.ts, resources.ts,
                                   aggregator.ts, export.ts, types.ts
+    platform/                     resources.ts, aggregator.ts, export.ts, types.ts
     aggregator.ts, relationships.ts, export.ts
   middleware/                     apiKey.ts, error.ts
   types/                          express.d.ts
@@ -138,6 +145,9 @@ npm run lint            # Lint
 - PowerVS API auth uses IAM Bearer token (same exchange as VPC)
 - PowerVS API base URL: `https://{region}.power-iaas.cloud.ibm.com/pcloud/v1/cloud-instances/{cloud_instance_id}/`
 - PowerVS requires CRN header on every request; workspace discovery via Resource Controller API
+- Platform Services API auth uses IAM Bearer token (same exchange as VPC)
+- Platform Services API base URL: `https://resource-controller.cloud.ibm.com/v2/`
+- Platform Services collects all service instances and resource groups; enriches with known service names
 - Code Engine deployment: 0.5 vCPU / 1GB RAM, auto-scaling 0–10 instances, 300s request timeout
 - UI must follow IBM Carbon Design System standards (WCAG 2.1 AA)
 - Primary use case is desktop; mobile is secondary
@@ -151,16 +161,18 @@ npm run lint            # Lint
 
 **PowerVS:** 22 types across categories: Compute (PVM Instances, Shared Processor Pools, Placement Groups, Host Groups), Network (Networks, Network Ports, Network Security Groups, Cloud Connections, DHCP Servers, VPN Connections, IKE Policies, IPSec Policies), Storage (Volumes, Volume Groups, Snapshots), Security (SSH Keys), Other (Workspaces, System Pools, SAP Profiles, Events, Images, Stock Images). PowerVS is workspace-scoped (not region-scoped like VPC). Workspace discovery uses the Resource Controller API to find all PowerVS service instances. PowerVS API calls require a CRN header with the workspace CRN. Zone-to-region mapping converts zones (e.g., `dal12`) to API regions (e.g., `us-south`). Network Ports depend on Networks (collected first). Resource keys are prefixed with `pvs` (e.g., `pvsInstances`), worksheet names with `p` (e.g., `pPvsInstances`).
 
+**Platform Services:** All IBM Cloud service instances collected via the Resource Controller API (`/v2/resource_instances`). Displayed as a single `serviceInstances` table with computed `_serviceType`, `_serviceCategory`, and `_resourceGroupName` fields. Resource groups are fetched separately (`/v2/resource_groups`) for name resolution. A `KNOWN_SERVICES` map provides display-friendly names for 30+ service types (COS, Key Protect, SCC, databases, Event Streams, etc.); unknown services fall back to the raw `resource_id`. Worksheet name: `sServiceInstances`. Platform Services is available whenever VPC or PowerVS auth succeeds (all use IAM tokens).
+
 **IMS Report Types:** 2 additional types added for IMS report import: Report Warnings (`reportWarnings` — priority, issue, type, recommendation) and Health Checks (`reportChecks` — checks performed with priority and rationale). These appear in Classic tables when importing IMS report files.
 
 **IMS Report Import Formats:** The app supports importing data from IBM's IMS reporting tool in multiple formats: CSV (warnings, gateways, NAS, security groups), HTML (warnings with embedded JS arrays, overview with Chart.js data, summary tables, inventory with nested DOM trees), drawio (XML network topology), report XLSX (assessment with VPC mapping, device inventory with physical location), JSON (converted from .mdl), and .mdl (serialized SoftLayer API responses, converted server-side via Python). The merger deduplicates across all sources using `id` as primary key and `hostname` as fallback.
 
 ## Migration Assessment
 
-**Pre-requisite checks (51 total):** Compute (27), Network (11), Storage (8), Security (3), plus 12 feature gap definitions. Each check produces a severity: blocker, warning, info, unknown, or passed. Check logic lives in `src/services/migration/checks/`. The `runAllPreReqChecks()` function in `checks/index.ts` orchestrates all four check categories.
+**Pre-requisite checks (50 total):** Compute (28), Network (11), Storage (8), Security (3), plus 12 feature gap definitions. Each check produces a severity: blocker, warning, info, unknown, or passed. Check logic lives in `src/services/migration/checks/`. The `runAllPreReqChecks()` function in `checks/index.ts` orchestrates all four check categories.
 
 **Migration approach classification:** Each VSI and Bare Metal server receives a recommended migration approach — `lift-and-shift`, `rebuild`, `re-platform`, or `re-architect` — based on OS compatibility, hypervisor detection, IKS/ROKS presence, and blocker status. The decision tree is in `computeAnalysis.ts` (`classifyMigrationApproach` / `classifyBareMetalApproach`). IBM's official guidance recommends "Rebuild" as the default approach (provision fresh VPC instances with latest OS).
 
 **Analysis services** in `src/services/migration/`: computeAnalysis (profile matching, approach classification), networkAnalysis, storageAnalysis, securityAnalysis, featureGapAnalysis, complexityScoring (5-dimension 0-100), costComparison (3-year projections), wavePlanning (dependency-grouped waves), dependencyMapping (resource graph).
 
-**Reference data** in `src/services/migration/data/`: datacenterMapping (Classic DC → VPC region/zones), osCompatibility (20 OS patterns), vpcProfiles (200+ VSI + 20 BM profiles), featureGaps (12 Classic-only features), storageTiers (IOPS mappings).
+**Reference data** in `src/services/migration/data/`: datacenterMapping (Classic DC → VPC region/zones), osCompatibility (43 OS entries), vpcProfiles (200+ VSI + 20 BM profiles), featureGaps (12 Classic-only features), storageTiers (IOPS mappings).

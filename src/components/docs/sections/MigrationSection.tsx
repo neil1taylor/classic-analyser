@@ -49,13 +49,15 @@ const MigrationSection: React.FC = () => (
       <h3 style={headingStyle}>Readiness Scoring</h3>
       <p style={paragraphStyle}>
         Each resource receives a 0&ndash;100% readiness score across 5 dimensions. The score
-        reflects 49 automated checks including:
+        reflects 50 automated checks including:
       </p>
       <ul style={listStyle}>
         <li>Boot disk size within VPC limits</li>
         <li>vCPU and memory within VPC profile maximums</li>
-        <li>Operating system supported on VPC</li>
-        <li>32-bit or end-of-life OS detection</li>
+        <li>Operating system supported on VPC (43 OS entries with stock/BYOL/unsupported classification)</li>
+        <li>Unsupported OS blocker &mdash; Windows 2003/2008 (no VirtIO drivers), Solaris, AIX, HP-UX, FreeBSD</li>
+        <li>End-of-life OS warning &mdash; RHEL 7, CentOS 7, Windows 2012 (available as BYOL but EOL)</li>
+        <li>32-bit OS detection</li>
         <li>Hypervisor detection (VMware, XenServer, Hyper-V)</li>
         <li>Datacenter availability in VPC regions</li>
         <li>Multi-attach block storage detection</li>

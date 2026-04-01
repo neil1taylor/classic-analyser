@@ -6,6 +6,10 @@ Format based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- Enriched OS compatibility data — expanded from 18 to 43 OS entries with EOL dates, VPC image type (stock/BYOL/none), and detailed migration notes. New entries include Windows Server 2003/2008 (blocker — no VirtIO drivers), RHEL 6, CentOS 5/6, Ubuntu 14–18, Debian 9, SLES 11, Rocky Linux, AlmaLinux, Oracle Linux, Fedora CoreOS, Solaris, AIX, HP-UX, and OpenBSD
+- New `os-unsupported` migration blocker check — flags servers running operating systems that cannot run on VPC at all (Windows 2003/2008 lack VirtIO drivers, Solaris/AIX/HP-UX are unsupported platforms). Separate from the existing EOL warning which now covers OSes that are EOL but still available via BYOL
+- BYOL awareness in compute analysis — migration notes now indicate when an OS is only available as a BYOL custom image on VPC (e.g. RHEL 7, CentOS 7, Windows 2012)
+- **Platform Services domain** — new fourth infrastructure tab that collects all IBM Cloud service instances (COS, Key Protect, SCC, databases, Event Streams, etc.) via the Resource Controller API. Includes service type identification (30+ known services), resource group name resolution, dashboard with service/location/category breakdowns, and XLSX export
 - Cloud-harvester schema alignment — attached network storage fields (`attachedBlockStorageGb`, `attachedFileStorageGb`, `volumeCount`) on Virtual Servers and Bare Metal, `costBasis` on Virtual Servers, `replicationStatus` on Block and File Storage
 - VMware Cross References frontend table definition (backend already collected; now visible in UI)
 - Migration execution step templates per approach — structured guidance for lift-and-shift (image export → COS → VPC), rebuild, re-platform (VMware RMM, PowerVS), and re-architect (Velero for IKS/ROKS) with IBM tool references and documentation links
@@ -20,7 +24,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/).
 - Expanded IBM migration resource links: Classic-to-VPC Migration Guide, VRF docs, VPC Quotas, ConvertIO/PrimaryIO
 - VRF Enablement migration pre-requisite check (manual verification flag for Classic-to-VPC Transit Gateway connectivity)
 - Storage discovery gaps closed — portable storage distinction on VSIs, file storage `bytesUsed`, `hasEncryptionAtRest`, datacenter name, per-volume snapshot collection in Phase 3
-- 9 new migration pre-requisite checks: 32-bit OS, EOL OS, hypervisor detection (VMware/XenServer/Hyper-V), Oracle/SAP workload detection, IKS/ROKS worker node detection, single-socket high clock speed
+- 9 new migration pre-requisite checks: 32-bit OS, unsupported OS (blocker), EOL OS (warning), hypervisor detection (VMware/XenServer/Hyper-V), Oracle/SAP workload detection, IKS/ROKS worker node detection, single-socket high clock speed
 - Hidden API fields surfaced in VSI and Bare Metal detail panels
 - IMS report import — CSV, HTML, drawio, XLSX, MDL, and JSON parsers with multi-source merger
 - Error boundaries, guided tour, export page, retry logic, AI hooks wired into application

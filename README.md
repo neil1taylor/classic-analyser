@@ -1,12 +1,13 @@
 # IBM Cloud Infrastructure Explorer
 
-A web-based inventory and analysis tool for IBM Cloud Classic (SoftLayer), VPC, and PowerVS infrastructure. It collects data from 75+ resource types across all three infrastructure domains, displays them in interactive tables with filtering and search, and exports to XLSX.
+A web-based inventory and analysis tool for IBM Cloud Classic (SoftLayer), VPC, PowerVS, and Platform Services infrastructure. It collects data from 75+ resource types across all four infrastructure domains, displays them in interactive tables with filtering and search, and exports to XLSX.
 
 ## Features
 
 - **Classic Infrastructure:** 27+ resource types — Compute (VSIs, Bare Metal), Network (VLANs, Subnets, Gateways, Firewalls), Storage (Block, File, Object), Security, DNS, and more
 - **VPC Infrastructure:** 26 resource types across all VPC regions — Instances, VPCs, Subnets, Security Groups, Load Balancers, Transit Gateways, Direct Link, and more
 - **PowerVS Infrastructure:** 22 resource types across all workspaces — PVM Instances, Networks, Volumes, Cloud Connections, and more
+- **Platform Services:** All IBM Cloud service instances (COS, Key Protect, SCC, databases, etc.) via the Resource Controller API with service type identification and resource group name resolution
 - **Interactive dashboards** with resource counts, distribution charts, and account info
 - **Data tables** with column filtering, sorting, search, and virtualized rendering for large datasets
 - **Topology diagrams** showing resource relationships
@@ -20,7 +21,7 @@ A web-based inventory and analysis tool for IBM Cloud Classic (SoftLayer), VPC, 
 - **Guided tour** onboarding for first-time users
 - **Section error boundaries** — chart/section errors don't crash the whole dashboard
 - **Retry with exponential backoff** on transient API failures
-- **VPC migration assessment** — 49 automated pre-requisite checks, per-workload migration approach recommendation (Lift & Shift / Rebuild / Re-platform / Re-architect), cost comparison, wave planning, Terraform export, and DOCX reports
+- **VPC migration assessment** — 50 automated pre-requisite checks (28 compute, 11 network, 8 storage, 3 security), per-workload migration approach recommendation (Lift & Shift / Rebuild / Re-platform / Re-architect), cost comparison, wave planning, Terraform export, and DOCX reports
 - **AI-powered insights** — optional watsonx.ai integration for chat, cost optimization, and report enhancement
 - **Account-scoped settings** — AI and preference persistence scoped per IBM Cloud account
 - **Stateless security** — API keys live only in browser memory, never persisted
