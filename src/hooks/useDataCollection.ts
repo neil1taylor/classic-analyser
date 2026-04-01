@@ -9,6 +9,7 @@ const log = createLogger('Collection');
 
 export interface CollectionOptions {
   skipBilling?: boolean;
+  collectDiskUtil?: boolean;
 }
 
 interface UseDataCollectionReturn {

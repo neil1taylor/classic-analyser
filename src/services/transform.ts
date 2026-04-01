@@ -255,6 +255,17 @@ function transformVirtualServer(raw: RawItem): RawItem {
     hourlyRate: raw.hourlyBillingFlag
       ? Number(nested(raw, 'billingItem', 'hourlyRecurringFee') ?? 0) || ''
       : '',
+    // Disk utilization (populated when opt-in SSH collection is enabled)
+    diskUtilUsedPercent: raw._diskUtilUsedPercent ?? '',
+    diskUtilUsedGB: raw._diskUtilTotalGB
+      ? `${raw._diskUtilUsedGB} / ${raw._diskUtilTotalGB} GB`
+      : '',
+    diskUtilStatus: raw._diskUtilStatus ?? '',
+    diskUtilDetails: Array.isArray(raw._diskUtilization)
+      ? (raw._diskUtilization as Array<{ mountPoint: string; usedGB: number; totalGB: number; usedPercent: number }>)
+          .map(d => `${d.mountPoint}: ${d.usedGB}/${d.totalGB}GB (${d.usedPercent}%)`)
+          .join(', ')
+      : '',
   };
 }
 
@@ -353,6 +364,17 @@ function transformBareMetal(raw: RawItem): RawItem {
     attachedBlockStorageGb,
     attachedFileStorageGb,
     volumeCount,
+    // Disk utilization (populated when opt-in SSH collection is enabled)
+    diskUtilUsedPercent: raw._diskUtilUsedPercent ?? '',
+    diskUtilUsedGB: raw._diskUtilTotalGB
+      ? `${raw._diskUtilUsedGB} / ${raw._diskUtilTotalGB} GB`
+      : '',
+    diskUtilStatus: raw._diskUtilStatus ?? '',
+    diskUtilDetails: Array.isArray(raw._diskUtilization)
+      ? (raw._diskUtilization as Array<{ mountPoint: string; usedGB: number; totalGB: number; usedPercent: number }>)
+          .map(d => `${d.mountPoint}: ${d.usedGB}/${d.totalGB}GB (${d.usedPercent}%)`)
+          .join(', ')
+      : '',
   };
 }
 

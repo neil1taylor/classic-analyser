@@ -7,6 +7,7 @@ export interface SLSoftwareDescription {
 
 export interface SLOperatingSystem {
   softwareDescription?: SLSoftwareDescription;
+  passwords?: Array<{ username?: string; password?: string; port?: number }>;
 }
 
 export interface SLDatacenter {

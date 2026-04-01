@@ -54,6 +54,7 @@
     "react-router-dom": "^7.13.1",
     "recharts": "^2.15.4",
     "sass": "^1.83.4",
+    "ssh2": "^1.17.0",
     "topojson-client": "^3.1.0",
     "winston": "^3.17.0",
     "zod": "^4.3.6"
@@ -75,6 +76,7 @@
     "@types/file-saver": "^2.0.7",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@types/ssh2": "^1.15.5",
     "@types/topojson-client": "^3.1.5",
     "@vitejs/plugin-react": "^5.2.0",
     "concurrently": "^9.1.2",

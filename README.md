@@ -17,6 +17,7 @@ A web-based inventory and analysis tool for IBM Cloud Classic (SoftLayer), VPC, 
 - **XLSX export/import** with one worksheet per resource type
 - **IMS report import** — parse CSVs, HTMLs, drawio, and report XLSXs from IBM's IMS reporting tool
 - **MDL import** — server-side conversion of IMS `.mdl` data files (serialized SoftLayer API responses) to populate all views
+- **Disk utilization collection** (opt-in) — SSH into Classic servers to collect real filesystem usage via private IP. Credentials are transient and never stored or displayed
 - **Real-time progress** via Server-Sent Events during data collection
 - **Guided tour** onboarding for first-time users
 - **Section error boundaries** — chart/section errors don't crash the whole dashboard

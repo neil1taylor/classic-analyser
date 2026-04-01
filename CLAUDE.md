@@ -25,7 +25,7 @@ Browser → Express.js (/api/* proxy routes + / static SPA) → SoftLayer REST A
 - No server-side sessions, no sticky sessions, no database
 - 60-minute inactivity timeout clears the key in the browser
 
-**Data collection** uses Server-Sent Events (SSE) to stream progress. Classic collection runs in three phases (shallow scan + deep scan + nested/billing) with 10 concurrent API calls per phase. Phase 3 includes per-volume snapshot collection for block and file storage (5 concurrent calls), billing items, VMware nested resources, and Transit Gateway connections. VPC collection runs as a single phase across all auto-discovered regions with 10 concurrent resource tasks. PowerVS collection discovers workspaces via the Resource Controller API, collects Networks first (dependency), then Network Ports, then all remaining resources concurrently with 10 concurrent tasks.
+**Data collection** uses Server-Sent Events (SSE) to stream progress. Classic collection runs in up to five phases: Phase 1 (shallow scan) + Phase 2 (deep scan) + Phase 3 (nested/billing) + Phase 4 (TGW route reports) + Phase 5 (disk utilization, opt-in). Phases 1-3 use 10 concurrent API calls. Phase 3 includes per-volume snapshot collection for block and file storage (5 concurrent calls), billing items, VMware nested resources, and Transit Gateway connections. Phase 5 (opt-in via "Disk util" toggle) fetches OS credentials from the SoftLayer API, SSHs into each VSI/BM via private IP to collect real filesystem usage, then discards credentials — they are never displayed, stored, logged, or exported. SSH uses 5 concurrent connections with 10s timeout; machines that are unreachable or lack credentials are gracefully skipped. VPC collection runs as a single phase across all auto-discovered regions with 10 concurrent resource tasks. PowerVS collection discovers workspaces via the Resource Controller API, collects Networks first (dependency), then Network Ports, then all remaining resources concurrently with 10 concurrent tasks.
 
 **IMS Report Import** provides three alternative data input methods (no API key required):
 - **Import XLSX** — re-imports a previously exported XLSX file (cloud-harvester output)
@@ -37,7 +37,7 @@ Browser → Express.js (/api/* proxy routes + / static SPA) → SoftLayer REST A
 ## Tech Stack
 
 - **Frontend:** React 18, TypeScript 5, Vite 5, @carbon/react (Carbon Design System v11), Axios, react-window (virtualization), ExcelJS (xlsx export/import), multer (file uploads)
-- **Backend:** Node.js 20 LTS, Express 4, winston (logging), helmet (security headers), compression, Python 3 (MDL conversion)
+- **Backend:** Node.js 20 LTS, Express 4, winston (logging), helmet (security headers), compression, ssh2 (disk utilization SSH), Python 3 (MDL conversion)
 - **Infrastructure:** Docker (Node 20 Alpine + Python 3, multi-stage build), IBM Code Engine, GitHub Actions CI/CD
 
 ## Project Structure
@@ -109,7 +109,7 @@ server/src/                       # Express backend
                                   platform-collect.ts, platform-export.ts
   services/
     softlayer/                    client.ts, compute.ts, network.ts, storage.ts,
-                                  security.ts, dns.ts, account.ts, types.ts
+                                  security.ts, dns.ts, account.ts, diskutil.ts, types.ts
     vpc/                          client.ts, regions.ts, resources.ts,
                                   aggregator.ts, export.ts, types.ts
     powervs/                      client.ts, workspaces.ts, resources.ts,
@@ -137,7 +137,7 @@ npm run lint            # Lint
 
 ## Key Design Constraints
 
-- **Never persist or log API keys** — sanitize all logging output, never write keys to disk or session storage
+- **Never persist or log API keys or OS credentials** — sanitize all logging output, never write keys to disk or session storage. OS credentials (fetched for disk utilization) are transient: fetched from the SL API, used for SSH, then discarded in the same function scope. Never sent to the frontend, never included in XLSX export, never logged. `passwords` is in the logger `SENSITIVE_KEYS` set
 - SoftLayer API auth uses HTTP Basic: `apikey:<user-api-key>` base64-encoded in the Authorization header
 - SoftLayer API base URL: `https://api.softlayer.com/rest/v3.1/`
 - VPC API auth uses IAM Bearer token (exchanged from the same API key)

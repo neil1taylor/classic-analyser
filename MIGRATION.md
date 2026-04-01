@@ -721,6 +721,7 @@ interface NetworkAssessment {
 | Access control (IP) | VPC security groups | Reconfigure |
 | Encryption at rest | VPC provider-managed encryption | Verify key management |
 | NFS usage (bytesUsed) | Capacity planning | Right-size VPC file shares |
+| Disk utilization (SSH) | Capacity planning | Right-size VPC boot/data volumes (opt-in Phase 5 collection via SSH) |
 
 ### 5.3 Storage Assessment Output
 

@@ -38,6 +38,8 @@ import {
 import { getSecurityCertificates, getSshKeys } from './softlayer/security.js';
 import { getDomains, getDomainsShallow, flattenDNSRecords } from './softlayer/dns.js';
 import { getUsers, getAllBillingItems, getEventLog } from './softlayer/account.js';
+import { collectDiskUtilization, mergeDiskUtilization } from './softlayer/diskutil.js';
+import type { MachineInfo } from './softlayer/diskutil.js';
 import { buildRelationships } from './relationships.js';
 import { VMwareClient } from './vmware/client.js';
 import { getVMwareInstances, getVMwareClusterHosts, getVMwareClusterVlans } from './vmware/solutions.js';
@@ -231,6 +233,7 @@ export interface AuthConfig {
 
 export interface CollectOptions {
   skipBilling?: boolean;
+  collectDiskUtil?: boolean;
 }
 
 export async function collectAllData(
@@ -876,6 +879,87 @@ export async function collectAllData(
           items: tgwVpcVpnGateways,
           count: tgwVpcVpnGateways.length,
         });
+      }
+    }
+
+    // ── PHASE 5: DISK UTILIZATION (opt-in) ──────────────────────────────
+    if (options?.collectDiskUtil && !abortSignal?.aborted) {
+      const allMachines: MachineInfo[] = [
+        ...virtualGuests
+          .filter(vg => vg.id && vg.operatingSystem)
+          .map(vg => ({
+            id: vg.id!,
+            type: 'vsi' as const,
+            primaryBackendIpAddress: vg.primaryBackendIpAddress,
+            operatingSystem: vg.operatingSystem,
+          })),
+        ...hardware
+          .filter(hw => hw.id && hw.operatingSystem)
+          .map(hw => ({
+            id: hw.id!,
+            type: 'bm' as const,
+            primaryBackendIpAddress: hw.primaryBackendIpAddress,
+            operatingSystem: hw.operatingSystem,
+          })),
+      ];
+
+      if (allMachines.length > 0) {
+        tracker.totalResources += 1;
+        currentPhaseName = 'Disk Utilization';
+
+        sendSSE(res, 'progress', {
+          phase: 'Disk Utilization',
+          resource: 'diskUtilization',
+          status: `collecting from ${allMachines.length} machines via SSH`,
+          totalResources: tracker.totalResources,
+          completedResources: tracker.completedResources,
+        });
+
+        const diskUtilResults = await collectDiskUtilization(
+          client,
+          allMachines,
+          (completed, total) => {
+            sendSSE(res, 'progress', {
+              phase: 'Disk Utilization',
+              resource: 'diskUtilization',
+              status: `SSH ${completed}/${total} machines`,
+              totalResources: tracker.totalResources,
+              completedResources: tracker.completedResources,
+            });
+          },
+        );
+
+        // Merge results into VSI/BM objects
+        mergeDiskUtilization(virtualGuests, diskUtilResults);
+        mergeDiskUtilization(hardware, diskUtilResults);
+
+        // Defense-in-depth: strip any credentials that may have leaked onto objects
+        for (const vg of virtualGuests) {
+          if (vg.operatingSystem) delete vg.operatingSystem.passwords;
+        }
+        for (const hw of hardware) {
+          if (hw.operatingSystem) delete hw.operatingSystem.passwords;
+        }
+
+        // Re-send enriched data via SSE
+        sendSSE(res, 'data', { resourceKey: 'virtualGuests', items: virtualGuests, count: virtualGuests.length });
+        sendSSE(res, 'data', { resourceKey: 'hardware', items: hardware, count: hardware.length });
+
+        tracker.completedResources++;
+        sendSSE(res, 'progress', {
+          phase: 'Disk Utilization',
+          resource: 'diskUtilization',
+          status: 'complete',
+          totalResources: tracker.totalResources,
+          completedResources: tracker.completedResources,
+        });
+
+        logger.info('Disk utilization phase complete', {
+          machines: allMachines.length,
+          collected: Array.from(diskUtilResults.values()).filter(r => r.status === 'collected').length,
+        });
+      } else {
+        logger.info('Disk utilization: no eligible machines found');
       }
     }
 

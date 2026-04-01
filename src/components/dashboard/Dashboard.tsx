@@ -23,6 +23,7 @@ const Dashboard: React.FC = () => {
   const { resourceMetrics, osDist, dcDist, cpuDist, totalServers, vmwareOverlap } = useDashboardMetrics();
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const [includeBilling, setIncludeBilling] = useState(false);
+  const [collectDiskUtil, setCollectDiskUtil] = useState(false);
 
   const hasData = Object.keys(collectedData).length > 0;
 
@@ -45,7 +46,7 @@ const Dashboard: React.FC = () => {
             <Button
               kind="primary"
               renderIcon={DataCollection}
-              onClick={() => startCollection({ skipBilling: !includeBilling })}
+              onClick={() => startCollection({ skipBilling: !includeBilling, collectDiskUtil })}
               disabled={isCollecting}
             >
               {isCollecting ? 'Collecting...' : 'Collect Data'}
@@ -59,6 +60,19 @@ const Dashboard: React.FC = () => {
                   labelB="Billing on"
                   toggled={includeBilling}
                   onToggle={(toggled: boolean) => setIncludeBilling(toggled)}
+                  disabled={isCollecting}
+                />
+              </div>
+            </Tooltip>
+            <Tooltip label="SSH into servers via private IP to collect real disk usage. Requires OS credentials in SoftLayer and network access to private IPs." align="bottom">
+              <div>
+                <Toggle
+                  id="collect-disk-util"
+                  size="sm"
+                  labelA="Disk util off"
+                  labelB="Disk util on"
+                  toggled={collectDiskUtil}
+                  onToggle={(toggled: boolean) => setCollectDiskUtil(toggled)}
                   disabled={isCollecting}
                 />
               </div>

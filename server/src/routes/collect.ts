@@ -8,6 +8,7 @@ const router = Router();
 
 router.get('/stream', apiKeyMiddleware, async (req: Request, res: Response): Promise<void> => {
   const skipBilling = req.query.skipBilling === '1';
+  const collectDiskUtil = req.query.diskUtil === '1';
 
   // Set SSE headers
   res.setHeader('Content-Type', 'text/event-stream');
@@ -58,7 +59,7 @@ router.get('/stream', apiKeyMiddleware, async (req: Request, res: Response): Pro
     const auth = req.authMode === 'iam'
       ? { iamToken: req.iamToken! }
       : { apiKey: req.apiKey! };
-    await collectAllData(auth, res, abortSignal, { skipBilling });
+    await collectAllData(auth, res, abortSignal, { skipBilling, collectDiskUtil });
   } catch (err) {
     const error = err as Error;
     logger.error('Collection stream error', { message: error.message });

@@ -229,12 +229,13 @@ IBM Cloud Infrastructure Explorer will address these challenges by providing a u
 | FR-2.7 | Relationship Resolution | Automatically resolve and map relationships between resources | Must |
 | FR-2.8 | Collection Cancellation | Allow user to cancel in-progress collection | Should |
 | FR-2.9 | Retry Failed | Option to retry failed API calls | Should |
-| FR-2.10 | Two-Phase Collection | Collection runs in two automatic phases: a shallow scan (minimal object masks for slow resources, full masks for fast resources) followed by a deep scan (full object masks for previously-shallow resources). Dashboard populates with summary data during shallow scan. | Must |
+| FR-2.10 | Multi-Phase Collection | Collection runs in up to five automatic phases: shallow scan, deep scan, nested/billing, TGW route reports, and disk utilization (opt-in). Dashboard populates with summary data during shallow scan. | Must |
 | FR-2.11 | Silent Data Replace | Deep scan data silently overwrites shallow data in the UI. No user interaction required between phases. | Must |
-| FR-2.12 | Phase Progress | Progress indicator shows current phase name ("Shallow Scan" / "Deep Scan") and continuous percentage across both phases. | Must |
+| FR-2.12 | Phase Progress | Progress indicator shows current phase name ("Shallow Scan" / "Deep Scan" / "Disk Utilization" etc.) and continuous percentage across all phases. | Must |
 | FR-2.13 | Deep Scan Fallback | If a deep scan fetch fails for a resource, the shallow data remains visible for that resource. | Must |
 | FR-2.14 | Abort Between Phases | If the user cancels during shallow scan, deep scan does not run. Abort signal checked between phases. | Must |
 | FR-2.15 | Deferred Relationships | Relationship mapping and DNS record flattening only run after deep scan completes (they require full nested data). | Must |
+| FR-2.16 | Disk Utilization Collection | Opt-in Phase 5: SSH into Classic VSIs and Bare Metal via private IP to collect real filesystem usage. Credentials fetched transiently from `operatingSystem.passwords`, used for SSH, then discarded. Never displayed, stored, logged, or exported. 5 concurrent SSH connections, 10s timeout. Graceful per-machine failure (unavailable/timeout/auth_failed/unsupported_os/no_credentials/no_ip). New columns: Disk Used %, Disk Used / Total, Disk Util Status, Disk Util Details (hidden by default). | Should |
 
 ### 5.3 Data Display
 
@@ -377,6 +378,11 @@ Many SoftLayer API responses include nested arrays (e.g., `tagReferences`, `netw
 | placementGroupId | Integer | Placement group association |
 | privateNetworkOnlyFlag | Boolean | Private network only |
 | localDiskFlag | Boolean | Local disk vs SAN |
+| _diskUtilUsedPercent | Number | Disk used % (opt-in Phase 5, SSH-collected) |
+| _diskUtilUsedGB | Number | Total disk used in GB (opt-in Phase 5) |
+| _diskUtilTotalGB | Number | Total disk capacity in GB (opt-in Phase 5) |
+| _diskUtilStatus | String | Collection status: collected, unavailable, timeout, auth_failed, unsupported_os, no_credentials, no_ip |
+| _diskUtilization | Array | Per-mount-point breakdown (mountPoint, totalGB, usedGB, availableGB, usedPercent) |
 
 **Worksheet Name:** vVirtualServers
 
@@ -420,6 +426,11 @@ The estimated cost is flagged via `estimatedCost: true` and `noBillingItem: true
 | networkVlans | Array | Associated VLANs |
 | tagReferences | Array | User-defined tags |
 | notes | String | User notes |
+| _diskUtilUsedPercent | Number | Disk used % (opt-in Phase 5, SSH-collected) |
+| _diskUtilUsedGB | Number | Total disk used in GB (opt-in Phase 5) |
+| _diskUtilTotalGB | Number | Total disk capacity in GB (opt-in Phase 5) |
+| _diskUtilStatus | String | Collection status: collected, unavailable, timeout, auth_failed, unsupported_os, no_credentials, no_ip |
+| _diskUtilization | Array | Per-mount-point breakdown (mountPoint, totalGB, usedGB, availableGB, usedPercent) |
 
 **Worksheet Name:** vBareMetal
 
@@ -1160,7 +1171,7 @@ Groups are expanded by default, collapsible via group header buttons. Active sec
 **Sections:**
 
 1. **Getting Started** — Overview, quick start, API key creation (full CLI guide with Service ID, IAM policies, verification commands), importing data (offline mode)
-2. **Classic Infrastructure** — Classic dashboard, two-phase collection (shallow scan + deep scan), resource categories, 13 parent-child relationship mappings
+2. **Classic Infrastructure** — Classic dashboard, multi-phase collection (shallow scan, deep scan, billing/nested, TGW routes, disk utilization), resource categories, 13 parent-child relationship mappings
 3. **VPC Infrastructure** — VPC dashboard, multi-region collection, Transit Gateways (global endpoint), Direct Link gateways/virtual connections, VPN gateway connections, 24 resource types, regional `_region` field
 4. **Data Tables** — Sorting, global search, column filtering, column visibility/resizing, row selection/expansion, pagination, virtualization, advanced filtering, toolbar actions
 5. **Visualizations** — Topology diagrams (Classic + VPC), Geography maps, Cost Analysis (treemap, donut/bar charts, cost data sources)
@@ -1306,7 +1317,7 @@ Detailed visual design specifications are maintained in [`VISUAL.md`](./VISUAL.m
 - Legend positioned at bottom
 
 **Multi-Phase Progress Stepper**
-- Five-step visual stepper: Authenticating → Shallow Scan → Deep Scan → Relationships → Complete
+- Multi-step visual stepper: Authenticating → Shallow Scan → Deep Scan → Billing/Nested → TGW Routes → Disk Utilization (opt-in) → Relationships → Complete
 - Step node icons: `CheckmarkFilled` (completed), `InProgress` with spin animation (active), `CircleDash` (pending), `ErrorFilled` (error)
 - Connector lines between steps coloured blue (complete) or gray (pending)
 - Current phase name, resource-level progress bar, elapsed time, and ETA displayed below stepper
@@ -2073,6 +2084,20 @@ Phase 3 — Nested + Billing (parallel):
   ├── VMware nested (cluster hosts, VLANs, PVDCs, PVDC clusters)
   └── Merge snapshots back onto storage volumes, re-send via SSE
 
+Phase 4 — TGW Route Reports + VPN Gateways:
+  ├── Async route report generation per TGW (POST + poll)
+  └── VPN gateways for VPC-connected TGWs
+
+Phase 5 — Disk Utilization (opt-in, ?diskUtil=1):
+  ├── Fetch OS credentials per VSI/BM: SoftLayer_Virtual_Guest/{id}/getObject
+  │   and SoftLayer_Hardware_Server/{id}/getObject with mask[operatingSystem[passwords]]
+  ├── SSH into each machine via private IP (concurrency 5, 10s timeout)
+  │   Linux: df -P --block-size=1G | tail -n +2
+  │   Windows: PowerShell Get-WmiObject Win32_LogicalDisk
+  ├── Merge _diskUtil* fields onto VSI/BM objects, re-send via SSE
+  ├── Credential map cleared immediately after SSH phase
+  └── Defense-in-depth: delete operatingSystem.passwords before SSE
+
 Post-Collection:
   ├── Flatten DNS records from deep domains
   ├── Build relationship map from deep data
@@ -2680,6 +2705,7 @@ Phase 2: Deep Scan + VMware Top-Level  (concurrent)
 
 Phase 3: Billing + VMware Nested Details  (concurrent)
     ├── billingItems  (slowest Classic call — runs here so VMware isn't blocked by it)
+    ├── Storage snapshots (per block+file volume, concurrency 5)
     └── VMware nested calls (per-instance clusters, per-site PVDCs)
 
 Phase 4: TGW Route Reports + VPC VPN Gateways  (if TGWs with connections exist)
@@ -2688,6 +2714,13 @@ Phase 4: TGW Route Reports + VPC VPN Gateways  (if TGWs with connections exist)
 
 Phase 5: VCF Clusters  (if PVDCs found in Phase 3)
     └── Per-PVDC cluster collection
+
+Phase 5b: Disk Utilization  (opt-in, ?diskUtil=1)
+    ├── Fetch OS credentials per VSI/BM via SoftLayer API (concurrency 5)
+    ├── SSH into each machine via private IP (concurrency 5, 10s timeout)
+    ├── Linux: df -P --block-size=1G; Windows: PowerShell Get-WmiObject
+    ├── Merge _diskUtil* fields onto VSI/BM objects, re-send via SSE
+    └── Credentials discarded immediately after SSH phase
 
 Phase 6: Cross-Reference Resolution
     └── Matches bare metal ↔ ESXi hosts, VLANs, storage

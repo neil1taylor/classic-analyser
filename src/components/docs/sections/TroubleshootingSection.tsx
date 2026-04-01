@@ -100,6 +100,32 @@ const TroubleshootingSection: React.FC = () => (
             </td>
           </tr>
           <tr>
+            <td style={tdStyle}>Disk utilization shows &quot;unavailable&quot; or &quot;timeout&quot;</td>
+            <td style={tdStyle}>Server is unreachable via private IP, SSH is blocked by firewall, or connection timed out</td>
+            <td style={tdStyle}>
+              The app must have network access to the server&apos;s private IP. This works when running
+              locally on the same network or via VPN. From Code Engine, private IPs may not be reachable.
+              Check that SSH (port 22) is not blocked by host or network firewalls.
+            </td>
+          </tr>
+          <tr>
+            <td style={tdStyle}>Disk utilization shows &quot;auth_failed&quot;</td>
+            <td style={tdStyle}>OS credentials in SoftLayer are stale or have been changed</td>
+            <td style={tdStyle}>
+              The app uses credentials stored in SoftLayer (<code>operatingSystem.passwords</code>).
+              If the root/administrator password has been changed on the server without updating
+              SoftLayer, authentication will fail. This is expected for some machines.
+            </td>
+          </tr>
+          <tr>
+            <td style={tdStyle}>Disk utilization shows &quot;no_credentials&quot;</td>
+            <td style={tdStyle}>No OS credentials stored in SoftLayer for this server</td>
+            <td style={tdStyle}>
+              Servers provisioned from custom images or with externally managed credentials may not
+              have passwords stored in SoftLayer. This status is informational, not an error.
+            </td>
+          </tr>
+          <tr>
             <td style={tdStyle}>AI features unavailable</td>
             <td style={tdStyle}>AI proxy not configured or unreachable</td>
             <td style={tdStyle}>

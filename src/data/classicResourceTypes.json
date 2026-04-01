@@ -249,6 +249,34 @@
         "dataType": "currency",
         "defaultVisible": false,
         "sortable": true
+      },
+      {
+        "field": "diskUtilUsedPercent",
+        "header": "Disk Used %",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "diskUtilUsedGB",
+        "header": "Disk Used / Total",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      },
+      {
+        "field": "diskUtilStatus",
+        "header": "Disk Util Status",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "diskUtilDetails",
+        "header": "Disk Util Details",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
       }
     ]
   },
@@ -439,6 +467,34 @@
         "dataType": "number",
         "defaultVisible": false,
         "sortable": true
+      },
+      {
+        "field": "diskUtilUsedPercent",
+        "header": "Disk Used %",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "diskUtilUsedGB",
+        "header": "Disk Used / Total",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
+      },
+      {
+        "field": "diskUtilStatus",
+        "header": "Disk Util Status",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "diskUtilDetails",
+        "header": "Disk Util Details",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": false
       }
     ]
   },

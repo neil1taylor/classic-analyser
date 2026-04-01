@@ -35,7 +35,7 @@ const ClassicSection: React.FC = () => (
       <h3 style={headingStyle}>Data Collection</h3>
       <p style={paragraphStyle}>
         Classic data collection uses Server-Sent Events (SSE) to stream real-time progress to the browser.
-        Collection runs in two phases:
+        Collection runs in multiple phases:
       </p>
 
       <h4 style={subHeadingStyle}>Phase 1: Shallow Scan</h4>
@@ -49,6 +49,30 @@ const ClassicSection: React.FC = () => (
         Enriches each discovered resource with full details by calling individual getObject endpoints
         with object masks. This phase also runs with 10 concurrent API calls. Deep scan adds properties
         like network components, software descriptions, billing information, and related resource IDs.
+      </p>
+
+      <h4 style={subHeadingStyle}>Phase 3: Billing &amp; Nested Details</h4>
+      <p style={paragraphStyle}>
+        Collects billing items, per-volume storage snapshots (concurrency 5), VMware nested resources,
+        and Transit Gateway connections. These are the slowest API calls and depend on Phase 2 results.
+      </p>
+
+      <h4 style={subHeadingStyle}>Phase 4: TGW Route Reports</h4>
+      <p style={paragraphStyle}>
+        Generates Transit Gateway route reports (async POST + poll) and fetches VPN gateways for
+        VPC-connected Transit Gateways.
+      </p>
+
+      <h4 style={subHeadingStyle}>Phase 5: Disk Utilization (opt-in)</h4>
+      <p style={paragraphStyle}>
+        When the <strong>Disk util</strong> toggle is enabled, the collector SSHs into each Virtual Server
+        and Bare Metal server via its private IP to collect real filesystem usage. OS credentials are
+        fetched transiently from the SoftLayer API, used for the SSH connection, then immediately
+        discarded &mdash; they are never displayed, stored, logged, or exported. Linux machines
+        use <code>df</code> and Windows machines use PowerShell. Machines that are unreachable,
+        lack credentials, or run unsupported operating systems are gracefully skipped with a status
+        indicator. New columns (hidden by default): Disk Used %, Disk Used / Total, Disk Util Status,
+        and Disk Util Details.
       </p>
 
       <p style={paragraphStyle}>

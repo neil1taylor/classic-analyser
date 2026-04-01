@@ -74,7 +74,7 @@ interface SSECallbacks {
 export function collectDataStream(
   apiKey: string,
   { onProgress, onData, onError, onComplete }: SSECallbacks,
-  options?: { skipBilling?: boolean },
+  options?: { skipBilling?: boolean; collectDiskUtil?: boolean },
   authConfig?: { authMode?: 'apikey' | 'iam'; iamToken?: string }
 ): AbortController {
   const controller = new AbortController();
@@ -83,6 +83,7 @@ export function collectDataStream(
     try {
       const params = new URLSearchParams();
       if (options?.skipBilling) params.set('skipBilling', '1');
+      if (options?.collectDiskUtil) params.set('diskUtil', '1');
       const qs = params.toString();
       const url = `/api/collect/stream${qs ? `?${qs}` : ''}`;
 

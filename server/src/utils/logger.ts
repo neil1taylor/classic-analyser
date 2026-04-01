@@ -8,7 +8,7 @@ const API_KEY_PATTERNS = [
 
 const SENSITIVE_KEYS = new Set([
   'apikey', 'api_key', 'api-key', 'authorization',
-  'x-api-key', 'password', 'secret', 'token',
+  'x-api-key', 'password', 'passwords', 'secret', 'token',
 ]);
 
 function sanitize(value: unknown): unknown {

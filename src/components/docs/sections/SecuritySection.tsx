@@ -35,6 +35,22 @@ const SecuritySection: React.FC = () => (
     </section>
 
     <section style={sectionStyle}>
+      <h3 style={headingStyle}>Disk Utilization Credentials</h3>
+      <p style={paragraphStyle}>
+        When the opt-in Disk Utilization feature is enabled, OS credentials are fetched from the
+        SoftLayer API (<code>operatingSystem.passwords</code>) to SSH into servers. These credentials
+        follow the same strict security model as API keys:
+      </p>
+      <ul style={listStyle}>
+        <li>Fetched transiently during Phase 5 collection only, then immediately discarded.</li>
+        <li>Never sent to the browser &mdash; only the resulting utilization data (percentages, sizes) reaches the frontend.</li>
+        <li>Never included in XLSX exports.</li>
+        <li>Never written to logs &mdash; <code>passwords</code> is in the server&apos;s sensitive-key redaction list.</li>
+        <li>Defense-in-depth: <code>operatingSystem.passwords</code> is explicitly deleted from all resource objects before SSE transmission.</li>
+      </ul>
+    </section>
+
+    <section style={sectionStyle}>
       <h3 style={headingStyle}>Log Sanitization</h3>
       <p style={paragraphStyle}>
         All server-side logging uses Winston with custom formatters that strip API keys,
