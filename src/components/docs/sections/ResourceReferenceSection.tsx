@@ -33,7 +33,7 @@ const ResourceReferenceSection: React.FC = () => (
       Resource Reference
     </h2>
     <p style={{ fontSize: '0.875rem', color: 'var(--cds-text-secondary)', marginBottom: '2rem' }}>
-      Complete list of all Classic, VPC, and Platform Services resource types collected
+      Complete list of all Classic, VPC, PowerVS, and Platform Services resource types collected
     </p>
 
     <section style={sectionStyle}>
@@ -214,6 +214,84 @@ const ResourceReferenceSection: React.FC = () => (
           <tr><td style={tdStyle}>SSH Keys</td><td style={tdStyle}>vVpcSSHKeys</td><td style={tdStyle}>SSH public keys</td></tr>
           <tr><td style={tdStyle}>Images</td><td style={tdStyle}>vVpcImages</td><td style={tdStyle}>Custom and stock images</td></tr>
           <tr><td style={tdStyle}>Flow Log Collectors</td><td style={tdStyle}>vVpcFlowLogCollectors</td><td style={tdStyle}>VPC flow log collectors</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section style={sectionStyle}>
+      <h3 style={headingStyle}>PowerVS Resource Types (22)</h3>
+
+      <h4 style={subHeadingStyle}>Compute</h4>
+      <table style={tableStyle}>
+        <thead>
+          <tr>
+            <th style={thStyle}>Resource Type</th>
+            <th style={thStyle}>Worksheet Name</th>
+            <th style={thStyle}>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style={tdStyle}>PVM Instances</td><td style={tdStyle}>pPvsInstances</td><td style={tdStyle}>PowerVS virtual machine instances</td></tr>
+          <tr><td style={tdStyle}>Shared Processor Pools</td><td style={tdStyle}>pPvsSPPools</td><td style={tdStyle}>Shared processor pools</td></tr>
+          <tr><td style={tdStyle}>Placement Groups</td><td style={tdStyle}>pPvsPlacementGrps</td><td style={tdStyle}>Server placement groups</td></tr>
+          <tr><td style={tdStyle}>Host Groups</td><td style={tdStyle}>pPvsHostGroups</td><td style={tdStyle}>Dedicated host groups</td></tr>
+        </tbody>
+      </table>
+
+      <h4 style={subHeadingStyle}>Network</h4>
+      <table style={tableStyle}>
+        <thead>
+          <tr>
+            <th style={thStyle}>Resource Type</th>
+            <th style={thStyle}>Worksheet Name</th>
+            <th style={thStyle}>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style={tdStyle}>Networks</td><td style={tdStyle}>pPvsNetworks</td><td style={tdStyle}>PowerVS networks</td></tr>
+          <tr><td style={tdStyle}>Network Ports</td><td style={tdStyle}>pPvsNetPorts</td><td style={tdStyle}>Network port attachments</td></tr>
+          <tr><td style={tdStyle}>Network Security Groups</td><td style={tdStyle}>pPvsNSGs</td><td style={tdStyle}>Network security groups</td></tr>
+          <tr><td style={tdStyle}>Cloud Connections</td><td style={tdStyle}>pPvsCloudConns</td><td style={tdStyle}>Cloud connections to VPC/Classic</td></tr>
+          <tr><td style={tdStyle}>DHCP Servers</td><td style={tdStyle}>pPvsDhcp</td><td style={tdStyle}>DHCP server configurations</td></tr>
+          <tr><td style={tdStyle}>VPN Connections</td><td style={tdStyle}>pPvsVpnConns</td><td style={tdStyle}>VPN connections</td></tr>
+          <tr><td style={tdStyle}>IKE Policies</td><td style={tdStyle}>pPvsIkePolicies</td><td style={tdStyle}>IKE policies for VPN</td></tr>
+          <tr><td style={tdStyle}>IPSec Policies</td><td style={tdStyle}>pPvsIpsecPolicies</td><td style={tdStyle}>IPSec policies for VPN</td></tr>
+        </tbody>
+      </table>
+
+      <h4 style={subHeadingStyle}>Storage</h4>
+      <table style={tableStyle}>
+        <thead>
+          <tr>
+            <th style={thStyle}>Resource Type</th>
+            <th style={thStyle}>Worksheet Name</th>
+            <th style={thStyle}>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style={tdStyle}>Volumes</td><td style={tdStyle}>pPvsVolumes</td><td style={tdStyle}>Storage volumes</td></tr>
+          <tr><td style={tdStyle}>Volume Groups</td><td style={tdStyle}>pPvsVolGroups</td><td style={tdStyle}>Volume groups</td></tr>
+          <tr><td style={tdStyle}>Snapshots</td><td style={tdStyle}>pPvsSnapshots</td><td style={tdStyle}>Volume snapshots</td></tr>
+        </tbody>
+      </table>
+
+      <h4 style={subHeadingStyle}>Other</h4>
+      <table style={tableStyle}>
+        <thead>
+          <tr>
+            <th style={thStyle}>Resource Type</th>
+            <th style={thStyle}>Worksheet Name</th>
+            <th style={thStyle}>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style={tdStyle}>SSH Keys</td><td style={tdStyle}>pPvsSshKeys</td><td style={tdStyle}>SSH public keys</td></tr>
+          <tr><td style={tdStyle}>Workspaces</td><td style={tdStyle}>pPvsWorkspaces</td><td style={tdStyle}>PowerVS workspace instances</td></tr>
+          <tr><td style={tdStyle}>System Pools</td><td style={tdStyle}>pPvsSystemPools</td><td style={tdStyle}>Available system pools</td></tr>
+          <tr><td style={tdStyle}>SAP Profiles</td><td style={tdStyle}>pPvsSapProfiles</td><td style={tdStyle}>SAP-certified profiles</td></tr>
+          <tr><td style={tdStyle}>Events</td><td style={tdStyle}>pPvsEvents</td><td style={tdStyle}>Workspace events</td></tr>
+          <tr><td style={tdStyle}>Images</td><td style={tdStyle}>pPvsImages</td><td style={tdStyle}>Custom images</td></tr>
+          <tr><td style={tdStyle}>Stock Images</td><td style={tdStyle}>pPvsStockImages</td><td style={tdStyle}>IBM-provided stock images</td></tr>
         </tbody>
       </table>
     </section>

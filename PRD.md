@@ -290,10 +290,10 @@ IBM Cloud Infrastructure Explorer will address these challenges by providing a u
 | FR-6.4 | Import Data Display | Imported data populates the same tables and dashboard as live-collected data — including Topology, Cost Analysis, Geography, and Migration Assessment views | Must |
 | FR-6.5 | Import Indicator | UI clearly indicates data source is "Imported from file" vs "Collected from API" | Should |
 | FR-6.6 | Import Replaces Data | Importing a file replaces any currently loaded data | Must |
-| FR-6.7 | Header→Field Reverse Mapping | Import uses RESOURCE_TYPES / VPC_RESOURCE_TYPES column definitions to reverse-map XLSX header text back to camelCase field names, ensuring imported objects have the same property names as live-collected data | Must |
+| FR-6.7 | Header→Field Reverse Mapping | Import uses RESOURCE_TYPES / VPC_RESOURCE_TYPES / POWERVS_RESOURCE_TYPES / PLATFORM_RESOURCE_TYPES column definitions to reverse-map XLSX header text back to camelCase field names, ensuring imported objects have the same property names as live-collected data | Must |
 | FR-6.8 | Type Coercion | Import coerces cell values based on column data type: numeric strings → numbers, "Yes"/"No" → booleans, currency strings → numbers | Must |
 | FR-6.9 | Account Info from Summary | Import parses the Summary / VPC Summary worksheet to extract Account Name, Account ID, Email, and Account Owner; displays this in the header and dashboard | Should |
-| FR-6.10 | VPC Import Support | Import recognises both Classic and VPC worksheet names, allowing a VPC export to be re-imported | Must |
+| FR-6.10 | Multi-Domain Import Support | Import recognises Classic, VPC, PowerVS, and Platform Services worksheet names, routing each domain's data to its correct context. Infrastructure mode is set automatically based on which domains have data | Must |
 | FR-6.11 | IMS Report Import | Import IMS reporting tool output: CSVs (warnings, gateways, NAS, security groups), HTMLs (warnings, overview, summary, inventory), drawio (topology), and report XLSXs (assessment, device inventory). Multi-file selection, auto-detects account ID from filenames. | Should |
 | FR-6.12 | MDL Import | Import IMS `.mdl` files (serialized SoftLayer data model) via server-side conversion to JSON. The `.mdl` is the most complete data source with raw API responses for all resource types. Uploaded to `POST /api/convert/mdl`. | Should |
 | FR-6.13 | Report Deduplication | When importing multiple report files, merge/deduplicate resources by `id` (primary) and `hostname` (fallback for files without IDs like assessment XLSX). | Should |
@@ -1177,10 +1177,10 @@ Groups are expanded by default, collapsible via group header buttons. Active sec
 5. **Visualizations** — Topology diagrams (Classic + VPC), Geography maps, Cost Analysis (treemap, donut/bar charts, cost data sources)
 6. **Migration Analysis** — 9 assessment tabs, readiness scoring (43 checks, 5 dimensions), migration waves, Terraform export, DOCX reports, IBM migration resource links (Virtualization Solutions Guide, RackWare, Wanclouds, open-source tools)
 7. **AI Features** — Chat assistant (context-aware), migration insights (executive summary, risks, recommendations), cost optimization (narrative, savings), report narratives. Requires AI proxy configuration.
-8. **Import & Export** — XLSX export (3 modes), XLSX import, unified DOCX report (with branding, TOC, pie charts, headers/footers), draw.io topology export, Terraform HCL export
+8. **Import & Export** — XLSX export (3 modes, includes disk utilization columns), XLSX import (Classic, VPC, PowerVS, Platform Services), unified DOCX report (with branding, TOC, pie charts, headers/footers), draw.io topology export, Terraform HCL export
 9. **Settings** — AI configuration (enable/disable, test connection), report branding (client/company/author), theme toggle
 10. **Security & Privacy** — API key in memory only, per-request X-API-Key header, no server sessions, 60-minute timeout, log sanitization, security headers (Helmet), data privacy (read-only, client-side exports)
-11. **Resource Reference** — All 27+ Classic types and 24 VPC types in categorised tables with worksheet names and descriptions
+11. **Resource Reference** — All 27+ Classic types, 26 VPC types, 22 PowerVS types, and Platform Services in categorised tables with worksheet names and descriptions
 12. **Troubleshooting** — Common issues table (issue/cause/solution), diagnostic steps (browser console, API key verification, network issues)
 
 **Discoverability:**
@@ -3701,15 +3701,15 @@ Legacy `buildInventoryReport()` and `buildMigrationReport()` functions are retai
 
 ### 16.3 Appendix C: XLSX Export Structure
 
-**Column naming convention:** Export column headers match the `header` values defined in `RESOURCE_TYPES` (`src/types/resources.ts`) and `VPC_RESOURCE_TYPES` (`src/types/vpc-resources.ts`). Export column keys match the `field` values from these same definitions. This alignment enables the import to reverse-map headers back to field names, ensuring round-trip fidelity (export → import produces identical object shapes to live collection).
+**Column naming convention:** Export column headers match the `header` values defined in `RESOURCE_TYPES` (`src/types/resources.ts`), `VPC_RESOURCE_TYPES` (`src/types/vpc-resources.ts`), `POWERVS_RESOURCE_TYPES` (`src/types/powervs-resources.ts`), and `PLATFORM_RESOURCE_TYPES` (`src/types/platform-resources.ts`). Export column keys match the `field` values from these same definitions. This alignment enables the import to reverse-map headers back to field names, ensuring round-trip fidelity (export → import produces identical object shapes to live collection).
 
 The exported XLSX file will contain the following worksheets:
 
 | Worksheet | Content |
 |-----------|---------|
 | Summary | Collection metadata, resource counts, account info |
-| vVirtualServers | Virtual server inventory (includes Start CPUs, Modified, Dedicated, Placement Group, Tags, Disk GB, Local Storage GB, Portable Storage GB, Portable Storage Details, VLANs) |
-| vBareMetal | Bare metal server inventory (includes Hard Drives, Network Components, VLANs, Tags) |
+| vVirtualServers | Virtual server inventory (includes Start CPUs, Modified, Dedicated, Placement Group, Tags, Disk GB, Local Storage GB, Portable Storage GB, Portable Storage Details, VLANs, Disk Used %, Disk Used / Total, Disk Util Status, Disk Util Details) |
+| vBareMetal | Bare metal server inventory (includes Hard Drives, Network Components, VLANs, Tags, Disk Used %, Disk Used / Total, Disk Util Status, Disk Util Details) |
 | vVLANs | VLAN inventory |
 | vSubnets | Subnet inventory |
 | vGateways | Network gateway inventory |
@@ -3766,6 +3766,41 @@ The exported XLSX file will contain the following worksheets:
 | vTransitGateways | Transit gateway inventory |
 | vTGConnections | Transit gateway connection inventory |
 
+**PowerVS Export (separate file via `/api/powervs/export`):**
+
+| Worksheet | Content |
+|-----------|---------|
+| PowerVS Summary | Collection metadata, resource counts |
+| pPvsInstances | PVM instance inventory |
+| pPvsSPPools | Shared processor pool inventory |
+| pPvsPlacementGrps | Placement group inventory |
+| pPvsHostGroups | Host group inventory |
+| pPvsNetworks | Network inventory |
+| pPvsNetPorts | Network port inventory |
+| pPvsNSGs | Network security group inventory |
+| pPvsCloudConns | Cloud connection inventory |
+| pPvsDhcp | DHCP server inventory |
+| pPvsVpnConns | VPN connection inventory |
+| pPvsIkePolicies | IKE policy inventory |
+| pPvsIpsecPolicies | IPSec policy inventory |
+| pPvsVolumes | Volume inventory |
+| pPvsVolGroups | Volume group inventory |
+| pPvsSnapshots | Snapshot inventory |
+| pPvsSshKeys | SSH key inventory |
+| pPvsWorkspaces | Workspace inventory |
+| pPvsSystemPools | System pool inventory |
+| pPvsSapProfiles | SAP profile inventory |
+| pPvsEvents | Event inventory |
+| pPvsImages | Custom image inventory |
+| pPvsStockImages | Stock image inventory |
+
+**Platform Services Export (separate file via `/api/platform/export`):**
+
+| Worksheet | Content |
+|-----------|---------|
+| Summary | Collection metadata, instance counts |
+| sServiceInstances | All IBM Cloud service instances with service type, category, resource group |
+
 ### 16.4 Appendix D: Version History
 
 | Version | Date | Author | Changes |
@@ -3786,6 +3821,7 @@ The exported XLSX file will contain the following worksheets:
 | 2.4 | 2026-02-01 | - | Moved AI proxy configuration from build-time Vite environment variables to runtime server injection. Express server reads `AI_PROXY_URL` and `AI_PROXY_SECRET` from process environment and injects them into `index.html` as `window.__AI_CONFIG__` at request time. Frontend `getConfig()` reads `window.__AI_CONFIG__` first, falling back to `import.meta.env` for local development. Eliminates `--build-arg` requirement — AI configuration now works with standard Code Engine `--env` flags. Updated `deploy_app.md` deployment instructions accordingly. |
 | 2.5 | 2026-02-01 | - | Removed unused Multi-Zone Deployment toggle and Availability Target radio buttons from Migration Preferences. These fields (`multiZone`, `targetAvailability`) were not consumed by any analysis logic — the app maps each Classic DC directly to a VPC zone. Removed from `MigrationPreferences` interface, `DEFAULT_PREFERENCES`, and `MigrationPreferencesPanel` UI. Cleaned up unused Carbon imports (`Toggle`, `RadioButtonGroup`, `RadioButton`). |
 | 2.6 | 2026-02-02 | - | Proxied AI requests through Express server to fix CORS. Added `server/src/routes/ai-proxy.ts` router mounted at `/api/ai` with: `GET /config` returns `{ configured }` status, `GET /health` forwards to AI proxy health check, `router.use('/')` middleware catch-all forwards POST requests to `AI_PROXY_URL/api/*` with `X-API-Key` header (uses `req.path` extraction for Express path-to-regexp compatibility). Frontend `aiProxyClient.ts` now uses same-origin `baseURL: '/api/ai'` with relative paths (`/insights`, `/chat`, etc.) and fetches configuration from `/api/ai/config` endpoint (no caching — re-checked on every availability refresh). Removed `window.__AI_CONFIG__` script injection from `index.html`. Removed `fs` import from `server/src/index.ts`. Simplified `AIConfig` type: removed `proxyUrl` and `apiKey`, replaced with `configured: boolean`. `isAIConfigured()` is now async. Removed `AI_PROXY_URL` from CSP `connect-src`. Health check timeout increased to 15 seconds to accommodate cold starts. Successful Settings test connection now refreshes main AI availability state. Added `.env` / `.env.example` support for local development via `--env-file` flag in dev script. |
+| 2.7 | 2026-04-02 | - | Added disk utilization columns (Disk Used %, Disk Used / Total, Disk Util Status, Disk Util Details) to vVirtualServers and vBareMetal XLSX export worksheets. Extended XLSX import to recognise PowerVS (`pPvs*`) and Platform Services (`sServiceInstances`) worksheets, routing imported data to the correct domain contexts. Added PowerVS and Platform Services export tables to Appendix C. Updated FR-6.7 and FR-6.10 for multi-domain import support. Added PowerVS resource type table to in-app Resource Reference docs. |
 | 2.2 | 2026-01-31 | - | Added Carbon `Tooltip` wrappers across the application. **Phase 1 (toggles):** billing toggle (Dashboard), AI features toggle (Settings), AI narratives toggle (Report Export), ~~multi-zone deployment toggle (removed in 2.5)~~. **Phase 2 (broader UI):** Migration table column headers (`DC`, `OS`, `IOPS`, `Strategy`, `VLAN #`, `Space`) via new `headerTooltip` field on `MigrationColumnDef`; migration summary tags (Ready/Needs Work/Blocked, Block/File/Object/TB, VLANs/Gateways/Firewalls/LBs/VPN/complexity, auto-translatable/manual review); readiness score card (overall score, complexity tag, dimension labels); security assessment tiles (group count, rules total, VPC groups needed, certificate counts, SSH keys); feature gap count tag; cost comparison tile labels (Classic Monthly, VPC Monthly, Monthly Savings, 3-Year Savings, Break-even, percentage change); migration preferences (~~Standard/HA radio buttons (removed in 2.5)~~, budget input); topology diagram stat tags (VSIs, TGW, VPN GWs) and legend abbreviations (FCR, BCR); VPC topology node badges (Classic Access, IPs avail, Public/Private LB); data table estimated cost `(est.)` span (replaced HTML `title`); export dialog filtered-data checkbox; progress indicator phase names (Shallow Scan, Deep Scan, Relationships); VPC progress indicator phase names (Region Discovery, VPC Collection, Processing); sidebar resource count badges. All use Carbon v11 `<Tooltip label="..." align="bottom">` pattern. |
 
 ---

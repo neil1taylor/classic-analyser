@@ -14,7 +14,7 @@ A web-based inventory and analysis tool for IBM Cloud Classic (SoftLayer), VPC, 
 - **Geography maps** showing resource distribution across regions
 - **Cost analysis** views
 - **Export hub** — dedicated Export page with XLSX, PDF, DOCX, and PPTX formats per domain
-- **XLSX export/import** with one worksheet per resource type
+- **XLSX export/import** with one worksheet per resource type across all four domains (Classic, VPC, PowerVS, Platform Services). Classic exports include disk utilization columns when collected
 - **IMS report import** — parse CSVs, HTMLs, drawio, and report XLSXs from IBM's IMS reporting tool
 - **MDL import** — server-side conversion of IMS `.mdl` data files (serialized SoftLayer API responses) to populate all views
 - **Disk utilization collection** (opt-in) — SSH into Classic servers to collect real filesystem usage via private IP. Credentials are transient and never stored or displayed
