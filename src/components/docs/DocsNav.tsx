@@ -2,17 +2,21 @@ import React, { useState } from 'react';
 import { ChevronDown } from '@carbon/icons-react';
 
 export type DocSection =
+  | 'index'
+  | 'feature-overview'
   | 'getting-started'
   | 'classic'
   | 'vpc'
+  | 'powervs'
+  | 'platform'
+  | 'dashboards'
   | 'data-tables'
   | 'visualizations'
   | 'migration'
-  | 'ai-features'
   | 'import-export'
-  | 'settings'
+  | 'input-file-reference'
   | 'security'
-  | 'resource-reference'
+  | 'settings'
   | 'troubleshooting';
 
 interface NavGroup {
@@ -23,10 +27,19 @@ interface NavGroup {
 const NAV_STRUCTURE: (NavGroup | { id: DocSection; label: string })[] = [
   { id: 'getting-started', label: 'Getting Started' },
   {
+    label: 'Overview',
+    items: [
+      { id: 'feature-overview', label: 'Feature Overview' },
+      { id: 'dashboards', label: 'Dashboards' },
+    ],
+  },
+  {
     label: 'Infrastructure',
     items: [
       { id: 'classic', label: 'Classic Infrastructure' },
       { id: 'vpc', label: 'VPC Infrastructure' },
+      { id: 'powervs', label: 'PowerVS Infrastructure' },
+      { id: 'platform', label: 'Platform Services' },
     ],
   },
   {
@@ -34,9 +47,9 @@ const NAV_STRUCTURE: (NavGroup | { id: DocSection; label: string })[] = [
     items: [
       { id: 'data-tables', label: 'Data Tables' },
       { id: 'visualizations', label: 'Visualizations' },
-      { id: 'migration', label: 'Migration Analysis' },
-      { id: 'ai-features', label: 'AI Features' },
+      { id: 'migration', label: 'Migration Assessment' },
       { id: 'import-export', label: 'Import & Export' },
+      { id: 'input-file-reference', label: 'Input File Reference' },
       { id: 'settings', label: 'Settings' },
     ],
   },
@@ -44,7 +57,6 @@ const NAV_STRUCTURE: (NavGroup | { id: DocSection; label: string })[] = [
     label: 'Reference',
     items: [
       { id: 'security', label: 'Security & Privacy' },
-      { id: 'resource-reference', label: 'Resource Reference' },
       { id: 'troubleshooting', label: 'Troubleshooting' },
     ],
   },
