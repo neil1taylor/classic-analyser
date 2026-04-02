@@ -90,7 +90,7 @@ describe('collect route - GET /stream', () => {
       { apiKey: 'test-key' },
       expect.anything(),
       expect.objectContaining({ aborted: false }),
-      { skipBilling: false },
+      { collectDiskUtil: false, skipBilling: false },
     );
   });
 
