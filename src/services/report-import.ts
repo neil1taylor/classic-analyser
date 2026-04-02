@@ -13,6 +13,7 @@ import {
   parseReportJson,
   parseAssessmentXlsx,
   parseDeviceInventoryXlsx,
+  parseConsolidatedXlsx,
   mergeReportData,
 } from './report-parsers';
 import { createLogger } from '@/utils/logger';
@@ -36,6 +37,7 @@ const FILE_PATTERNS: { suffix: RegExp; type: ReportFileType }[] = [
   { suffix: /\.json$/i, type: 'json' },
   { suffix: /_assessment\.xlsx$/i, type: 'assessment_xlsx' },
   { suffix: /_deviceinventory\.xlsx$/i, type: 'deviceinventory_xlsx' },
+  { suffix: /_consolidated\.xlsx$/i, type: 'consolidated_xlsx' },
 ];
 
 /**
@@ -110,6 +112,7 @@ const FILE_PARSER_DISPATCH: {
 }[] = [
   { type: 'assessment_xlsx', parse: parseAssessmentXlsx },
   { type: 'deviceinventory_xlsx', parse: parseDeviceInventoryXlsx },
+  { type: 'consolidated_xlsx', parse: parseConsolidatedXlsx },
 ];
 
 /**

@@ -21,5 +21,7 @@
   "Director Site": "directorSites",
   "PVDC": "pvdcs",
   "VCF Cluster": "vcfClusters",
-  "VDC": "vdcs"
+  "VDC": "vdcs",
+  "Bandwidth Usage": "bandwidthUsage",
+  "Bandwidth Pooling": "bandwidthPooling"
 }

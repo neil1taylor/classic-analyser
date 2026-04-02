@@ -12,7 +12,8 @@ export type ReportFileType =
   | 'drawio'
   | 'json'
   | 'assessment_xlsx'
-  | 'deviceinventory_xlsx';
+  | 'deviceinventory_xlsx'
+  | 'consolidated_xlsx';
 
 export interface ReportFileSet {
   accountId: string;

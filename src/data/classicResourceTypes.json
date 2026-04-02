@@ -277,6 +277,41 @@
         "dataType": "string",
         "defaultVisible": false,
         "sortable": false
+      },
+      {
+        "field": "publicBandwidthAvgInGb",
+        "header": "Public BW Avg In (GB)",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "publicBandwidthAvgOutGb",
+        "header": "Public BW Avg Out (GB)",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "privateBandwidthAvgInGb",
+        "header": "Private BW Avg In (GB)",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "privateBandwidthAvgOutGb",
+        "header": "Private BW Avg Out (GB)",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "bandwidthPoolId",
+        "header": "BW Pool ID",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
       }
     ]
   },
@@ -495,6 +530,41 @@
         "dataType": "string",
         "defaultVisible": false,
         "sortable": false
+      },
+      {
+        "field": "publicBandwidthAvgInGb",
+        "header": "Public BW Avg In (GB)",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "publicBandwidthAvgOutGb",
+        "header": "Public BW Avg Out (GB)",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "privateBandwidthAvgInGb",
+        "header": "Private BW Avg In (GB)",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "privateBandwidthAvgOutGb",
+        "header": "Private BW Avg Out (GB)",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "bandwidthPoolId",
+        "header": "BW Pool ID",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
       }
     ]
   },
@@ -3193,6 +3263,281 @@
       {
         "field": "vmwareResourceName",
         "header": "VMware Resource Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "bandwidthUsage",
+    "label": "Bandwidth Usage",
+    "category": "Network",
+    "worksheetName": "vBandwidthUsage",
+    "columns": [
+      {
+        "field": "id",
+        "header": "Hardware ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "hostname",
+        "header": "Hostname",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "domain",
+        "header": "Domain",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "datacenter",
+        "header": "Datacenter",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "direction",
+        "header": "Direction",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "deviceType",
+        "header": "Device Type",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "poolId",
+        "header": "Pool ID",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "month1Start",
+        "header": "Month 1 Start",
+        "dataType": "date",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "month1End",
+        "header": "Month 1 End",
+        "dataType": "date",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "month1InGb",
+        "header": "Month 1 In (GB)",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "month1OutGb",
+        "header": "Month 1 Out (GB)",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "month2Start",
+        "header": "Month 2 Start",
+        "dataType": "date",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "month2End",
+        "header": "Month 2 End",
+        "dataType": "date",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "month2InGb",
+        "header": "Month 2 In (GB)",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "month2OutGb",
+        "header": "Month 2 Out (GB)",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "month3Start",
+        "header": "Month 3 Start",
+        "dataType": "date",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "month3End",
+        "header": "Month 3 End",
+        "dataType": "date",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "month3InGb",
+        "header": "Month 3 In (GB)",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "month3OutGb",
+        "header": "Month 3 Out (GB)",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "avgInGb",
+        "header": "3 Month Avg In (GB)",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "avgOutGb",
+        "header": "3 Month Avg Out (GB)",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "bandwidthPooling",
+    "label": "Bandwidth Pooling",
+    "category": "Network",
+    "worksheetName": "vBandwidthPooling",
+    "columns": [
+      {
+        "field": "poolId",
+        "header": "Pool ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "poolName",
+        "header": "Pool Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "poolType",
+        "header": "Pool Type",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "locationGroupId",
+        "header": "Location Group",
+        "dataType": "number",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "totalAllocatedGb",
+        "header": "Total Allocated (GB)",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "billingCycleUsageGb",
+        "header": "Billing Cycle Usage (GB)",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "publicUsageTotalGb",
+        "header": "Public Usage (GB)",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "allowedUsageGb",
+        "header": "Allowed Usage (GB)",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "estimatedUsageGb",
+        "header": "Estimated Usage (GB)",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "projectedUsageGb",
+        "header": "Projected Usage (GB)",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "deviceType",
+        "header": "Device Type",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "deviceId",
+        "header": "Device ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "deviceHostname",
+        "header": "Hostname",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "deviceDomain",
+        "header": "Domain",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "deviceFqdn",
+        "header": "FQDN",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "deviceDatacenter",
+        "header": "Datacenter",
         "dataType": "string",
         "defaultVisible": true,
         "sortable": true
