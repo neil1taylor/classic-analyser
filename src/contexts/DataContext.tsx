@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, useCallback } from 'react';
 import { dataReducer, initialDataState, type DataAction } from './dataReducer';
+import { transformItems } from '@/services/transform';
 
 export type CollectionStatus = 'idle' | 'collecting' | 'complete' | 'error' | 'cancelled';
 export type DataSource = 'none' | 'collected' | 'imported';
@@ -74,7 +75,14 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const importData = useCallback((data: Record<string, unknown[]>, filename: string) => {
-    dispatch({ type: 'IMPORT_DATA', data, filename });
+    // Apply the same transforms used during API collection so that
+    // nested SoftLayer fields (e.g. status.name, publicIpAddress.ipAddress)
+    // are flattened to the field names the UI tables expect.
+    const transformed: Record<string, unknown[]> = {};
+    for (const [key, items] of Object.entries(data)) {
+      transformed[key] = transformItems(key, items);
+    }
+    dispatch({ type: 'IMPORT_DATA', data: transformed, filename });
   }, []);
 
   const value: DataContextValue = {

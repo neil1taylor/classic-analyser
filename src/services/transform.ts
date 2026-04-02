@@ -384,7 +384,8 @@ function buildOsString(raw: RawItem): string {
   if (name) {
     return version ? `${safeStr(name)} ${safeStr(version)}` : safeStr(name);
   }
-  return '';
+  // Fallback for IMS report imports which use operatingSystemReferenceCode or os
+  return safeStr(raw.operatingSystemReferenceCode ?? raw.os ?? '');
 }
 
 function transformVlan(raw: RawItem): RawItem {

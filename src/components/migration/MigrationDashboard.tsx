@@ -46,7 +46,7 @@ const MigrationDashboard: React.FC = () => {
   } = useMigrationAnalysis();
 
   const { pricing } = useMigration();
-  const { collectedData } = useData();
+  const { collectedData, dataSource } = useData();
   const { exportDocx, exportXlsx, exportPptx, exporting, exportingXlsx, exportingPptx } = useMigrationExport();
   const { exportTerraform, exporting: terraformExporting } = useTerraformExport();
   const [exportOpen, setExportOpen] = useState(false);
@@ -158,6 +158,16 @@ const MigrationDashboard: React.FC = () => {
             </button>
           ))}
         </div>
+        {dataSource === 'imported' && [0, 2, 5].includes(activeTab) && (
+          <InlineNotification
+            kind="warning"
+            title="Imported data — no billing information"
+            subtitle="Classic monthly costs are unavailable because billing data is not included in IMS report imports. Cost columns will show $0.00."
+            lowContrast
+            hideCloseButton
+            style={{ marginTop: '0.5rem', marginBottom: 0 }}
+          />
+        )}
         <div className="migration-tabs__panel" role="tabpanel">
           {activeTab === 8 ? (
             renderTabPanel()
