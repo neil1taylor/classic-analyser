@@ -6,6 +6,7 @@ import { buildMigrationReport, getReportBranding } from '@/services/report/docx/
 import { isAIConfigured } from '@/services/ai/aiProxyClient';
 import { fetchReportNarrative } from '@/services/ai/reportApi';
 import { buildInsightsInput, buildCostInput } from '@/services/ai/contextBuilders';
+import { generateMigrationXlsx, generateMigrationPptx } from '@/services/migration/export';
 
 const AI_SECTIONS: AIReportSectionType[] = [
   'executive_summary',
@@ -21,6 +22,8 @@ const AI_SECTIONS: AIReportSectionType[] = [
 
 export function useMigrationExport() {
   const [exporting, setExporting] = useState(false);
+  const [exportingXlsx, setExportingXlsx] = useState(false);
+  const [exportingPptx, setExportingPptx] = useState(false);
 
   const exportDocx = useCallback(async (
     analysisResult: MigrationAnalysisOutput,
@@ -102,5 +105,57 @@ export function useMigrationExport() {
     }
   }, []);
 
-  return { exportDocx, exporting };
+  const exportXlsx = useCallback(async (
+    analysisResult: MigrationAnalysisOutput,
+    options?: { accountName?: string },
+  ) => {
+    setExportingXlsx(true);
+    try {
+      const blob = await generateMigrationXlsx(analysisResult, {
+        accountName: options?.accountName,
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const date = new Date().toISOString().slice(0, 10);
+      const name = options?.accountName
+        ? options.accountName.replace(/[^a-zA-Z0-9_-]/g, '_')
+        : 'migration';
+      a.href = url;
+      a.download = `${name}_migration_assessment_${date}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } finally {
+      setExportingXlsx(false);
+    }
+  }, []);
+
+  const exportPptx = useCallback(async (
+    analysisResult: MigrationAnalysisOutput,
+    options?: { accountName?: string },
+  ) => {
+    setExportingPptx(true);
+    try {
+      const blob = await generateMigrationPptx(analysisResult, {
+        accountName: options?.accountName,
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const date = new Date().toISOString().slice(0, 10);
+      const name = options?.accountName
+        ? options.accountName.replace(/[^a-zA-Z0-9_-]/g, '_')
+        : 'migration';
+      a.href = url;
+      a.download = `${name}_migration_assessment_${date}.pptx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } finally {
+      setExportingPptx(false);
+    }
+  }, []);
+
+  return { exportDocx, exportXlsx, exportPptx, exporting, exportingXlsx, exportingPptx };
 }

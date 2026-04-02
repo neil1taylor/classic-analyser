@@ -1,6 +1,6 @@
-import { Paragraph, TextRun, AlignmentType } from 'docx';
+import { Paragraph, TextRun, AlignmentType, PageBreak } from 'docx';
 import type { ReportBranding } from '../types';
-import { BLUE, DARK, GRAY } from '../utils/styles';
+import { BLUE, GRAY, FONT_FAMILY } from '../utils/styles';
 
 export function buildCoverPage(
   title: string,
@@ -15,33 +15,17 @@ export function buildCoverPage(
   });
 
   return [
-    // Top spacer
-    new Paragraph({ spacing: { before: 2400 }, children: [] }),
-
-    // IBM Cloud branding line
-    new Paragraph({
-      alignment: AlignmentType.CENTER,
-      spacing: { after: 200 },
-      children: [
-        new TextRun({
-          text: 'IBM Cloud',
-          bold: true,
-          color: BLUE,
-          size: 28,
-        }),
-      ],
-    }),
-
     // Title
     new Paragraph({
       alignment: AlignmentType.CENTER,
-      spacing: { after: 120 },
+      spacing: { before: 2400, after: 480 },
       children: [
         new TextRun({
           text: title,
           bold: true,
-          color: DARK,
-          size: 48,
+          color: BLUE,
+          size: 56,
+          font: FONT_FAMILY,
         }),
       ],
     }),
@@ -49,25 +33,13 @@ export function buildCoverPage(
     // Subtitle
     new Paragraph({
       alignment: AlignmentType.CENTER,
-      spacing: { after: 400 },
+      spacing: { after: 960 },
       children: [
         new TextRun({
           text: subtitle,
           color: GRAY,
-          size: 28,
-        }),
-      ],
-    }),
-
-    // Horizontal rule (thin line)
-    new Paragraph({
-      alignment: AlignmentType.CENTER,
-      spacing: { after: 400 },
-      children: [
-        new TextRun({
-          text: '________________________________________',
-          color: BLUE,
-          size: 20,
+          size: 26,
+          font: FONT_FAMILY,
         }),
       ],
     }),
@@ -75,12 +47,12 @@ export function buildCoverPage(
     // Client name
     new Paragraph({
       alignment: AlignmentType.CENTER,
-      spacing: { after: 120 },
+      spacing: { before: 480, after: 240 },
       children: [
         new TextRun({
           text: `Prepared for: ${branding.clientName}`,
-          color: DARK,
-          size: 24,
+          size: 22,
+          font: FONT_FAMILY,
         }),
       ],
     }),
@@ -88,12 +60,12 @@ export function buildCoverPage(
     // Author
     new Paragraph({
       alignment: AlignmentType.CENTER,
-      spacing: { after: 120 },
+      spacing: { after: 240 },
       children: [
         new TextRun({
           text: `Prepared by: ${branding.authorName}`,
-          color: GRAY,
           size: 22,
+          font: FONT_FAMILY,
         }),
       ],
     }),
@@ -101,12 +73,12 @@ export function buildCoverPage(
     // Company
     new Paragraph({
       alignment: AlignmentType.CENTER,
-      spacing: { after: 120 },
+      spacing: { after: 240 },
       children: [
         new TextRun({
           text: branding.companyName,
-          color: GRAY,
           size: 22,
+          font: FONT_FAMILY,
         }),
       ],
     }),
@@ -114,27 +86,18 @@ export function buildCoverPage(
     // Date
     new Paragraph({
       alignment: AlignmentType.CENTER,
-      spacing: { after: 600 },
+      spacing: { before: 480 },
       children: [
         new TextRun({
           text: dateStr,
-          color: GRAY,
           size: 22,
+          color: GRAY,
+          font: FONT_FAMILY,
         }),
       ],
     }),
 
-    // Confidentiality
-    new Paragraph({
-      alignment: AlignmentType.CENTER,
-      children: [
-        new TextRun({
-          text: 'CONFIDENTIAL',
-          bold: true,
-          color: GRAY,
-          size: 18,
-        }),
-      ],
-    }),
+    // Page break after cover
+    new Paragraph({ children: [new PageBreak()] }),
   ];
 }

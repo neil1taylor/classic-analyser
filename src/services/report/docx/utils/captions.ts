@@ -1,5 +1,5 @@
 import { Paragraph, TextRun, AlignmentType } from 'docx';
-import { GRAY } from './styles';
+import { BLUE, FONT_FAMILY } from './styles';
 
 let tableCounter = 0;
 let figureCounter = 0;
@@ -10,49 +10,49 @@ export function resetCaptionCounters(): void {
   figureCounter = 0;
 }
 
-/** Return a "Table N: description" caption paragraph. */
+/** Return a "Table N: description" caption paragraph (centered, below table). */
 export function tableCaption(description: string): Paragraph {
   tableCounter++;
   return new Paragraph({
-    alignment: AlignmentType.LEFT,
-    spacing: { before: 80, after: 60 },
+    alignment: AlignmentType.CENTER,
+    spacing: { before: 120, after: 300 },
     children: [
       new TextRun({
         text: `Table ${tableCounter}: `,
         bold: true,
-        italics: true,
-        size: 18,
-        color: GRAY,
+        size: 20,
+        color: BLUE,
+        font: FONT_FAMILY,
       }),
       new TextRun({
         text: description,
-        italics: true,
-        size: 18,
-        color: GRAY,
+        bold: true,
+        size: 20,
+        font: FONT_FAMILY,
       }),
     ],
   });
 }
 
-/** Return a "Figure N: description" caption paragraph. */
+/** Return a "Figure N: description" caption paragraph (centered, below figure). */
 export function figureCaption(description: string): Paragraph {
   figureCounter++;
   return new Paragraph({
     alignment: AlignmentType.CENTER,
-    spacing: { before: 40, after: 100 },
+    spacing: { before: 120, after: 300 },
     children: [
       new TextRun({
         text: `Figure ${figureCounter}: `,
         bold: true,
-        italics: true,
-        size: 18,
-        color: GRAY,
+        size: 20,
+        color: BLUE,
+        font: FONT_FAMILY,
       }),
       new TextRun({
         text: description,
-        italics: true,
-        size: 18,
-        color: GRAY,
+        bold: true,
+        size: 20,
+        font: FONT_FAMILY,
       }),
     ],
   });

@@ -219,9 +219,9 @@ function assessVSI(item: unknown, _preferences: MigrationPreferences): VSIMigrat
   const id = num(item, 'id');
   const hostname = str(item, 'hostname');
   const datacenter = str(item, 'datacenter');
-  const cpu = num(item, 'maxCpu');
+  const cpu = num(item, 'maxCpu') || num(item, 'startCpus');
   const memoryMB = num(item, 'maxMemory');
-  const os = str(item, 'os');
+  const os = str(item, 'os') || str(item, 'operatingSystemReferenceCode');
   const currentFee = num(item, 'recurringFee');
   const isEstimatedCost = Boolean(field(item, 'estimatedCost'));
   const noBillingItem = Boolean(field(item, 'noBillingItem'));
@@ -349,11 +349,11 @@ function assessBareMetal(item: unknown, _preferences: MigrationPreferences): Bar
   const id = num(item, 'id');
   const hostname = str(item, 'hostname');
   const datacenter = str(item, 'datacenter');
-  const cores = num(item, 'cores');
-  const memoryGB = num(item, 'memory');
-  const os = str(item, 'os');
+  const cores = num(item, 'cores') || num(item, 'processorPhysicalCoreAmount');
+  const memoryGB = num(item, 'memory') || num(item, 'memoryCapacity');
+  const os = str(item, 'os') || str(item, 'operatingSystemReferenceCode');
   const currentFee = num(item, 'recurringFee');
-  const isGatewayMember = Boolean(field(item, 'gatewayMember'));
+  const isGatewayMember = Boolean(field(item, 'gatewayMember') ?? field(item, 'networkGatewayMemberFlag'));
   const isVSphere = /vmware|vsphere|esxi/i.test(os);
   const notes: string[] = [];
 

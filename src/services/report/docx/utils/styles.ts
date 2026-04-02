@@ -1,4 +1,5 @@
 import { Paragraph, TextRun, HeadingLevel, PageBreak } from 'docx';
+import { nextSectionNumber } from './sectionCounter';
 
 // ── Brand colours ───────────────────────────────────────────────────────
 export const BLUE = '0F62FE';
@@ -12,21 +13,43 @@ export const MEDIUM_GRAY = 'E0E0E0';
 export const LIGHT_BG = 'F4F4F4';
 export const WHITE = 'FFFFFF';
 
+// ── Section numbering toggle ────────────────────────────────────────────
+let sectionNumberingEnabled = false;
+
+export function setSectionNumbering(enabled: boolean): void {
+  sectionNumberingEnabled = enabled;
+}
+
+// ── Font ────────────────────────────────────────────────────────────────
+export const FONT_FAMILY = 'IBM Plex Sans';
+
 // ── Paragraph helpers ───────────────────────────────────────────────────
 
 export function heading(
   text: string,
   level: (typeof HeadingLevel)[keyof typeof HeadingLevel] = HeadingLevel.HEADING_1,
 ): Paragraph {
+  const prefix = sectionNumberingEnabled && level === HeadingLevel.HEADING_1
+    ? `§${nextSectionNumber()} `
+    : '';
+
+  const isH1 = level === HeadingLevel.HEADING_1;
+  const isH2 = level === HeadingLevel.HEADING_2;
+
   return new Paragraph({
     heading: level,
-    spacing: { before: 240, after: 120 },
+    keepNext: true,
+    spacing: {
+      before: isH1 ? 400 : isH2 ? 300 : 200,
+      after: isH1 ? 200 : isH2 ? 150 : 100,
+    },
     children: [
       new TextRun({
-        text,
+        text: `${prefix}${text}`,
         bold: true,
-        color: DARK,
-        size: level === HeadingLevel.HEADING_1 ? 32 : level === HeadingLevel.HEADING_2 ? 26 : 22,
+        color: isH1 ? BLUE : GRAY,
+        size: isH1 ? 32 : isH2 ? 26 : 22,
+        font: FONT_FAMILY,
       }),
     ],
   });
@@ -34,12 +57,13 @@ export function heading(
 
 export function body(text: string): Paragraph {
   return new Paragraph({
-    spacing: { before: 40, after: 120 },
+    spacing: { after: 120 },
     children: [
       new TextRun({
         text,
         size: 22,
         color: DARK,
+        font: FONT_FAMILY,
       }),
     ],
   });
@@ -54,6 +78,7 @@ export function bullet(text: string): Paragraph {
         text,
         size: 22,
         color: DARK,
+        font: FONT_FAMILY,
       }),
     ],
   });

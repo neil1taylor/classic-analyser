@@ -9,14 +9,17 @@ import {
   ShadingType,
   AlignmentType,
 } from 'docx';
-import { BLUE, WHITE, DARK, LIGHT_BG } from './styles';
+import { GRAY, WHITE, DARK, FONT_FAMILY } from './styles';
+
+const TABLE_HEADER_BG = '525252';   // Dark gray — matches vcf_migration
+const CELL_MARGINS = { top: 100, bottom: 100, left: 140, right: 140 };
 
 // ── Cell helpers ────────────────────────────────────────────────────────
 
 export function headerCell(text: string): TableCell {
   return new TableCell({
-    shading: { type: ShadingType.SOLID, color: BLUE, fill: BLUE },
-    margins: { top: 40, bottom: 40, left: 80, right: 80 },
+    shading: { type: ShadingType.SOLID, color: TABLE_HEADER_BG, fill: TABLE_HEADER_BG },
+    margins: CELL_MARGINS,
     children: [
       new Paragraph({
         alignment: AlignmentType.LEFT,
@@ -25,7 +28,8 @@ export function headerCell(text: string): TableCell {
             text,
             bold: true,
             color: WHITE,
-            size: 20,
+            size: 22,
+            font: FONT_FAMILY,
           }),
         ],
       }),
@@ -35,7 +39,7 @@ export function headerCell(text: string): TableCell {
 
 export function dataCell(text: string): TableCell {
   return new TableCell({
-    margins: { top: 30, bottom: 30, left: 80, right: 80 },
+    margins: CELL_MARGINS,
     children: [
       new Paragraph({
         children: [
@@ -43,6 +47,7 @@ export function dataCell(text: string): TableCell {
             text,
             size: 20,
             color: DARK,
+            font: FONT_FAMILY,
           }),
         ],
       }),
@@ -52,8 +57,7 @@ export function dataCell(text: string): TableCell {
 
 export function altDataCell(text: string): TableCell {
   return new TableCell({
-    shading: { type: ShadingType.SOLID, color: LIGHT_BG, fill: LIGHT_BG },
-    margins: { top: 30, bottom: 30, left: 80, right: 80 },
+    margins: CELL_MARGINS,
     children: [
       new Paragraph({
         children: [
@@ -61,6 +65,7 @@ export function altDataCell(text: string): TableCell {
             text,
             size: 20,
             color: DARK,
+            font: FONT_FAMILY,
           }),
         ],
       }),

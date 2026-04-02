@@ -47,19 +47,24 @@ const MigrationDashboard: React.FC = () => {
 
   const { pricing } = useMigration();
   const { collectedData } = useData();
-  const { exportDocx, exporting } = useMigrationExport();
+  const { exportDocx, exportXlsx, exportPptx, exporting, exportingXlsx, exportingPptx } = useMigrationExport();
   const { exportTerraform, exporting: terraformExporting } = useTerraformExport();
   const [exportOpen, setExportOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
 
   const handleExport = async (options: ReportExportOptions) => {
-    if (analysisResult) {
+    if (!analysisResult) return;
+    if (options.format === 'xlsx') {
+      await exportXlsx(analysisResult, { accountName: options.clientName });
+    } else if (options.format === 'pptx') {
+      await exportPptx(analysisResult, { accountName: options.clientName });
+    } else {
       await exportDocx(analysisResult, collectedData, {
         clientName: options.clientName,
         includeAI: options.includeAI,
       });
-      setExportOpen(false);
     }
+    setExportOpen(false);
   };
 
   const renderTabPanel = () => {
@@ -171,7 +176,7 @@ const MigrationDashboard: React.FC = () => {
         open={exportOpen}
         onClose={() => setExportOpen(false)}
         onExport={handleExport}
-        exporting={exporting}
+        exporting={exporting || exportingXlsx || exportingPptx}
         hasMigrationData={!!analysisResult}
       />
     </div>

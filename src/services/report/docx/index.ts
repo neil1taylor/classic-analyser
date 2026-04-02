@@ -12,6 +12,8 @@ import {
   StyleLevel,
   PageBreak,
   SectionType,
+  NumberFormat,
+  convertInchesToTwip,
 } from 'docx';
 import { saveAs } from 'file-saver';
 import type { MigrationAnalysisOutput } from '@/types/migration';
@@ -30,10 +32,16 @@ import { buildFeatureGaps } from './sections/featureGaps';
 import { buildCostAnalysis } from './sections/costAnalysis';
 import { buildWavePlan } from './sections/wavePlan';
 import { buildRecommendations } from './sections/recommendations';
+import { buildPreFlightChecks } from './sections/preFlightChecks';
+import { buildOsCompatibility } from './sections/osCompatibility';
+import { buildRiskAssessment } from './sections/riskAssessment';
+import { buildRemediationPlan } from './sections/remediationPlan';
+import { buildNextSteps } from './sections/nextSteps';
 import { buildAssumptions } from './sections/assumptions';
 import { buildAppendices } from './sections/appendices';
 import { resetCaptionCounters } from './utils/captions';
-import { GRAY } from './utils/styles';
+import { resetSectionCounter } from './utils/sectionCounter';
+import { BLUE, GRAY, FONT_FAMILY, setSectionNumbering } from './utils/styles';
 
 // ── Helpers ─────────────────────────────────────────────────────────────
 
@@ -42,18 +50,56 @@ function ai(config: ReportConfig, key: string): string | undefined {
   return config.aiNarratives[key];
 }
 
-function buildDocument(children: (Paragraph | Table)[]): Document {
-  const headerText = 'IBM Cloud Infrastructure Report';
+function buildDocument(
+  children: (Paragraph | Table)[],
+  companyName = 'IBM Technology Expert Labs',
+): Document {
+  const headerText = 'IBM Cloud Infrastructure Migration Assessment';
 
   return new Document({
     features: {
       updateFields: true,
     },
+    creator: companyName,
+    title: 'IBM Cloud Infrastructure Migration Assessment',
     styles: {
       default: {
         document: {
           run: {
-            font: 'IBM Plex Sans',
+            font: FONT_FAMILY,
+            size: 22,
+          },
+        },
+        heading1: {
+          run: {
+            font: FONT_FAMILY,
+            size: 32,
+            bold: true,
+            color: BLUE,
+          },
+          paragraph: {
+            spacing: { before: 400, after: 200 },
+          },
+        },
+        heading2: {
+          run: {
+            font: FONT_FAMILY,
+            size: 26,
+            bold: true,
+            color: GRAY,
+          },
+          paragraph: {
+            spacing: { before: 300, after: 150 },
+          },
+        },
+        heading3: {
+          run: {
+            font: FONT_FAMILY,
+            size: 22,
+            bold: true,
+          },
+          paragraph: {
+            spacing: { before: 200, after: 100 },
           },
         },
       },
@@ -63,17 +109,30 @@ function buildDocument(children: (Paragraph | Table)[]): Document {
         properties: {
           type: SectionType.CONTINUOUS,
           titlePage: true,
+          page: {
+            margin: {
+              top: convertInchesToTwip(1),
+              right: convertInchesToTwip(1),
+              bottom: convertInchesToTwip(1),
+              left: convertInchesToTwip(1),
+            },
+            pageNumbers: {
+              start: 1,
+              formatType: NumberFormat.DECIMAL,
+            },
+          },
         },
         headers: {
           default: new Header({
             children: [
               new Paragraph({
-                alignment: AlignmentType.LEFT,
+                alignment: AlignmentType.RIGHT,
                 children: [
                   new TextRun({
                     text: headerText,
-                    size: 16,
+                    size: 18,
                     color: GRAY,
+                    font: FONT_FAMILY,
                   }),
                 ],
               }),
@@ -90,9 +149,34 @@ function buildDocument(children: (Paragraph | Table)[]): Document {
                 alignment: AlignmentType.CENTER,
                 children: [
                   new TextRun({
+                    text: companyName,
+                    size: 16,
+                    color: GRAY,
+                    font: FONT_FAMILY,
+                  }),
+                  new TextRun({
+                    text: '  |  Page ',
+                    size: 16,
+                    color: GRAY,
+                    font: FONT_FAMILY,
+                  }),
+                  new TextRun({
                     children: [PageNumber.CURRENT],
                     size: 16,
                     color: GRAY,
+                    font: FONT_FAMILY,
+                  }),
+                  new TextRun({
+                    text: ' of ',
+                    size: 16,
+                    color: GRAY,
+                    font: FONT_FAMILY,
+                  }),
+                  new TextRun({
+                    children: [PageNumber.TOTAL_PAGES],
+                    size: 16,
+                    color: GRAY,
+                    font: FONT_FAMILY,
                   }),
                 ],
               }),
@@ -119,13 +203,14 @@ function buildTOC(): (Paragraph | Table | TableOfContents)[] {
   return [
     new Paragraph({ children: [new PageBreak()] }),
     new Paragraph({
-      spacing: { before: 240, after: 200 },
+      spacing: { before: 0, after: 200 },
       children: [
         new TextRun({
           text: 'Table of Contents',
           bold: true,
           size: 32,
-          color: '161616',
+          color: BLUE,
+          font: FONT_FAMILY,
         }),
       ],
     }),
@@ -136,6 +221,18 @@ function buildTOC(): (Paragraph | Table | TableOfContents)[] {
         new StyleLevel('Heading1', 1),
         new StyleLevel('Heading2', 2),
         new StyleLevel('Heading3', 3),
+      ],
+    }),
+    new Paragraph({
+      spacing: { before: 120, after: 120 },
+      children: [
+        new TextRun({
+          text: 'Note: When opening this document, click "Yes" to update fields and populate the Table of Contents with correct page numbers.',
+          size: 18,
+          italics: true,
+          color: GRAY,
+          font: FONT_FAMILY,
+        }),
       ],
     }),
   ];
@@ -149,8 +246,10 @@ export async function buildReport(
   migrationData?: MigrationAnalysisOutput,
 ): Promise<void> {
   resetCaptionCounters();
+  resetSectionCounter();
 
   const hasMigration = !!migrationData;
+  setSectionNumbering(hasMigration);
 
   const title = hasMigration
     ? 'Classic to VPC Migration Assessment'
@@ -212,6 +311,8 @@ export async function buildReport(
       ),
     );
 
+    children.push(...buildOsCompatibility(migrationData.computeAssessment));
+
     children.push(
       ...buildNetworkAssessment(
         migrationData.networkAssessment,
@@ -233,6 +334,8 @@ export async function buildReport(
       ),
     );
 
+    children.push(...buildPreFlightChecks(migrationData.prereqChecks));
+
     children.push(...buildFeatureGaps(migrationData.featureGaps));
 
     const costSection = await buildCostAnalysis(
@@ -243,9 +346,15 @@ export async function buildReport(
 
     children.push(...buildWavePlan(migrationData.migrationWaves));
 
+    children.push(...buildRiskAssessment(migrationData));
+
+    children.push(...buildRemediationPlan(migrationData));
+
     children.push(
       ...buildRecommendations(migrationData, ai(config, 'recommendations')),
     );
+
+    children.push(...buildNextSteps(migrationData));
 
     children.push(...buildAssumptions());
   }
@@ -253,7 +362,7 @@ export async function buildReport(
   // Appendices (always)
   children.push(...buildAppendices());
 
-  const doc = buildDocument(children as (Paragraph | Table)[]);
+  const doc = buildDocument(children as (Paragraph | Table)[], config.branding.companyName);
   const timestamp = new Date().toISOString().slice(0, 10);
   const suffix = hasMigration ? 'Migration_Assessment' : 'Inventory';
   await saveDocument(doc, `${config.branding.clientName}_${suffix}_${timestamp}.docx`);
