@@ -113,7 +113,7 @@ function sumHourlyFees(raw: RawItem): number {
 }
 
 function transformVirtualServer(raw: RawItem): RawItem {
-  const blockDevices = raw.blockDevices as RawItem[] | undefined;
+  const blockDevices = Array.isArray(raw.blockDevices) ? raw.blockDevices as RawItem[] : undefined;
   const diskGb = blockDevices
     ? blockDevices.reduce((sum, bd) => {
         const cap = Number(nested(bd, 'diskImage', 'capacity') ?? 0);
@@ -151,7 +151,7 @@ function transformVirtualServer(raw: RawItem): RawItem {
     : '';
 
   // Attached network storage (block & file)
-  const allowedNetworkStorage = raw.allowedNetworkStorage as RawItem[] | undefined;
+  const allowedNetworkStorage = Array.isArray(raw.allowedNetworkStorage) ? raw.allowedNetworkStorage as RawItem[] : undefined;
   const attachedBlockStorageGb = allowedNetworkStorage
     ? allowedNetworkStorage
         .filter((s) => s.nasType === 'ISCSI')
@@ -270,7 +270,7 @@ function transformVirtualServer(raw: RawItem): RawItem {
 }
 
 function transformBareMetal(raw: RawItem): RawItem {
-  const drives = raw.hardDrives as RawItem[] | undefined;
+  const drives = Array.isArray(raw.hardDrives) ? raw.hardDrives as RawItem[] : undefined;
   const hardDrives = drives
     ? drives
         .map((d) => {
@@ -281,7 +281,7 @@ function transformBareMetal(raw: RawItem): RawItem {
         .join(', ')
     : '';
 
-  const nics = raw.networkComponents as RawItem[] | undefined;
+  const nics = Array.isArray(raw.networkComponents) ? raw.networkComponents as RawItem[] : undefined;
   const networkComponents = nics
     ? nics
         .map((n) => {
@@ -296,7 +296,7 @@ function transformBareMetal(raw: RawItem): RawItem {
     : '';
 
   // Attached network storage (block & file)
-  const allowedNetworkStorage = raw.allowedNetworkStorage as RawItem[] | undefined;
+  const allowedNetworkStorage = Array.isArray(raw.allowedNetworkStorage) ? raw.allowedNetworkStorage as RawItem[] : undefined;
   const attachedBlockStorageGb = allowedNetworkStorage
     ? allowedNetworkStorage
         .filter((s) => s.nasType === 'ISCSI')
