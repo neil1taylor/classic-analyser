@@ -1,6 +1,8 @@
 import ExcelJS from 'exceljs';
 import { RESOURCE_TYPES } from '@/types/resources';
 import { VPC_RESOURCE_TYPES } from '@/types/vpc-resources';
+import { POWERVS_RESOURCE_TYPES } from '@/types/powervs-resources';
+import { PLATFORM_RESOURCE_TYPES } from '@/types/platform-resources';
 import type { AccountInfo } from '@/types/resources';
 import { createLogger } from '@/utils/logger';
 
@@ -23,6 +25,12 @@ function buildWorksheetMap(): Map<string, string> {
   for (const rt of VPC_RESOURCE_TYPES) {
     map.set(rt.worksheetName.toLowerCase(), rt.key);
   }
+  for (const rt of POWERVS_RESOURCE_TYPES) {
+    map.set(rt.worksheetName.toLowerCase(), rt.key);
+  }
+  for (const rt of PLATFORM_RESOURCE_TYPES) {
+    map.set(rt.worksheetName.toLowerCase(), rt.key);
+  }
   return map;
 }
 
@@ -39,6 +47,22 @@ function buildHeaderFieldMaps(): Map<string, Map<string, { field: string; dataTy
   }
 
   for (const rt of VPC_RESOURCE_TYPES) {
+    const headerMap = new Map<string, { field: string; dataType: string }>();
+    for (const col of rt.columns) {
+      headerMap.set(col.header, { field: col.field, dataType: col.dataType });
+    }
+    result.set(rt.worksheetName.toLowerCase(), headerMap);
+  }
+
+  for (const rt of POWERVS_RESOURCE_TYPES) {
+    const headerMap = new Map<string, { field: string; dataType: string }>();
+    for (const col of rt.columns) {
+      headerMap.set(col.header, { field: col.field, dataType: col.dataType });
+    }
+    result.set(rt.worksheetName.toLowerCase(), headerMap);
+  }
+
+  for (const rt of PLATFORM_RESOURCE_TYPES) {
     const headerMap = new Map<string, { field: string; dataType: string }>();
     for (const col of rt.columns) {
       headerMap.set(col.header, { field: col.field, dataType: col.dataType });
@@ -200,7 +224,7 @@ export async function parseImportedXlsx(file: File): Promise<ImportResult> {
   if (worksheets.length === 0) {
     log.error('No recognised worksheets found in file');
     throw new Error(
-      'No recognised worksheets found. Expected worksheet names like "vVirtualServers", "vVLANs", etc.'
+      'No recognised worksheets found. Expected worksheet names like "vVirtualServers", "vVLANs", "pPvsInstances", "sServiceInstances", etc.'
     );
   }
 

@@ -170,6 +170,10 @@ export async function generateExcelExport(
     { header: 'Attached File Storage (GB)', key: 'attachedFileStorageGb', width: 24 },
     { header: 'Volume Count', key: 'volumeCount', width: 14 },
     { header: 'VLANs', key: 'networkVlans', width: 30 },
+    { header: 'Disk Used %', key: 'diskUtilUsedPercent', width: 14 },
+    { header: 'Disk Used / Total', key: 'diskUtilUsedGB', width: 18 },
+    { header: 'Disk Util Status', key: 'diskUtilStatus', width: 16 },
+    { header: 'Disk Util Details', key: 'diskUtilDetails', width: 40 },
   ];
   addHeaderStyle(wsVSI);
 
@@ -230,6 +234,10 @@ export async function generateExcelExport(
       attachedFileStorageGb: r.attachedFileStorageGb ?? '',
       volumeCount: r.volumeCount ?? '',
       networkVlans: r.networkVlans ?? '',
+      diskUtilUsedPercent: r.diskUtilUsedPercent ?? '',
+      diskUtilUsedGB: r.diskUtilUsedGB ?? '',
+      diskUtilStatus: r.diskUtilStatus ?? '',
+      diskUtilDetails: r.diskUtilDetails ?? '',
     });
   }
   autoWidth(wsVSI);
@@ -262,6 +270,10 @@ export async function generateExcelExport(
     { header: 'Network Components', key: 'networkComponents', width: 40 },
     { header: 'VLANs', key: 'networkVlans', width: 30 },
     { header: 'Tags', key: 'tags', width: 30 },
+    { header: 'Disk Used %', key: 'diskUtilUsedPercent', width: 14 },
+    { header: 'Disk Used / Total', key: 'diskUtilUsedGB', width: 18 },
+    { header: 'Disk Util Status', key: 'diskUtilStatus', width: 16 },
+    { header: 'Disk Util Details', key: 'diskUtilDetails', width: 40 },
   ];
   addHeaderStyle(wsBM);
 
@@ -296,6 +308,10 @@ export async function generateExcelExport(
       networkComponents: r.networkComponents ?? '',
       networkVlans: r.networkVlans ?? '',
       tags: r.tags ?? '',
+      diskUtilUsedPercent: r.diskUtilUsedPercent ?? '',
+      diskUtilUsedGB: r.diskUtilUsedGB ?? '',
+      diskUtilStatus: r.diskUtilStatus ?? '',
+      diskUtilDetails: r.diskUtilDetails ?? '',
     });
   }
   autoWidth(wsBM);

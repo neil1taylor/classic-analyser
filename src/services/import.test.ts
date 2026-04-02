@@ -53,6 +53,15 @@ vi.mock('exceljs', () => {
         new MockWorksheet('Summary', [
           [{ value: 'Property' }, { value: 'Value' }],
         ]),
+        new MockWorksheet('pPvsInstances', [
+          [{ value: 'Name' }, { value: 'Status' }],
+          [{ value: 'pvs-vm1' }, { value: 'ACTIVE' }],
+        ]),
+        new MockWorksheet('sServiceInstances', [
+          [{ value: 'Name' }, { value: 'Service' }],
+          [{ value: 'my-cos' }, { value: 'Cloud Object Storage' }],
+          [{ value: 'my-kp' }, { value: 'Key Protect' }],
+        ]),
       );
     }
 
@@ -122,5 +131,29 @@ describe('parseImportedXlsx', () => {
     const vlan = result.data.vlans[0] as Record<string, unknown>;
     expect(vlan.id).toBe(10);
     expect(vlan.vlanNumber).toBe(500);
+  });
+
+  it('recognises PowerVS worksheets', async () => {
+    const file = createMockFile('export.xlsx');
+    const result = await parseImportedXlsx(file);
+
+    expect(result.worksheets).toContain('pPvsInstances');
+    expect(result.data.pvsInstances).toBeDefined();
+    expect(result.data.pvsInstances).toHaveLength(1);
+
+    const pvs = result.data.pvsInstances[0] as Record<string, unknown>;
+    expect(pvs.serverName).toBe('pvs-vm1');
+  });
+
+  it('recognises Platform Services worksheets', async () => {
+    const file = createMockFile('export.xlsx');
+    const result = await parseImportedXlsx(file);
+
+    expect(result.worksheets).toContain('sServiceInstances');
+    expect(result.data.serviceInstances).toBeDefined();
+    expect(result.data.serviceInstances).toHaveLength(2);
+
+    const svc = result.data.serviceInstances[0] as Record<string, unknown>;
+    expect(svc.name).toBe('my-cos');
   });
 });
