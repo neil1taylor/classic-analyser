@@ -130,10 +130,13 @@ export const VlanNode = memo(({ data }: NodeProps) => {
           </div>
           <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.5625rem', color: 'var(--cds-text-secondary)', lineHeight: 1.4 }}>
             {cidrs.map((cidr, i) => {
+              const isIPv6 = cidr.includes('(IPv6)');
               const isLinkLocal = cidr.includes('(link-local)');
               return (
                 <div key={i}>
-                  {isLinkLocal ? (
+                  {isIPv6 ? (
+                    <>{cidr.replace(' (IPv6)', '')} <span style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '0.5rem', opacity: 0.7, fontStyle: 'italic', color: '#8a3ffc' }}>IPv6</span></>
+                  ) : isLinkLocal ? (
                     <>{cidr.replace(' (link-local)', '')} <span style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '0.5rem', opacity: 0.7, fontStyle: 'italic' }}>link-local</span></>
                   ) : cidr}
                 </div>
