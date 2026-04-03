@@ -10,7 +10,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUI } from '@/contexts/UIContext';
 import { useAI } from '@/contexts/AIContext';
-import AboutModal from '@/components/common/AboutModal';
 
 const TopNav: React.FC = () => {
   const { isAuthenticated, accountInfo, logout } = useAuth();
@@ -18,7 +17,6 @@ const TopNav: React.FC = () => {
   const { isConfigured } = useAI();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [aboutOpen, setAboutOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -75,7 +73,7 @@ const TopNav: React.FC = () => {
 
           <HeaderGlobalAction
             aria-label="About"
-            onClick={() => setAboutOpen(true)}
+            onClick={() => navigate('/about')}
           >
             <Information size={20} />
           </HeaderGlobalAction>
@@ -136,7 +134,6 @@ const TopNav: React.FC = () => {
         </HeaderGlobalBar>
       </CarbonHeader>
 
-      <AboutModal open={aboutOpen} onClose={() => setAboutOpen(false)} />
     </>
   );
 };

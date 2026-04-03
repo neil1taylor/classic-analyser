@@ -1,0 +1,74 @@
+{
+  "releases": [
+    {
+      "version": "1.1.0",
+      "date": "2026-04-03",
+      "sections": {
+        "added": [
+          "Disk utilization in XLSX export — the four disk utilization columns (Disk Used %, Disk Used / Total, Disk Util Status, Disk Util Details) are now included in the vVirtualServers and vBareMetal worksheets when exporting to XLSX",
+          "PowerVS and Platform Services XLSX import — the Import XLSX feature now recognises PowerVS worksheets (pPvs* prefix) and Platform Services worksheets (sServiceInstances), routing imported data to the correct domain contexts",
+          "Disk Utilization Collection (opt-in) — SSH into Classic VSIs and Bare Metal servers via private IP to collect real filesystem usage. New Phase 5 runs after all API collection with 5 concurrent SSH connections and 10s timeout",
+          "Enriched OS compatibility data — expanded from 18 to 43 OS entries with EOL dates, VPC image type, and detailed migration notes",
+          "New os-unsupported migration blocker check — flags servers running operating systems that cannot run on VPC at all",
+          "BYOL awareness in compute analysis — migration notes now indicate when an OS is only available as a BYOL custom image on VPC",
+          "Platform Services domain — new fourth infrastructure tab that collects all IBM Cloud service instances via the Resource Controller API",
+          "Cloud-harvester schema alignment — attached network storage fields on Virtual Servers and Bare Metal",
+          "VMware Cross References frontend table definition",
+          "Migration execution step templates per approach — structured guidance for lift-and-shift, rebuild, re-platform, and re-architect",
+          "Windows Cloudbase-Init & VirtIO pre-requisite check",
+          "VPC Network ACL rule estimate check — warns when Classic firewall rules exceed VPC NACL limits",
+          "Documentation links on all 12 feature gap definitions",
+          "Expanded Classic-to-VPC migration links in Help docs",
+          "Migration approach recommendation per workload — classifies each VSI and Bare Metal as Lift & Shift, Rebuild, Re-platform, or Re-architect",
+          "6 new migration pre-requisite checks: VRF Enablement, Reserved Capacity, Storage Utilization, Software Add-on Detection, GPU Workload Detection, and migration approach classification",
+          "Software Add-ons feature gap entry in Feature Gap Analysis",
+          "Post-migration troubleshooting section in Help docs",
+          "Expanded IBM migration resource links",
+          "VRF Enablement migration pre-requisite check",
+          "Storage discovery gaps closed — portable storage distinction, file storage bytesUsed, hasEncryptionAtRest, per-volume snapshot collection",
+          "9 new migration pre-requisite checks: 32-bit OS, unsupported OS, EOL OS, hypervisor detection, Oracle/SAP workload detection, IKS/ROKS worker node detection, single-socket high clock speed",
+          "IMS report import — CSV, HTML, drawio, XLSX, MDL, and JSON parsers with multi-source merger",
+          "Error boundaries, guided tour, export page, retry logic",
+          "Collection timeout (10 min) and SSE keepalive (30s) on all collection streams",
+          "CI npm audit step and Trivy container image scan",
+          "In-app About page with changelog"
+        ],
+        "changed": [
+          "Auth routes refactored — IAM helpers extracted to shared utils/iam.ts, Zod request validation added",
+          "MDL parser improved — field renames, nested dict resolution, gateway IP extraction",
+          "Deploy script rewritten with .env loading, podman support, create-or-update pattern",
+          "CI/CD deploy workflow: use us.icr.io registry, target resource group, create-or-update app pattern"
+        ],
+        "fixed": [
+          "ApiKeyForm test failures — added missing mocks for ImportReportButton and ImportMdlButton",
+          "blockDevices crash on IMS report import guarded with Array.isArray",
+          "Replaced abandoned react-simple-maps with d3-geo for React 19 compatibility"
+        ]
+      }
+    },
+    {
+      "version": "1.0.0",
+      "date": "2025-01-28",
+      "sections": {
+        "added": [
+          "Initial release — IBM Cloud Infrastructure Explorer",
+          "Classic infrastructure collection (27+ resource types)",
+          "VPC collection (26 resource types across all regions)",
+          "PowerVS collection (22 resource types across all workspaces)",
+          "Interactive tables with column picker, filtering, sorting, virtualization",
+          "XLSX export with one worksheet per resource type",
+          "XLSX import for re-loading previously exported data",
+          "Dashboard with resource counts, distribution charts, account info",
+          "Cost analysis with treemap and sunburst visualizations",
+          "Geography map showing resource distribution across datacenters",
+          "Network topology diagram with relationship mapping",
+          "VPC migration assessment with pre-requisite checks",
+          "OAuth 2.0 PKCE and IAM passcode login flows",
+          "VSI Profile Selection Guide with flowchart",
+          "Docker multi-stage build for IBM Code Engine deployment",
+          "GitHub Actions CI/CD pipeline"
+        ]
+      }
+    }
+  ]
+}

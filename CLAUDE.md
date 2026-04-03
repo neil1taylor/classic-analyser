@@ -152,6 +152,7 @@ npm run lint            # Lint
 - UI must follow IBM Carbon Design System standards (WCAG 2.1 AA)
 - Primary use case is desktop; mobile is secondary
 - XLSX exports use one worksheet per resource type, named with `v` prefix for Classic (e.g., `vVirtualServers`) and `p` prefix for PowerVS (e.g., `pPvsInstances`)
+- **Changelog** — release notes are maintained in `src/data/changelog.json` (bundled at build time) and displayed on the About page (`/about`). When shipping a new version, add a new entry to the `releases` array with `version`, `date`, and `sections` (added/changed/fixed/removed)
 
 ## Resource Types
 

@@ -68,6 +68,7 @@ const PlatformResourcePage = lazyWithRetry(() => import('@/pages/PlatformResourc
 const ExportPage = lazyWithRetry(() => import('@/pages/ExportPage'));
 const SettingsPage = lazyWithRetry(() => import('@/pages/SettingsPage'));
 const DocsHub = lazyWithRetry(() => import('@/components/docs/DocsHub'));
+const AboutPage = lazyWithRetry(() => import('@/pages/AboutPage'));
 
 export const router = createBrowserRouter([
   {
@@ -105,6 +106,7 @@ export const router = createBrowserRouter([
       // Shared routes
       { path: 'export', element: <PageLoader><ExportPage /></PageLoader> },
       { path: 'settings', element: <PageLoader><SettingsPage /></PageLoader> },
+      { path: 'about', element: <PageLoader><AboutPage /></PageLoader> },
       { path: 'docs', element: <PageLoader><DocsHub /></PageLoader> },
       { path: 'help', element: <Navigate to="/docs" replace /> },
       { path: '*', element: <Navigate to="/" replace /> },

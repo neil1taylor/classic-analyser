@@ -1,4 +1,3 @@
-export { default as AboutModal } from './AboutModal';
 export { default as AnimatedCounter } from './AnimatedCounter';
 export { ErrorBoundary } from './ErrorBoundary';
 export { default as ExportDialog } from './ExportDialog';
