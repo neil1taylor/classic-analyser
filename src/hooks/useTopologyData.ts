@@ -268,7 +268,10 @@ export function useTopologyData(
             networkSpace: 'PUBLIC',
             datacenter: dc,
             subnetCount: vlanSubnets.length,
-            subnetCidrs: vlanSubnets.map((s) => `${str(s, 'networkIdentifier')}/${num(s, 'cidr')}`),
+            subnetCidrs: vlanSubnets.map((s) => {
+              const cidr = `${str(s, 'networkIdentifier')}/${num(s, 'cidr')}`;
+              return str(s, 'networkIdentifier').startsWith('169.254.') ? `${cidr} (link-local)` : cidr;
+            }),
           },
         });
 
@@ -347,7 +350,10 @@ export function useTopologyData(
             networkSpace: 'PRIVATE',
             datacenter: dc,
             subnetCount: vlanSubnets.length,
-            subnetCidrs: vlanSubnets.map((s) => `${str(s, 'networkIdentifier')}/${num(s, 'cidr')}`),
+            subnetCidrs: vlanSubnets.map((s) => {
+              const cidr = `${str(s, 'networkIdentifier')}/${num(s, 'cidr')}`;
+              return str(s, 'networkIdentifier').startsWith('169.254.') ? `${cidr} (link-local)` : cidr;
+            }),
           },
         });
 
@@ -484,6 +490,8 @@ export function useTopologyData(
           label: str(vsi, 'hostname') || `VSI ${num(vsi, 'id')}`,
           nodeType: 'vsi',
           id: num(vsi, 'id'),
+          publicIp: str(vsi, 'primaryIp'),
+          privateIp: str(vsi, 'backendIp'),
           ip: str(vsi, 'primaryIp') || str(vsi, 'backendIp'),
           cpu: num(vsi, 'maxCpu'),
           memory: Math.round(num(vsi, 'maxMemory') / 1024), // MB to GB
@@ -506,6 +514,8 @@ export function useTopologyData(
           label: str(bm, 'hostname') || `BM ${num(bm, 'id')}`,
           nodeType: 'bareMetal',
           id: num(bm, 'id'),
+          publicIp: str(bm, 'primaryIp'),
+          privateIp: str(bm, 'backendIp'),
           ip: str(bm, 'primaryIp') || str(bm, 'backendIp'),
           cpu: num(bm, 'cores'),
           memory: num(bm, 'memory'),
@@ -552,15 +562,10 @@ export function useTopologyData(
           })),
         },
       });
-      // Connect to first compute node in same DC
-      const computeInDC = [
-        ...filtVsis.filter((v) => str(v, 'datacenter') === dc),
-        ...filtBms.filter((b) => str(b, 'datacenter') === dc),
-      ];
-      if (computeInDC.length > 0) {
-        const first = computeInDC[0];
-        const isVsi = 'maxCpu' in first;
-        const targetId = isVsi ? `vsi-${num(first, 'id')}` : `bm-${num(first, 'id')}`;
+      // Connect storage to first private VLAN in same DC (storage is accessed over private network)
+      const dcPrivVlans = privateVlansByDC.get(dc) ?? [];
+      if (dcPrivVlans.length > 0) {
+        const targetId = `vlan-${num(dcPrivVlans[0], 'id')}`;
         edges.push({
           id: `${id}-${targetId}`,
           source: targetId,
@@ -568,6 +573,18 @@ export function useTopologyData(
           type: 'smoothstep',
           style: { stroke: '#0f62fe', strokeWidth: 1, strokeDasharray: '4,4' },
         });
+      } else {
+        // Fallback: connect to BCR if no private VLAN found
+        const bcrId = `bcr-${dc}`;
+        if (nodes.find((n) => n.id === bcrId)) {
+          edges.push({
+            id: `${id}-${bcrId}`,
+            source: bcrId,
+            target: id,
+            type: 'smoothstep',
+            style: { stroke: '#0f62fe', strokeWidth: 1, strokeDasharray: '4,4' },
+          });
+        }
       }
       dcIdx++;
     });

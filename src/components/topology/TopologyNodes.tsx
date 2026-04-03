@@ -129,9 +129,16 @@ export const VlanNode = memo(({ data }: NodeProps) => {
             {d.subnetCount} subnet{d.subnetCount !== 1 ? 's' : ''}
           </div>
           <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.5625rem', color: 'var(--cds-text-secondary)', lineHeight: 1.4 }}>
-            {cidrs.map((cidr, i) => (
-              <div key={i}>{cidr}</div>
-            ))}
+            {cidrs.map((cidr, i) => {
+              const isLinkLocal = cidr.includes('(link-local)');
+              return (
+                <div key={i}>
+                  {isLinkLocal ? (
+                    <>{cidr.replace(' (link-local)', '')} <span style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '0.5rem', opacity: 0.7, fontStyle: 'italic' }}>link-local</span></>
+                  ) : cidr}
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
@@ -204,9 +211,10 @@ export const VSINode = memo(({ data }: NodeProps) => {
           {d.os}
         </div>
       )}
-      {d.ip && (
-        <div style={{ fontFamily: "'IBM Plex Mono', monospace", marginTop: 4, color: 'var(--cds-text-secondary)' }}>
-          {d.ip}
+      {(d.publicIp || d.privateIp) && (
+        <div style={{ fontFamily: "'IBM Plex Mono', monospace", marginTop: 4, color: 'var(--cds-text-secondary)', fontSize: '0.6875rem', lineHeight: 1.4 }}>
+          {d.publicIp && <div style={{ color: '#da1e28' }}>{d.publicIp}</div>}
+          {d.privateIp && <div style={{ color: '#0f62fe' }}>{d.privateIp}</div>}
         </div>
       )}
       <Handle type="source" position={Position.Bottom} style={{ background: '#0f62fe' }} />
@@ -231,9 +239,10 @@ export const BareMetalNode = memo(({ data }: NodeProps) => {
       <div style={{ color: 'var(--cds-text-secondary)' }}>
         {d.cpu} cores &middot; {d.memory} GB
       </div>
-      {d.ip && (
-        <div style={{ fontFamily: "'IBM Plex Mono', monospace", marginTop: 4, color: 'var(--cds-text-secondary)' }}>
-          {d.ip}
+      {(d.publicIp || d.privateIp) && (
+        <div style={{ fontFamily: "'IBM Plex Mono', monospace", marginTop: 4, color: 'var(--cds-text-secondary)', fontSize: '0.6875rem', lineHeight: 1.4 }}>
+          {d.publicIp && <div style={{ color: '#da1e28' }}>{d.publicIp}</div>}
+          {d.privateIp && <div style={{ color: '#0f62fe' }}>{d.privateIp}</div>}
         </div>
       )}
       <Handle type="source" position={Position.Bottom} style={{ background: '#002d9c' }} />
