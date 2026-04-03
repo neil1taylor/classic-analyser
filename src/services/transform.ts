@@ -83,15 +83,21 @@ function flattenTags(raw: RawItem): string {
 
 function flattenNetworkVlans(raw: RawItem): string {
   const vlans = raw.networkVlans as RawItem[] | undefined;
-  if (!vlans || !Array.isArray(vlans)) return '';
-  return vlans
-    .map((v) => {
-      const num = safeStr(v.vlanNumber);
-      const space = safeStr(v.networkSpace);
-      return space ? `${num} (${space})` : num;
-    })
-    .filter(Boolean)
-    .join(', ');
+  if (vlans && Array.isArray(vlans) && vlans.length > 0) {
+    return vlans
+      .map((v) => {
+        const num = safeStr(v.vlanNumber);
+        const space = safeStr(v.networkSpace);
+        return space ? `${num} (${space})` : num;
+      })
+      .filter(Boolean)
+      .join(', ');
+  }
+  // Fallback: IMS report imports use publicVlan / privateVlan fields
+  const parts: string[] = [];
+  if (raw.publicVlan) parts.push(`${safeStr(raw.publicVlan)} (PUBLIC)`);
+  if (raw.privateVlan) parts.push(`${safeStr(raw.privateVlan)} (PRIVATE)`);
+  return parts.join(', ');
 }
 
 /**

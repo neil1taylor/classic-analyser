@@ -39,13 +39,23 @@ const RowDetailPanel: React.FC<RowDetailPanelProps> = ({ row, resourceKey, colum
   const { vpcCollectedData } = useVpcData();
 
   const keyFields = useMemo(() => {
-    const fieldList = KEY_FIELDS[resourceKey];
-    if (fieldList) {
-      return fieldList;
+    const priorityFields = KEY_FIELDS[resourceKey] ?? columns.map((c) => c.field);
+    // Show all non-empty fields: priority fields first (in order), then any extra fields on the row
+    const seen = new Set<string>();
+    const result: string[] = [];
+    for (const f of priorityFields) {
+      seen.add(f);
+      result.push(f);
     }
-    // Fallback: show all column fields
-    return columns.map((c) => c.field);
-  }, [resourceKey, columns]);
+    // Add any remaining fields from the row data that aren't already listed
+    for (const key of Object.keys(row)) {
+      if (!seen.has(key)) {
+        seen.add(key);
+        result.push(key);
+      }
+    }
+    return result;
+  }, [resourceKey, columns, row]);
 
   const relatedResources = useMemo(
     () => getRelatedResources(resourceKey, row, collectedData),

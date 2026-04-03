@@ -448,6 +448,62 @@ export function useTopologyData(
     const vlanByNumber = new Map<number, string>();
     filtVlans.forEach((v) => vlanByNumber.set(num(v, 'vlanNumber'), `vlan-${num(v, 'id')}`));
 
+    // Helper: check if an IPv4 address falls within a CIDR subnet
+    function ipInSubnet(ip: string, networkId: string, cidrBits: number): boolean {
+      const parts = ip.split('.').map(Number);
+      const netParts = networkId.split('.').map(Number);
+      if (parts.length !== 4 || netParts.length !== 4) return false;
+      const ipNum = ((parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3]) >>> 0;
+      const netNum = ((netParts[0] << 24) | (netParts[1] << 16) | (netParts[2] << 8) | netParts[3]) >>> 0;
+      const mask = cidrBits === 0 ? 0 : (~0 << (32 - cidrBits)) >>> 0;
+      return (ipNum & mask) === (netNum & mask);
+    }
+
+    // Helper: find the VLAN node ID that owns a given IP address via subnet matching
+    function findVlanByIp(ip: string, space: 'PUBLIC' | 'PRIVATE'): string | undefined {
+      if (!ip) return undefined;
+      for (const [vlanNum, vlanSubnets] of subnetsByVlan.entries()) {
+        for (const s of vlanSubnets) {
+          const ni = str(s, 'networkIdentifier');
+          const cidr = num(s, 'cidr');
+          if (ni && cidr && !ni.includes(':') && ipInSubnet(ip, ni, cidr)) {
+            // Verify this VLAN matches the expected network space
+            const nodeId = vlanByNumber.get(vlanNum);
+            if (!nodeId) continue;
+            const vlan = filtVlans.find((v) => num(v, 'vlanNumber') === vlanNum);
+            if (vlan && str(vlan, 'networkSpace').toUpperCase() === space) {
+              return nodeId;
+            }
+          }
+        }
+      }
+      return undefined;
+    }
+
+    // Helper: resolve the VLAN node for a server, trying:
+    // 1. networkVlans string (from live API collection)
+    // 2. IP-to-subnet matching (works for IMS/MDL imports)
+    // 3. First VLAN in datacenter (last resort)
+    function resolveVlanNodeId(
+      item: Record<string, unknown>,
+      space: 'PUBLIC' | 'PRIVATE',
+    ): string | undefined {
+      // Try networkVlans string first (format: "1458 (PUBLIC), 1563 (PRIVATE)")
+      const vlansStr = str(item, 'networkVlans');
+      if (vlansStr) {
+        for (const part of vlansStr.split(',')) {
+          const match = part.trim().match(/^(\d+)\s*\((\w+)\)/);
+          if (match && match[2].toUpperCase() === space) {
+            const nodeId = vlanByNumber.get(parseInt(match[1], 10));
+            if (nodeId) return nodeId;
+          }
+        }
+      }
+      // Try IP-to-subnet matching
+      const ip = space === 'PRIVATE' ? str(item, 'backendIp') : str(item, 'primaryIp');
+      return findVlanByIp(ip, space);
+    }
+
     // Helper: link compute node to VLANs
     // Public VLAN (above) → top of compute node
     // Compute node bottom → Private VLAN (below)
@@ -457,30 +513,52 @@ export function useTopologyData(
 
       // Public VLAN (above) → compute top
       if (hasPublicIp) {
-        const pubVlans = publicVlansByDC.get(dc) ?? [];
-        if (pubVlans.length > 0) {
-          const pubVlan = pubVlans[0];
+        const pubNodeId = resolveVlanNodeId(item, 'PUBLIC');
+        if (pubNodeId) {
           edges.push({
-            id: `vlan-${num(pubVlan, 'id')}-${computeId}`,
-            source: `vlan-${num(pubVlan, 'id')}`,
+            id: `${pubNodeId}-${computeId}`,
+            source: pubNodeId,
             target: computeId,
             type: 'smoothstep',
             style: { stroke: '#da1e28', strokeWidth: 1 },
           });
+        } else {
+          const pubVlans = publicVlansByDC.get(dc) ?? [];
+          if (pubVlans.length > 0) {
+            const pubVlan = pubVlans[0];
+            edges.push({
+              id: `vlan-${num(pubVlan, 'id')}-${computeId}`,
+              source: `vlan-${num(pubVlan, 'id')}`,
+              target: computeId,
+              type: 'smoothstep',
+              style: { stroke: '#da1e28', strokeWidth: 1 },
+            });
+          }
         }
       }
 
       // Compute bottom → Private VLAN (below)
-      const privVlans = privateVlansByDC.get(dc) ?? [];
-      if (privVlans.length > 0) {
-        const privVlan = privVlans[0];
+      const privNodeId = resolveVlanNodeId(item, 'PRIVATE');
+      if (privNodeId) {
         edges.push({
-          id: `${computeId}-vlan-${num(privVlan, 'id')}`,
+          id: `${computeId}-${privNodeId}`,
           source: computeId,
-          target: `vlan-${num(privVlan, 'id')}`,
+          target: privNodeId,
           type: 'smoothstep',
           style: { stroke: '#0f62fe', strokeWidth: 1 },
         });
+      } else {
+        const privVlans = privateVlansByDC.get(dc) ?? [];
+        if (privVlans.length > 0) {
+          const privVlan = privVlans[0];
+          edges.push({
+            id: `${computeId}-vlan-${num(privVlan, 'id')}`,
+            source: computeId,
+            target: `vlan-${num(privVlan, 'id')}`,
+            type: 'smoothstep',
+            style: { stroke: '#0f62fe', strokeWidth: 1 },
+          });
+        }
       }
     }
 
