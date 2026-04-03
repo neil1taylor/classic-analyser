@@ -496,12 +496,17 @@ function normalizeVlanFromInventory(
     ? (datacenter as Record<string, unknown>).name
     : datacenter;
 
+  const routerHostname = typeof obj.primaryRouter === 'object' && obj.primaryRouter
+    ? (obj.primaryRouter as Record<string, unknown>).hostname
+    : obj.primaryRouter;
+
   return {
     id: obj.id,
     vlanNumber: obj.vlanNumber,
     name: obj.name,
     datacenter: dcName || '',
     networkSpace: obj.networkSpace,
+    primaryRouter: routerHostname || '',
     subnetCount: obj.subnetCount,
   };
 }
