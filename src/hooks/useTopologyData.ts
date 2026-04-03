@@ -269,8 +269,11 @@ export function useTopologyData(
             datacenter: dc,
             subnetCount: vlanSubnets.length,
             subnetCidrs: vlanSubnets.map((s) => {
-              const cidr = `${str(s, 'networkIdentifier')}/${num(s, 'cidr')}`;
-              return str(s, 'networkIdentifier').startsWith('169.254.') ? `${cidr} (link-local)` : cidr;
+              const ni = str(s, 'networkIdentifier');
+              const cidr = `${ni}/${num(s, 'cidr')}`;
+              if (ni.includes(':')) return `${cidr} (IPv6)`;
+              if (ni.startsWith('169.254.')) return `${cidr} (link-local)`;
+              return cidr;
             }),
           },
         });
@@ -351,8 +354,11 @@ export function useTopologyData(
             datacenter: dc,
             subnetCount: vlanSubnets.length,
             subnetCidrs: vlanSubnets.map((s) => {
-              const cidr = `${str(s, 'networkIdentifier')}/${num(s, 'cidr')}`;
-              return str(s, 'networkIdentifier').startsWith('169.254.') ? `${cidr} (link-local)` : cidr;
+              const ni = str(s, 'networkIdentifier');
+              const cidr = `${ni}/${num(s, 'cidr')}`;
+              if (ni.includes(':')) return `${cidr} (IPv6)`;
+              if (ni.startsWith('169.254.')) return `${cidr} (link-local)`;
+              return cidr;
             }),
           },
         });
@@ -547,7 +553,7 @@ export function useTopologyData(
       nodes.push({
         id,
         type: 'storageGroupNode',
-        position: { x: 100 + dcIdx * 250, y: Y_STORAGE },
+        position: { x: 100 + dcIdx * 250, y: Y_PRIVATE_NETWORK },
         data: {
           label: `Storage (${dc})`,
           nodeType: 'storageGroup',
@@ -562,30 +568,14 @@ export function useTopologyData(
           })),
         },
       });
-      // Connect storage to first private VLAN in same DC (storage is accessed over private network)
-      const dcPrivVlans = privateVlansByDC.get(dc) ?? [];
-      if (dcPrivVlans.length > 0) {
-        const targetId = `vlan-${num(dcPrivVlans[0], 'id')}`;
-        edges.push({
-          id: `${id}-${targetId}`,
-          source: targetId,
-          target: id,
-          type: 'smoothstep',
-          style: { stroke: '#0f62fe', strokeWidth: 1, strokeDasharray: '4,4' },
-        });
-      } else {
-        // Fallback: connect to BCR if no private VLAN found
-        const bcrId = `bcr-${dc}`;
-        if (nodes.find((n) => n.id === bcrId)) {
-          edges.push({
-            id: `${id}-${bcrId}`,
-            source: bcrId,
-            target: id,
-            type: 'smoothstep',
-            style: { stroke: '#0f62fe', strokeWidth: 1, strokeDasharray: '4,4' },
-          });
-        }
-      }
+      // Connect storage to IBM Cloud Private Network bus (storage is accessed over private network)
+      edges.push({
+        id: `private-network-bus-${id}`,
+        source: 'private-network-bus',
+        target: id,
+        type: 'smoothstep',
+        style: { stroke: '#0f62fe', strokeWidth: 1, strokeDasharray: '4,4' },
+      });
       dcIdx++;
     });
 
