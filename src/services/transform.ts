@@ -412,7 +412,8 @@ function transformSubnet(raw: RawItem): RawItem {
     broadcastAddress: raw.broadcastAddress,
     usableIpAddressCount: raw.usableIpAddressCount,
     totalIpAddresses: raw.totalIpAddresses,
-    vlanNumber: nested(raw, 'networkVlan', 'vlanNumber'),
+    vlanNumber: nested(raw, 'networkVlan', 'vlanNumber') ?? raw.vlanNumber,
+    networkVlanId: raw.networkVlanId,
     datacenter: nested(raw, 'datacenter', 'name') ?? raw.datacenter,
   };
 }

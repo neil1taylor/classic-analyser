@@ -569,6 +569,35 @@
     ]
   },
   {
+    "key": "virtualHosts",
+    "label": "Hypervisors",
+    "category": "Compute",
+    "worksheetName": "vVirtualHosts",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "name",
+        "header": "Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "datacenter",
+        "header": "Datacenter",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      }
+    ]
+  },
+  {
     "key": "dedicatedHosts",
     "label": "Dedicated Hosts",
     "category": "Compute",
@@ -890,6 +919,42 @@
         "field": "insideVlanCount",
         "header": "Inside VLANs",
         "dataType": "number",
+        "defaultVisible": true,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "routers",
+    "label": "Routers",
+    "category": "Network",
+    "worksheetName": "vRouters",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "name",
+        "header": "Name",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "networkSpace",
+        "header": "Network Space",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "datacenter",
+        "header": "Datacenter",
+        "dataType": "string",
         "defaultVisible": true,
         "sortable": true
       }
@@ -1904,6 +1969,42 @@
       {
         "field": "transitGatewayName",
         "header": "Transit Gateway",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      }
+    ]
+  },
+  {
+    "key": "transitGatewayDevices",
+    "label": "TGW Devices",
+    "category": "Network",
+    "worksheetName": "vTGWDevices",
+    "columns": [
+      {
+        "field": "id",
+        "header": "ID",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "hostname",
+        "header": "Hostname",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "configuration_status",
+        "header": "Status",
+        "dataType": "string",
+        "defaultVisible": true,
+        "sortable": true
+      },
+      {
+        "field": "datacenter",
+        "header": "Datacenter",
         "dataType": "string",
         "defaultVisible": true,
         "sortable": true

@@ -16,6 +16,9 @@ const MODEL_TYPE_MAP: Record<string, string> = {
   transitGateway: 'classicTransitGateways',
   transitGatewayDevice: 'transitGatewayDevices',
   transitGatewayConnection: 'classicTransitGatewayConnections',
+  directLinkTenant: 'directLinkGateways',
+  directLinkVlan: 'vlans',
+  directLinkRouter: 'routers',
 };
 
 /**
@@ -51,11 +54,19 @@ export function parseDrawio(text: string): ReportParserResult {
       const resourceKey = MODEL_TYPE_MAP[modelType];
       if (!resourceKey) continue;
 
-      const resource = extractUserObjectAttributes(uo, modelType, datacenter);
-      if (!resource) continue;
+      const result = extractUserObjectAttributes(uo, modelType, datacenter);
+      if (!result) continue;
 
       if (!data[resourceKey]) data[resourceKey] = [];
-      data[resourceKey].push(resource);
+      data[resourceKey].push(result.resource);
+
+      // Add any extra resources (e.g., subnets extracted from VLANs)
+      if (result.extraResources) {
+        for (const [extraKey, extraItems] of Object.entries(result.extraResources)) {
+          if (!data[extraKey]) data[extraKey] = [];
+          data[extraKey].push(...extraItems);
+        }
+      }
     }
 
     // Extract edges (LAN connections and implicit connections)
@@ -68,6 +79,9 @@ export function parseDrawio(text: string): ReportParserResult {
     }
   }
 
+  // Post-process: enrich gateways with member and inside VLAN counts from edges
+  enrichGatewaysFromEdges(data, topology);
+
   // Log summary
   for (const [key, items] of Object.entries(data)) {
     log.info(`Parsed ${items.length} ${key} from drawio`);
@@ -77,11 +91,16 @@ export function parseDrawio(text: string): ReportParserResult {
   return { data, topology };
 }
 
+interface ExtractionResult {
+  resource: Record<string, unknown>;
+  extraResources?: Record<string, Record<string, unknown>[]>;
+}
+
 function extractUserObjectAttributes(
   uo: Element,
   modelType: string,
   datacenter: string
-): Record<string, unknown> | null {
+): ExtractionResult | null {
   const slId = uo.getAttribute('sl_id');
   if (!slId) return null;
 
@@ -113,12 +132,17 @@ function extractUserObjectAttributes(
   }
 
   // Model-specific normalization
+  const extraResources: Record<string, Record<string, unknown>[]> = {};
   switch (modelType) {
     case 'baremetal':
       attrs.hostname = attrs.name;
       attrs.primaryIpAddress = attrs.PublicIP;
       attrs.primaryBackendIpAddress = attrs.PrivateIP;
       attrs.operatingSystemReferenceCode = attrs.OS;
+      attrs.processorPhysicalCoreAmount = attrs.processors;
+      attrs.networkSpace = attrs.domain;
+      // Collect tag_* attributes into tagReferences format
+      attrs.tagReferences = collectTags(attrs);
       break;
 
     case 'virtualguest':
@@ -127,6 +151,11 @@ function extractUserObjectAttributes(
       attrs.primaryBackendIpAddress = attrs.PrivateIP;
       attrs.operatingSystemReferenceCode = attrs.OS;
       attrs.maxMemory = attrs.memory;
+      attrs.startCpus = attrs.maxCpu;
+      attrs.dedicatedAccountHostOnlyFlag = attrs.dedicated;
+      attrs.networkSpace = attrs.domain;
+      // Collect tag_* attributes into tagReferences format
+      attrs.tagReferences = collectTags(attrs);
       break;
 
     case 'vlan': {
@@ -138,20 +167,42 @@ function extractUserObjectAttributes(
       }
       // The domain field indicates PRIVATE or PUBLIC
       attrs.networkSpace = attrs.domain;
-      // Collect subnet attributes
-      const subnets: string[] = [];
+      // Extract subnet attributes as both a summary on the VLAN and separate subnet resources
+      const subnetStrings: string[] = [];
+      const subnetResources: Record<string, unknown>[] = [];
       for (const [key, val] of Object.entries(attrs)) {
         if (key.startsWith('subnet_') && typeof val === 'string') {
-          subnets.push(val);
+          subnetStrings.push(val);
+          // Format: "TYPE CIDR" e.g. "ADDITIONAL_PRIMARY 10.221.32.0/26"
+          const subnetMatch = val.match(/^(\S+)\s+(\S+?)\/(\d+)$/);
+          if (subnetMatch) {
+            subnetResources.push({
+              id: `${attrs.id}_${key}`,
+              _source: 'drawio',
+              datacenter,
+              subnetType: subnetMatch[1],
+              networkIdentifier: subnetMatch[2],
+              cidr: parseInt(subnetMatch[3]),
+              networkVlanId: attrs.id,
+              vlanNumber: attrs.vlanNumber,
+            });
+          }
+          // Remove subnet_N keys from the VLAN resource
+          delete attrs[key];
         }
       }
-      if (subnets.length > 0) attrs.subnets = subnets;
+      if (subnetStrings.length > 0) attrs.subnets = subnetStrings;
+      if (subnetResources.length > 0) {
+        extraResources.subnets = subnetResources;
+      }
       break;
     }
 
     case 'gateway':
       attrs.publicIpAddress = attrs.PublicIP;
       attrs.privateIpAddress = attrs.PrivateIP;
+      attrs.publicIPv6Address = attrs.PublicIPv6Address;
+      attrs.networkSpace = attrs.domain;
       break;
 
     case 'router':
@@ -172,12 +223,123 @@ function extractUserObjectAttributes(
         const parts = (attrs.id as string).split('_');
         attrs.id = parts.slice(0, -1).join('_');
       }
-      attrs.networkType = attrs.network_type;
-      attrs.baseNetworkType = attrs.base_network_type;
+      // Map drawio field names to what the transform expects
+      attrs.network_account_id = attrs.transit_network_account_id;
+      break;
+
+    case 'directLinkTenant':
+      attrs.speed_mbps = parseInt(attrs.link_speed as string) || undefined;
+      attrs.bgp_status = attrs.bgp_status;
+      attrs.operational_status = attrs.operational_status;
+      attrs.global = (attrs.global_routing as string)?.toLowerCase() === 'true';
+      attrs.type = 'dedicated';
+      break;
+
+    case 'directLinkVlan':
+      // Direct Link VLANs — map to vlans with INTERCONNECT network space
+      attrs.vlanNumber = parseInt(attrs.name as string) || undefined;
+      attrs.networkSpace = attrs.domain; // INTERCONNECT
+      break;
+
+    case 'directLinkRouter':
+      attrs.name = attrs.primaryName;
+      attrs.networkSpace = attrs.domain; // INTERCONNECT
       break;
   }
 
-  return attrs;
+  const result: ExtractionResult = { resource: attrs };
+  if (Object.keys(extraResources).length > 0) {
+    result.extraResources = extraResources;
+  }
+  return result;
+}
+
+/**
+ * Enrich gateway resources with member counts and inside VLAN counts
+ * derived from topology edges.
+ *
+ * - implconnection from gateway→baremetal = gateway member (BM hardware)
+ * - lanconnection from vlan→gateway = inside VLAN
+ */
+function enrichGatewaysFromEdges(
+  data: Record<string, unknown[]>,
+  topology: ReportTopologyEdge[]
+): void {
+  const gateways = data.gateways as Record<string, unknown>[] | undefined;
+  if (!gateways || gateways.length === 0) return;
+
+  // Build gateway lookup by SLO id format: SLO_{id}_gateway
+  const gatewayById = new Map<string, Record<string, unknown>>();
+  for (const gw of gateways) {
+    gatewayById.set(String(gw.id), gw);
+  }
+
+  // Count members and inside VLANs per gateway
+  const memberCount = new Map<string, number>();
+  const insideVlanIds = new Map<string, Set<string>>();
+
+  for (const edge of topology) {
+    const sourceId = extractSlId(edge.source);
+    const targetId = extractSlId(edge.target);
+    const sourceType = edge.sourceType;
+    const targetType = edge.targetType;
+
+    // implconnection: gateway → baremetal = member
+    if (sourceType === 'gateway' && targetType === 'baremetal' && sourceId) {
+      memberCount.set(sourceId, (memberCount.get(sourceId) || 0) + 1);
+    }
+    if (targetType === 'gateway' && sourceType === 'baremetal' && targetId) {
+      memberCount.set(targetId, (memberCount.get(targetId) || 0) + 1);
+    }
+
+    // lanconnection: vlan → gateway = inside VLAN
+    if (targetType === 'gateway' && sourceType === 'vlan' && targetId && sourceId) {
+      if (!insideVlanIds.has(targetId)) insideVlanIds.set(targetId, new Set());
+      insideVlanIds.get(targetId)!.add(sourceId);
+    }
+    if (sourceType === 'gateway' && targetType === 'vlan' && sourceId && targetId) {
+      if (!insideVlanIds.has(sourceId)) insideVlanIds.set(sourceId, new Set());
+      insideVlanIds.get(sourceId)!.add(targetId);
+    }
+  }
+
+  // Apply counts to gateway resources
+  for (const gw of gateways) {
+    const id = String(gw.id);
+    const members = memberCount.get(id) || 0;
+    const vlans = insideVlanIds.get(id)?.size || 0;
+    // Set as raw fields that the transform expects
+    gw.members = Array(members).fill({});
+    gw.insideVlans = Array(vlans).fill({});
+  }
+}
+
+/**
+ * Extract the SoftLayer ID from an SLO-format node ID.
+ * Format: SLO_{sl_id}_{type} → returns sl_id
+ */
+function extractSlId(nodeId: string): string | null {
+  const parts = nodeId.split('_');
+  if (parts.length >= 3 && parts[0] === 'SLO') {
+    // Everything between SLO_ and _type is the sl_id
+    return parts.slice(1, -1).join('_');
+  }
+  return null;
+}
+
+/**
+ * Collect tag_* attributes into the tagReferences format expected by flattenTags().
+ * Drawio stores tags as tag_12345="value" attributes.
+ */
+function collectTags(attrs: Record<string, unknown>): { tag: { name: string } }[] {
+  const tags: { tag: { name: string } }[] = [];
+  for (const [key, val] of Object.entries(attrs)) {
+    if (key.startsWith('tag_') && typeof val === 'string') {
+      tags.push({ tag: { name: val } });
+      delete attrs[key];
+    }
+  }
+  return tags;
 }
 
 function extractEdge(cell: Element): ReportTopologyEdge | null {

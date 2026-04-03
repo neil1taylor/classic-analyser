@@ -1,13 +1,15 @@
 import React, { useEffect } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
+import { InlineNotification } from '@carbon/react';
 import { getResourceType } from '@/types/resources';
 import { useData } from '@/contexts/DataContext';
 import { useUI } from '@/contexts/UIContext';
 import AppDataTable from '@/components/tables/DataTable';
+import { getImportMethod, getImportWarning } from '@/data/importWarnings';
 
 const ResourcePage: React.FC = () => {
   const { type } = useParams<{ type: string }>();
-  const { collectedData } = useData();
+  const { collectedData, dataSource, importFilename } = useData();
   const { setActiveResourceType } = useUI();
 
   useEffect(() => {
@@ -30,6 +32,8 @@ const ResourcePage: React.FC = () => {
   }
 
   const data = (collectedData[type] || []) as Record<string, unknown>[];
+  const importMethod = dataSource === 'imported' ? getImportMethod(importFilename) : null;
+  const importWarning = getImportWarning(importMethod, type);
 
   return (
     <main style={{ padding: '1.5rem', width: '100%' }}>
@@ -41,6 +45,16 @@ const ResourcePage: React.FC = () => {
           {resourceType.category} &middot; {data.length.toLocaleString()} items
         </p>
       </div>
+      {importWarning && (
+        <InlineNotification
+          kind="info"
+          title="Import data note"
+          subtitle={importWarning}
+          lowContrast
+          hideCloseButton
+          style={{ marginBottom: '1rem', maxWidth: 'none' }}
+        />
+      )}
       <AppDataTable
         resourceKey={type}
         columns={resourceType.columns}
