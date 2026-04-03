@@ -394,11 +394,11 @@ function transformVlan(raw: RawItem): RawItem {
     vlanNumber: raw.vlanNumber,
     name: raw.name,
     networkSpace: raw.networkSpace,
-    primaryRouter: nested(raw, 'primaryRouter', 'hostname'),
-    datacenter: nested(raw, 'primaryRouter', 'datacenter', 'name'),
+    primaryRouter: nested(raw, 'primaryRouter', 'hostname') ?? raw.primaryRouter,
+    datacenter: nested(raw, 'primaryRouter', 'datacenter', 'name') ?? raw.datacenter,
     virtualGuestCount: raw.virtualGuestCount,
     hardwareCount: raw.hardwareCount,
-    gateway: nested(raw, 'networkGateway', 'name'),
+    gateway: nested(raw, 'networkGateway', 'name') ?? raw.gateway,
   };
 }
 
