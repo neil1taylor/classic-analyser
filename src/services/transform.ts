@@ -513,7 +513,7 @@ function flattenReplicationPartners(raw: RawItem): string {
 function transformBlockStorage(raw: RawItem): RawItem {
   return {
     id: raw.id,
-    username: raw.username,
+    username: raw.username ?? raw.hostname,
     capacityGb: raw.capacityGb,
     iops: raw.iops,
     storageType: nested(raw, 'storageType', 'keyName') ?? raw.storageType,
@@ -529,17 +529,21 @@ function transformBlockStorage(raw: RawItem): RawItem {
     allowedSubnets: flattenAllowedSubnets(raw, 'allowedSubnets'),
     replicationPartners: flattenReplicationPartners(raw),
     encrypted: raw.hasEncryptionAtRest ?? '',
-    datacenter: nested(raw, 'serviceResource', 'datacenter', 'name') ?? '',
+    datacenter: nested(raw, 'serviceResource', 'datacenter', 'name') ?? raw.datacenter ?? '',
     snapshotSizeBytes: nested(raw, 'parentVolume', 'snapshotSizeBytes') ?? '',
     snapshotCount: Array.isArray(raw.snapshots) ? (raw.snapshots as unknown[]).length : '',
     replicationStatus: raw.replicationStatus ?? '',
+    percentUsed: raw.percentUsed,
+    totalBytesUsed: raw.totalBytesUsed,
+    nasType: raw.nasType,
+    connectedHosts: raw.connectedHosts,
   };
 }
 
 function transformFileStorage(raw: RawItem): RawItem {
   return {
     id: raw.id,
-    username: raw.username,
+    username: raw.username ?? raw.hostname,
     capacityGb: raw.capacityGb,
     iops: raw.iops,
     storageType: nested(raw, 'storageType', 'keyName') ?? raw.storageType,
@@ -554,12 +558,15 @@ function transformFileStorage(raw: RawItem): RawItem {
     allowedHardware: flattenAllowedHosts(raw, 'allowedHardware'),
     allowedSubnets: flattenAllowedSubnets(raw, 'allowedSubnets'),
     replicationPartners: flattenReplicationPartners(raw),
-    bytesUsed: raw.bytesUsed ?? '',
+    bytesUsed: raw.bytesUsed ?? raw.totalBytesUsed ?? '',
     encrypted: raw.hasEncryptionAtRest ?? '',
-    datacenter: nested(raw, 'serviceResource', 'datacenter', 'name') ?? '',
+    datacenter: nested(raw, 'serviceResource', 'datacenter', 'name') ?? raw.datacenter ?? '',
     snapshotSizeBytes: nested(raw, 'parentVolume', 'snapshotSizeBytes') ?? '',
     snapshotCount: Array.isArray(raw.snapshots) ? (raw.snapshots as unknown[]).length : '',
     replicationStatus: raw.replicationStatus ?? '',
+    percentUsed: raw.percentUsed,
+    nasType: raw.nasType,
+    connectedHosts: raw.connectedHosts,
   };
 }
 

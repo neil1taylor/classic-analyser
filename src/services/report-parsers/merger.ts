@@ -32,7 +32,13 @@ function createMergedResourceMap(): MergedResourceMap {
 
   return {
     upsert(item: Record<string, unknown>) {
-      const id = item.id as string | number | undefined;
+      // Normalize id to string for consistent Map key comparison
+      // (CSV parser produces numbers, XLSX parser produces strings)
+      const rawId = item.id;
+      const id = (rawId !== undefined && rawId !== null && rawId !== '')
+        ? String(rawId)
+        : undefined;
+      if (id !== undefined) item.id = id;
       const hostname = (item.hostname as string) || '';
 
       // Try to find an existing entry to merge into

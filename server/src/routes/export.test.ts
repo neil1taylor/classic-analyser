@@ -1,14 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 const mockGenerateExcelExport = vi.fn();
-const mockApiKeyMiddleware = vi.fn((_req: unknown, _res: unknown, next: () => void) => next());
 
 vi.mock('../services/export.js', () => ({
   generateExcelExport: (...args: unknown[]) => mockGenerateExcelExport(...(args as [unknown, unknown])),
-}));
-
-vi.mock('../middleware/apiKey.js', () => ({
-  apiKeyMiddleware: (...args: unknown[]) => mockApiKeyMiddleware(...(args as [unknown, unknown, () => void])),
 }));
 
 // Import once after mocks are set up

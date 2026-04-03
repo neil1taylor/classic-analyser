@@ -187,8 +187,20 @@ export async function parseAssessmentXlsx(file: File): Promise<ReportParserResul
       'PaaS Target (Yes/No)': 'paasTarget',
     };
     const items = parseWorksheet(storageSheet, fieldMap);
-    if (items.length > 0) data.fileStorage = items;
-    log.info(`Assessment: ${items.length} storage volumes`);
+    // Split by nasType: ISCSI/NAS_CONTAINER → blockStorage, NAS → fileStorage
+    const fileItems: Record<string, unknown>[] = [];
+    const blockItems: Record<string, unknown>[] = [];
+    for (const item of items) {
+      const nasType = String(item.nasType ?? '').toUpperCase();
+      if (nasType === 'ISCSI' || nasType === 'NAS_CONTAINER') {
+        blockItems.push(item);
+      } else {
+        fileItems.push(item);
+      }
+    }
+    if (fileItems.length > 0) data.fileStorage = fileItems;
+    if (blockItems.length > 0) data.blockStorage = blockItems;
+    log.info(`Assessment: ${fileItems.length} file storage + ${blockItems.length} block storage volumes`);
   }
 
   return { data, accountInfo };
@@ -429,8 +441,20 @@ export async function parseConsolidatedXlsx(file: File): Promise<ReportParserRes
       'notes': 'notes',
     };
     const items = parseWorksheetFromHeader(nasSheet, 'ID', fieldMap);
-    if (items.length > 0) data.fileStorage = items;
-    log.info(`Consolidated: ${items.length} NAS/file storage items`);
+    // Split by nasType: ISCSI/NAS_CONTAINER → blockStorage, NAS → fileStorage
+    const fileItems: Record<string, unknown>[] = [];
+    const blockItems: Record<string, unknown>[] = [];
+    for (const item of items) {
+      const nasType = String(item.nasType ?? '').toUpperCase();
+      if (nasType === 'ISCSI' || nasType === 'NAS_CONTAINER') {
+        blockItems.push(item);
+      } else {
+        fileItems.push(item);
+      }
+    }
+    if (fileItems.length > 0) data.fileStorage = fileItems;
+    if (blockItems.length > 0) data.blockStorage = blockItems;
+    log.info(`Consolidated: ${fileItems.length} file storage + ${blockItems.length} block storage items`);
   }
 
   // Gateways sheet — Direct Link 2 Tenants

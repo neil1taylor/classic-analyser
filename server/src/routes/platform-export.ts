@@ -1,12 +1,11 @@
 import { Router } from 'express';
 import type { Request, Response } from 'express';
-import { apiKeyMiddleware } from '../middleware/apiKey.js';
 import { generatePlatformExcelExport } from '../services/platform/export.js';
 import logger from '../utils/logger.js';
 
 const router = Router();
 
-router.post('/', apiKeyMiddleware, async (req: Request, res: Response): Promise<void> => {
+router.post('/', async (req: Request, res: Response): Promise<void> => {
   try {
     const { data, accountName } = req.body as { data: Record<string, unknown[]>; accountName?: string };
 

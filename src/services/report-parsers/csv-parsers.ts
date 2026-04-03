@@ -142,8 +142,24 @@ export function parseNasCsv(text: string): ReportParserResult {
     notes: typeof item.notes === 'string' ? decodeURIComponent(item.notes) : item.notes,
   }));
 
-  log.info(`Parsed ${items.length} NAS/File Storage items`);
-  return { data: { fileStorage: items } };
+  // Split by nasType: ISCSI/NAS_CONTAINER → blockStorage, NAS → fileStorage
+  const fileStorage: Record<string, unknown>[] = [];
+  const blockStorage: Record<string, unknown>[] = [];
+  for (const item of items) {
+    const nasType = String(item.nasType ?? '').toUpperCase();
+    if (nasType === 'ISCSI' || nasType === 'NAS_CONTAINER') {
+      blockStorage.push(item);
+    } else {
+      fileStorage.push(item);
+    }
+  }
+
+  const data: Record<string, unknown[]> = {};
+  if (fileStorage.length > 0) data.fileStorage = fileStorage;
+  if (blockStorage.length > 0) data.blockStorage = blockStorage;
+
+  log.info(`Parsed ${fileStorage.length} file storage + ${blockStorage.length} block storage items from NAS CSV`);
+  return { data };
 }
 
 /**

@@ -554,6 +554,8 @@ export async function generateExcelExport(
     { header: 'Snapshot Count', key: 'snapshotCount', width: 14 },
     { header: 'Replication Status', key: 'replicationStatus', width: 16 },
     { header: 'Allowed Subnets', key: 'allowedSubnets', width: 30 },
+    { header: 'Used %', key: 'percentUsed', width: 10 },
+    { header: 'Connected Hosts', key: 'connectedHosts', width: 30 },
   ];
   addHeaderStyle(wsBS);
 
@@ -581,6 +583,8 @@ export async function generateExcelExport(
       snapshotCount: Array.isArray((vol as Record<string, unknown>).snapshots) ? ((vol as Record<string, unknown>).snapshots as unknown[]).length : (r.snapshotCount ?? ''),
       replicationStatus: r.replicationStatus ?? '',
       allowedSubnets: r.allowedSubnets ?? '',
+      percentUsed: r.percentUsed ?? '',
+      connectedHosts: r.connectedHosts ?? '',
     });
   }
   autoWidth(wsBS);
@@ -610,6 +614,8 @@ export async function generateExcelExport(
     { header: 'Snapshot Count', key: 'snapshotCount', width: 14 },
     { header: 'Replication Status', key: 'replicationStatus', width: 16 },
     { header: 'Allowed Subnets', key: 'allowedSubnets', width: 30 },
+    { header: 'Used %', key: 'percentUsed', width: 10 },
+    { header: 'Connected Hosts', key: 'connectedHosts', width: 30 },
   ];
   addHeaderStyle(wsFS);
 
@@ -638,6 +644,8 @@ export async function generateExcelExport(
       snapshotCount: Array.isArray((vol as Record<string, unknown>).snapshots) ? ((vol as Record<string, unknown>).snapshots as unknown[]).length : (r.snapshotCount ?? ''),
       replicationStatus: r.replicationStatus ?? '',
       allowedSubnets: r.allowedSubnets ?? '',
+      percentUsed: r.percentUsed ?? '',
+      connectedHosts: r.connectedHosts ?? '',
     });
   }
   autoWidth(wsFS);
