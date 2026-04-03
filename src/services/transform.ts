@@ -423,13 +423,18 @@ function transformGateway(raw: RawItem): RawItem {
   const insideVlans = raw.insideVlans as RawItem[] | undefined;
   return {
     id: raw.id,
-    name: raw.name,
-    networkSpace: raw.networkSpace,
+    name: raw.name ?? raw.hostname,
+    networkSpace: raw.networkSpace ?? raw.domain,
     status: nested(raw, 'status', 'name') ?? raw.status,
-    publicIp: nested(raw, 'publicIpAddress', 'ipAddress') ?? raw.publicIpAddress,
-    privateIp: nested(raw, 'privateIpAddress', 'ipAddress') ?? raw.privateIpAddress,
+    publicIp: nested(raw, 'publicIpAddress', 'ipAddress') ?? raw.publicIpAddress ?? raw.PublicIP,
+    privateIp: nested(raw, 'privateIpAddress', 'ipAddress') ?? raw.privateIpAddress ?? raw.PrivateIP,
+    datacenter: nested(raw, 'datacenter', 'name') ?? raw.datacenter,
     memberCount: members?.length ?? 0,
     insideVlanCount: insideVlans?.length ?? 0,
+    // Assessment-sourced fields
+    deviceType: raw.deviceType,
+    cores: raw.cores,
+    memoryGb: raw.memoryGb,
   };
 }
 

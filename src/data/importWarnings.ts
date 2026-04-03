@@ -14,10 +14,11 @@ const importWarnings: Record<string, Record<string, string>> = {
     bareMetal:
       'IMS reports provide limited bare metal data — disk utilization and detailed hardware component information are not available.',
     vlans:
-      'IMS reports provide basic VLAN data only — subnet details and associated resource counts are not available.',
+      'IMS reports provide basic VLAN data only — associated resource counts are not available.',
     gateways:
-      'IMS reports provide basic gateway data only — member details, inside VLANs, and status are not available.',
-    subnets: 'Subnet data is not available from IMS report imports.',
+      'IMS reports provide basic gateway data only — status is not available.',
+    subnets:
+      'Subnet data from IMS reports is limited to network/CIDR extracted from VLAN definitions — gateway, broadcast, and IP count details are not available.',
     blockStorage:
       'IMS reports provide basic block storage data only — snapshot details and allowed hardware associations are not available.',
     fileStorage:

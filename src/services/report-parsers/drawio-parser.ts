@@ -82,6 +82,9 @@ export function parseDrawio(text: string): ReportParserResult {
   // Post-process: enrich gateways with member and inside VLAN counts from edges
   enrichGatewaysFromEdges(data, topology);
 
+  // Post-process: set primaryRouter on VLANs from router→vlan edges
+  enrichVlansWithRouter(data, topology);
+
   // Log summary
   for (const [key, items] of Object.entries(data)) {
     log.info(`Parsed ${items.length} ${key} from drawio`);
@@ -199,6 +202,7 @@ function extractUserObjectAttributes(
     }
 
     case 'gateway':
+      attrs.hostname = attrs.name;
       attrs.publicIpAddress = attrs.PublicIP;
       attrs.privateIpAddress = attrs.PrivateIP;
       attrs.publicIPv6Address = attrs.PublicIPv6Address;
@@ -311,6 +315,51 @@ function enrichGatewaysFromEdges(
     // Set as raw fields that the transform expects
     gw.members = Array(members).fill({});
     gw.insideVlans = Array(vlans).fill({});
+  }
+}
+
+/**
+ * Enrich VLAN resources with primaryRouter from router→vlan topology edges.
+ */
+function enrichVlansWithRouter(
+  data: Record<string, unknown[]>,
+  topology: ReportTopologyEdge[]
+): void {
+  const vlans = data.vlans as Record<string, unknown>[] | undefined;
+  const routers = data.routers as Record<string, unknown>[] | undefined;
+  if (!vlans || vlans.length === 0 || !routers || routers.length === 0) return;
+
+  // Build router lookup by id
+  const routerById = new Map<string, Record<string, unknown>>();
+  for (const r of routers) {
+    routerById.set(String(r.id), r);
+  }
+
+  // Build vlan→router mapping from edges
+  const vlanRouter = new Map<string, string>();
+  for (const edge of topology) {
+    const sourceId = extractSlId(edge.source);
+    const targetId = extractSlId(edge.target);
+    const sourceType = edge.sourceType;
+    const targetType = edge.targetType;
+
+    if (sourceType === 'router' && targetType === 'vlan' && sourceId && targetId) {
+      vlanRouter.set(targetId, sourceId);
+    }
+    if (targetType === 'router' && sourceType === 'vlan' && targetId && sourceId) {
+      vlanRouter.set(sourceId, targetId);
+    }
+  }
+
+  // Apply router hostname to VLANs
+  for (const vlan of vlans) {
+    const routerId = vlanRouter.get(String(vlan.id));
+    if (routerId) {
+      const router = routerById.get(routerId);
+      if (router) {
+        vlan.primaryRouter = router.name || router.primaryName;
+      }
+    }
   }
 }
 

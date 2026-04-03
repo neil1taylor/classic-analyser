@@ -52,7 +52,13 @@ function parseWorksheet(
       }
     });
 
-    if (hasValue) rows.push(obj);
+    if (!hasValue) return;
+
+    // Skip summary/total rows (e.g. "SUBTOTAL", "COST", "TOTAL" in first column)
+    const firstVal = String(row.getCell(1).value ?? '').trim().toUpperCase();
+    if (['SUBTOTAL', 'COST', 'TOTAL', 'GRAND TOTAL'].includes(firstVal)) return;
+
+    rows.push(obj);
   });
 
   return rows;

@@ -60,7 +60,7 @@ export function csvRowsToObjects(
 
   for (let i = 1; i < rows.length; i++) {
     const row = rows[i];
-    if (row.length === 0 || (row.length === 1 && !row[0])) continue;
+    if (row.length === 0 || row.every(cell => !cell.trim())) continue;
 
     const obj: Record<string, unknown> = {};
     for (let j = 0; j < headers.length && j < row.length; j++) {
