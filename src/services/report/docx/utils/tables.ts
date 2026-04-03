@@ -9,7 +9,7 @@ import {
   ShadingType,
   AlignmentType,
 } from 'docx';
-import { GRAY, WHITE, DARK, FONT_FAMILY } from './styles';
+import { WHITE, DARK, FONT_FAMILY } from './styles';
 
 const TABLE_HEADER_BG = '525252';   // Dark gray — matches vcf_migration
 const CELL_MARGINS = { top: 100, bottom: 100, left: 140, right: 140 };

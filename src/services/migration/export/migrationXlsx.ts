@@ -1,5 +1,5 @@
 import ExcelJS from 'exceljs';
-import type { MigrationAnalysisOutput, VSIMigration, BareMetalMigration, CheckResult } from '@/types/migration';
+import type { MigrationAnalysisOutput, CheckResult } from '@/types/migration';
 import {
   addHeaderStyle, autoWidth, freezeHeaderRow, addAutoFilter,
   applyCurrencyFormat, applyFillByValue,
@@ -333,14 +333,6 @@ function addCostComparison(wb: ExcelJS.Workbook, a: MigrationAnalysisOutput): vo
 
   const dataEndRow = dataStartRow + instances.length - 1;
   const summaryStart = dataEndRow + 3;
-
-  // Summary section
-  const summaryRows: Array<[string, string, string]> = [
-    ['Category', 'Classic Monthly ($)', 'VPC Monthly ($)'],
-    ['Compute', String(a.costAnalysis.costByCategory.compute.classic), String(a.costAnalysis.costByCategory.compute.vpc)],
-    ['Storage', String(a.costAnalysis.costByCategory.storage.classic), String(a.costAnalysis.costByCategory.storage.vpc)],
-    ['Network', String(a.costAnalysis.costByCategory.network.classic), String(a.costAnalysis.costByCategory.network.vpc)],
-  ];
 
   // Summary header
   const sumHeaderRow = ws.getRow(summaryStart);

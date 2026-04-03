@@ -96,7 +96,6 @@ const Y_COMPUTE = 520;
 const Y_PRIV_VLAN = 680;
 const Y_PRIV_GATEWAY = 800;
 const Y_BCR = 920;
-const Y_STORAGE = 1060;
 const Y_PRIVATE_NETWORK = 1200;
 const Y_SERVICES_AND_TGW = 1360;
 const Y_TGW_CONNECTIONS = 1500;

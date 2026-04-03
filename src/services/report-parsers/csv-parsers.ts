@@ -136,7 +136,7 @@ export function parseNasCsv(text: string): ReportParserResult {
     'notes': 'notes',
   };
 
-  const items = csvRowsToObjects(rows, fieldMap).map(item => ({
+  const items: Record<string, unknown>[] = csvRowsToObjects(rows, fieldMap).map(item => ({
     ...item,
     // Decode URL-encoded notes
     notes: typeof item.notes === 'string' ? decodeURIComponent(item.notes) : item.notes,
