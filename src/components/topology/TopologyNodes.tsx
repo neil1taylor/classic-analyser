@@ -259,6 +259,45 @@ export const StorageNode = memo(({ data }: NodeProps) => {
 });
 StorageNode.displayName = 'StorageNode';
 
+// Storage Group Node — one per datacenter, click to expand detail list
+export const StorageGroupNode = memo(({ data }: NodeProps) => {
+  const d = data as unknown as TopologyNodeData;
+  const [expanded, setExpanded] = useState(false);
+  const toggle = useCallback(() => setExpanded((prev) => !prev), []);
+  const details = d.storageDetails ?? [];
+  const breakdown = d.storageBreakdown;
+  return (
+    <div
+      style={{ ...nodeBase, borderColor: '#0f62fe', borderStyle: 'dotted', cursor: 'pointer', minWidth: 160 }}
+      onClick={toggle}
+    >
+      <Handle type="target" position={Position.Top} style={{ background: '#0f62fe' }} />
+      <div style={{ fontWeight: 600, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
+        <span>&#9670; {d.storageCount} Volumes</span>
+        {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+      </div>
+      <div style={{ color: 'var(--cds-text-secondary)', marginBottom: 2 }}>
+        {d.totalCapacityGb?.toLocaleString()} GB total
+      </div>
+      {breakdown && (
+        <div style={{ color: 'var(--cds-text-secondary)', fontSize: '0.75rem' }}>
+          {breakdown.block} block &middot; {breakdown.file} file
+        </div>
+      )}
+      {expanded && details.length > 0 && (
+        <div style={{ marginTop: 8, maxHeight: 200, overflowY: 'auto', borderTop: '1px solid var(--cds-border-subtle)', paddingTop: 4 }}>
+          {details.map((item, i) => (
+            <div key={i} style={{ fontSize: '0.75rem', padding: '2px 0', color: 'var(--cds-text-secondary)' }}>
+              {item.label} &middot; {item.capacityGb} GB &middot; {item.storageType}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+});
+StorageGroupNode.displayName = 'StorageGroupNode';
+
 // Private Network Node — bottom anchor for subnet topology
 export const PrivateNetworkNode = memo(({ data }: NodeProps) => {
   const d = data as unknown as TopologyNodeData;
@@ -770,6 +809,7 @@ export const allClassicNodeTypes: NodeTypes = {
   vsiNode: VSINode as any,
   bareMetalNode: BareMetalNode as any,
   storageNode: StorageNode as any,
+  storageGroupNode: StorageGroupNode as any,
   cloudServicesNode: CloudServicesNode as any,
   // Subnet view
   subnetDetailNode: SubnetDetailNode as any,

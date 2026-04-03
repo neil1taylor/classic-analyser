@@ -16,7 +16,7 @@ function num(item: unknown, key: string): number {
 
 export interface TopologyNodeData {
   label: string;
-  nodeType: 'vsi' | 'bareMetal' | 'storage' | 'gateway' | 'vlan' | 'firewall' | 'internet' | 'router' | 'subnet' | 'privateNetworkBus' | 'cloudServices' | 'transitGateway' | 'tgwConnection' | 'directLink' | 'vpnGateway';
+  nodeType: 'vsi' | 'bareMetal' | 'storage' | 'storageGroup' | 'gateway' | 'vlan' | 'firewall' | 'internet' | 'router' | 'subnet' | 'privateNetworkBus' | 'cloudServices' | 'transitGateway' | 'tgwConnection' | 'directLink' | 'vpnGateway';
   // Common
   id?: number;
   ip?: string;
@@ -65,6 +65,11 @@ export interface TopologyNodeData {
   vpnMode?: string;
   vpcName?: string;
   vpcRegion?: string;
+  // Storage Group
+  storageCount?: number;
+  totalCapacityGb?: number;
+  storageBreakdown?: { block: number; file: number };
+  storageDetails?: Array<{ label: string; capacityGb: number; storageType: string }>;
   [key: string]: unknown;
 }
 
@@ -512,33 +517,47 @@ export function useTopologyData(
       linkComputeToVlans(id, bm);
     });
 
-    // Storage
+    // Storage — group by datacenter into summary nodes
     const allStorage = [
       ...filtBlock.map((s) => ({ ...s, _kind: 'block' })),
       ...filtFile.map((s) => ({ ...s, _kind: 'file' })),
     ];
-    allStorage.forEach((stor, i) => {
-      const id = `stor-${str(stor, '_kind')}-${num(stor, 'id')}`;
+    const storageByDc = new Map<string, typeof allStorage>();
+    allStorage.forEach((stor) => {
+      const dc = str(stor, 'datacenter') || 'Unknown';
+      if (!storageByDc.has(dc)) storageByDc.set(dc, []);
+      storageByDc.get(dc)!.push(stor);
+    });
+    let dcIdx = 0;
+    storageByDc.forEach((volumes, dc) => {
+      const id = `stor-group-${dc}`;
+      const blockCount = volumes.filter((v) => str(v, '_kind') === 'block').length;
+      const fileCount = volumes.filter((v) => str(v, '_kind') === 'file').length;
+      const totalCap = volumes.reduce((sum, v) => sum + num(v, 'capacityGb'), 0);
       nodes.push({
         id,
-        type: 'storageNode',
-        position: { x: 100 + i * 180, y: Y_STORAGE },
+        type: 'storageGroupNode',
+        position: { x: 100 + dcIdx * 250, y: Y_STORAGE },
         data: {
-          label: str(stor, 'username') || `Storage ${num(stor, 'id')}`,
-          nodeType: 'storage',
-          id: num(stor, 'id'),
-          capacityGb: num(stor, 'capacityGb'),
-          storageType: str(stor, 'storageType') || str(stor, '_kind'),
-          datacenter: str(stor, 'datacenter'),
+          label: `Storage (${dc})`,
+          nodeType: 'storageGroup',
+          datacenter: dc,
+          storageCount: volumes.length,
+          totalCapacityGb: totalCap,
+          storageBreakdown: { block: blockCount, file: fileCount },
+          storageDetails: volumes.map((v) => ({
+            label: str(v, 'username') || `Storage ${num(v, 'id')}`,
+            capacityGb: num(v, 'capacityGb'),
+            storageType: str(v, 'storageType') || str(v, '_kind'),
+          })),
         },
       });
-      // Connect to compute nodes in the same DC
+      // Connect to first compute node in same DC
       const computeInDC = [
-        ...filtVsis.filter((v) => str(v, 'datacenter') === str(stor, 'datacenter')),
-        ...filtBms.filter((b) => str(b, 'datacenter') === str(stor, 'datacenter')),
+        ...filtVsis.filter((v) => str(v, 'datacenter') === dc),
+        ...filtBms.filter((b) => str(b, 'datacenter') === dc),
       ];
       if (computeInDC.length > 0) {
-        // Connect to first compute node to avoid too many edges
         const first = computeInDC[0];
         const isVsi = 'maxCpu' in first;
         const targetId = isVsi ? `vsi-${num(first, 'id')}` : `bm-${num(first, 'id')}`;
@@ -550,6 +569,7 @@ export function useTopologyData(
           style: { stroke: '#0f62fe', strokeWidth: 1, strokeDasharray: '4,4' },
         });
       }
+      dcIdx++;
     });
 
     // ── Private Network Backbone, Transit Gateways, Direct Links ──────
@@ -817,6 +837,7 @@ export function useTopologyData(
       gateway: 'gateways',
       firewall: 'firewalls',
       storage: 'storage',
+      storageGroup: 'storage',
       subnet: 'subnets',
       transitGateway: 'transitGateways',
       tgwConnection: 'transitGateways',
