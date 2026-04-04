@@ -44,14 +44,15 @@ export function parseGatewayCsv(text: string): ReportParserResult {
 
   for (const line of lines) {
     // Section titles are lines that don't contain commas (or very few)
-    // and match known section names
+    // and match known section names. Strip trailing commas for matching.
+    const stripped = line.replace(/,+$/, '').trim();
     if (
-      line === 'Direct Link 2 Tenants' ||
-      line === 'Transit Gateways' ||
-      line === 'Transit Gateway Connections'
+      stripped === 'Direct Link 2 Tenants' ||
+      stripped === 'Transit Gateways' ||
+      stripped === 'Transit Gateway Connections'
     ) {
       if (currentSection) sections.push(currentSection);
-      currentSection = { title: line, lines: [] };
+      currentSection = { title: stripped, lines: [] };
     } else if (currentSection) {
       currentSection.lines.push(line);
     }

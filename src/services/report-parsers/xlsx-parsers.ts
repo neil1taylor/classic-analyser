@@ -223,8 +223,9 @@ export async function parseDeviceInventoryXlsx(file: File): Promise<ReportParser
 
   const data: Record<string, unknown[]> = {};
 
-  // Bare Metal Servers sheet
-  const bmSheet = workbook.getWorksheet('Bare Metal Servers');
+  // Bare Metal Servers sheet (alternate name: "Device Inventory (Bare Metal)")
+  const bmSheet = workbook.getWorksheet('Bare Metal Servers')
+    ?? workbook.getWorksheet('Device Inventory (Bare Metal)');
   if (bmSheet) {
     const fieldMap: Record<string, string> = {
       'ID': 'id',
@@ -263,8 +264,9 @@ export async function parseDeviceInventoryXlsx(file: File): Promise<ReportParser
     log.info(`Device inventory: ${items.length} bare metals`);
   }
 
-  // Virtual Guests sheet
-  const vsiSheet = workbook.getWorksheet('Virtual Guests');
+  // Virtual Guests sheet (alternate name: "Device Inventory (Virtual)")
+  const vsiSheet = workbook.getWorksheet('Virtual Guests')
+    ?? workbook.getWorksheet('Device Inventory (Virtual)');
   if (vsiSheet) {
     const fieldMap: Record<string, string> = {
       'ID': 'id',
