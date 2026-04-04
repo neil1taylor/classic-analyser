@@ -60,7 +60,10 @@ npm ci
 npm run dev
 
 # Run tests
-npm test
+npm test                    # All unit + integration tests
+npm run test:integration    # Parser/merger tests with real data
+npm run test:roundtrip      # Export roundtrip validation
+npm run test:e2e            # Playwright browser tests
 
 # Production build
 npm run build

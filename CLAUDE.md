@@ -131,7 +131,10 @@ npm ci                  # Install dependencies
 npm run dev             # Development server
 npm run build           # Production build (frontend + backend)
 npm start               # Production server
-npm test                # Run tests
+npm test                # Run all unit + integration tests
+npm run test:integration # Parser/merger integration tests (alt_input/ data)
+npm run test:roundtrip  # Export roundtrip test
+npm run test:e2e        # Playwright E2E tests (builds + browser)
 npm run lint            # Lint
 ```
 
