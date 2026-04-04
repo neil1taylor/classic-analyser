@@ -11,7 +11,7 @@ import logger from '../../utils/logger.js';
 
 export async function getVirtualGuests(client: SoftLayerClient): Promise<SLVirtualGuest[]> {
   const objectMask =
-    'mask[id,hostname,domain,fullyQualifiedDomainName,primaryIpAddress,primaryBackendIpAddress,maxCpu,maxMemory,startCpus,status,powerState,datacenter,operatingSystem[softwareDescription],hourlyBillingFlag,createDate,modifyDate,billingItem[recurringFee,hourlyRecurringFee,children[categoryCode,hourlyRecurringFee],orderItem],networkVlans[id,vlanNumber,name,networkSpace],blockDevices[bootableFlag,device,diskImage[capacity,units,localDiskFlag,description]],allowedNetworkStorage[id,nasType,capacityGb,username],tagReferences[tag],notes,dedicatedAccountHostOnlyFlag,placementGroupId,privateNetworkOnlyFlag,localDiskFlag]';
+    'mask[id,hostname,domain,fullyQualifiedDomainName,primaryIpAddress,primaryBackendIpAddress,maxCpu,maxMemory,startCpus,status,powerState,datacenter,operatingSystem[softwareDescription],hourlyBillingFlag,createDate,modifyDate,billingItem[recurringFee,hourlyRecurringFee,children[categoryCode,hourlyRecurringFee],orderItem],networkVlans[id,vlanNumber,name,networkSpace],primaryNetworkComponent[primarySubnet[networkIdentifier,cidr,gateway,id]],backendNetworkComponent[primarySubnet[networkIdentifier,cidr,gateway,id]],blockDevices[bootableFlag,device,diskImage[capacity,units,localDiskFlag,description]],allowedNetworkStorage[id,nasType,capacityGb,username],tagReferences[tag],notes,dedicatedAccountHostOnlyFlag,placementGroupId,privateNetworkOnlyFlag,localDiskFlag]';
 
   try {
     const result = await client.requestAllPages<SLVirtualGuest>({
@@ -33,7 +33,7 @@ export async function getVirtualGuests(client: SoftLayerClient): Promise<SLVirtu
 
 export async function getHardware(client: SoftLayerClient): Promise<SLHardware[]> {
   const objectMask =
-    'mask[id,hostname,domain,fullyQualifiedDomainName,manufacturerSerialNumber,primaryIpAddress,primaryBackendIpAddress,processorPhysicalCoreAmount,memoryCapacity,hardDrives[capacity,hardwareComponentModel[hardwareGenericComponentModel[hardwareComponentType]]],datacenter,operatingSystem[softwareDescription],networkComponents[primaryIpAddress,port,speed,status,macAddress],billingItem[recurringFee],provisionDate,powerSupplyCount,networkGatewayMemberFlag,networkVlans,tagReferences,notes,allowedNetworkStorage[id,nasType,capacityGb,username]]';
+    'mask[id,hostname,domain,fullyQualifiedDomainName,manufacturerSerialNumber,primaryIpAddress,primaryBackendIpAddress,processorPhysicalCoreAmount,memoryCapacity,hardDrives[capacity,hardwareComponentModel[hardwareGenericComponentModel[hardwareComponentType]]],datacenter,operatingSystem[softwareDescription],networkComponents[primaryIpAddress,port,speed,status,macAddress],billingItem[recurringFee],provisionDate,powerSupplyCount,networkGatewayMemberFlag,networkVlans[id,vlanNumber,name,networkSpace],primaryNetworkComponent[primarySubnet[networkIdentifier,cidr,gateway,id]],backendNetworkComponent[primarySubnet[networkIdentifier,cidr,gateway,id]],tagReferences,notes,allowedNetworkStorage[id,nasType,capacityGb,username]]';
 
   try {
     const result = await client.requestAllPages<SLHardware>({

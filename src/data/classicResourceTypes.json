@@ -181,6 +181,34 @@
         "sortable": false
       },
       {
+        "field": "publicVlan",
+        "header": "Public VLAN",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "privateVlan",
+        "header": "Private VLAN",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "primarySubnet",
+        "header": "Primary Subnet",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "backendSubnet",
+        "header": "Backend Subnet",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
         "field": "blockDeviceDetails",
         "header": "Block Devices",
         "dataType": "string",
@@ -460,6 +488,34 @@
         "dataType": "string",
         "defaultVisible": false,
         "sortable": false
+      },
+      {
+        "field": "publicVlan",
+        "header": "Public VLAN",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "privateVlan",
+        "header": "Private VLAN",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "primarySubnet",
+        "header": "Primary Subnet",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
+        "field": "backendSubnet",
+        "header": "Backend Subnet",
+        "dataType": "string",
+        "defaultVisible": false,
+        "sortable": true
       },
       {
         "field": "tags",

@@ -81,6 +81,24 @@ function flattenTags(raw: RawItem): string {
     .join(', ');
 }
 
+function formatSubnet(raw: RawItem, component: string): string {
+  const subnet = nested(raw, component, 'primarySubnet') as RawItem | undefined;
+  if (!subnet) return '';
+  const netId = safeStr(subnet.networkIdentifier);
+  const cidr = safeStr(subnet.cidr);
+  if (!netId) return '';
+  return cidr ? `${netId}/${cidr}` : netId;
+}
+
+function extractVlanBySpace(raw: RawItem, space: string): string {
+  const vlans = raw.networkVlans as RawItem[] | undefined;
+  if (vlans && Array.isArray(vlans)) {
+    const match = vlans.find((v) => safeStr(v.networkSpace) === space);
+    if (match) return safeStr(match.vlanNumber);
+  }
+  return '';
+}
+
 function flattenNetworkVlans(raw: RawItem): string {
   const vlans = raw.networkVlans as RawItem[] | undefined;
   if (vlans && Array.isArray(vlans) && vlans.length > 0) {
@@ -225,6 +243,10 @@ function transformVirtualServer(raw: RawItem): RawItem {
     tags: flattenTags(raw),
     diskGb: diskGb || '',
     networkVlans: flattenNetworkVlans(raw),
+    publicVlan: extractVlanBySpace(raw, 'PUBLIC') || safeStr(raw.publicVlan),
+    privateVlan: extractVlanBySpace(raw, 'PRIVATE') || safeStr(raw.privateVlan),
+    primarySubnet: formatSubnet(raw, 'primaryNetworkComponent'),
+    backendSubnet: formatSubnet(raw, 'backendNetworkComponent'),
     localStorageGb: localStorageGb || '',
     portableStorageGb: portableStorageGb || '',
     portableStorageDetails,
@@ -335,6 +357,10 @@ function transformBareMetal(raw: RawItem): RawItem {
     hardDrives,
     networkComponents,
     networkVlans: flattenNetworkVlans(raw),
+    publicVlan: extractVlanBySpace(raw, 'PUBLIC') || safeStr(raw.publicVlan),
+    privateVlan: extractVlanBySpace(raw, 'PRIVATE') || safeStr(raw.privateVlan),
+    primarySubnet: formatSubnet(raw, 'primaryNetworkComponent'),
+    backendSubnet: formatSubnet(raw, 'backendNetworkComponent'),
     tags: flattenTags(raw),
     nicDetails: nics
       ? nics
