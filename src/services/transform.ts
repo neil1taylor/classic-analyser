@@ -7,6 +7,8 @@
  * use simplified field names (e.g. primaryIp, fqdn, datacenter).
  */
 
+import { computeSubnetFields } from '../utils/ip';
+
 // Maps SSE resourceKey → frontend RESOURCE_TYPES key
 const RESOURCE_KEY_MAP: Record<string, string> = {
   virtualGuests: 'virtualServers',
@@ -435,15 +437,19 @@ function transformVlan(raw: RawItem): RawItem {
 }
 
 function transformSubnet(raw: RawItem): RawItem {
+  const computed =
+    !raw.gateway && raw.networkIdentifier && raw.cidr
+      ? computeSubnetFields(raw.networkIdentifier as string, raw.cidr as number)
+      : null;
   return {
     id: raw.id,
     networkIdentifier: raw.networkIdentifier,
     cidr: raw.cidr,
     subnetType: raw.subnetType,
-    gateway: raw.gateway,
-    broadcastAddress: raw.broadcastAddress,
-    usableIpAddressCount: raw.usableIpAddressCount,
-    totalIpAddresses: raw.totalIpAddresses,
+    gateway: raw.gateway ?? computed?.gateway,
+    broadcastAddress: raw.broadcastAddress ?? computed?.broadcastAddress,
+    usableIpAddressCount: raw.usableIpAddressCount ?? computed?.usableIpAddressCount,
+    totalIpAddresses: raw.totalIpAddresses ?? computed?.totalIpAddresses,
     vlanNumber: nested(raw, 'networkVlan', 'vlanNumber') ?? raw.vlanNumber,
     networkVlanId: raw.networkVlanId,
     datacenter: nested(raw, 'datacenter', 'name') ?? raw.datacenter,

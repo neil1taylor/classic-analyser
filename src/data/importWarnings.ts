@@ -18,7 +18,7 @@ const importWarnings: Record<string, Record<string, string>> = {
     gateways:
       'IMS reports provide basic gateway data only — status is not available.',
     subnets:
-      'Subnet data from IMS reports is limited to network/CIDR extracted from VLAN definitions — gateway, broadcast, and IP count details are not available.',
+      'Subnet data from IMS reports is limited to network/CIDR extracted from VLAN definitions — gateway, broadcast, and IP counts are computed from CIDR.',
     blockStorage:
       'IMS reports provide basic block storage data only — snapshot details and allowed hardware associations are not available.',
     fileStorage:
