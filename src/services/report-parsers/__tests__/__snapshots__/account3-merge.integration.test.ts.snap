@@ -1,0 +1,25 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Account 3 (1703429) — Merger > produces consistent snapshot of resource counts 1`] = `
+{
+  "bandwidthPooling": 734,
+  "bandwidthUsage": 724,
+  "bareMetal": 321,
+  "blockStorage": 130,
+  "classicTransitGatewayConnections": 3,
+  "classicTransitGateways": 1,
+  "directLinkGateways": 11,
+  "fileStorage": 210,
+  "gateways": 366,
+  "reportChecks": 48,
+  "reportResourceCounts": 9,
+  "reportWarningSummaries": 631,
+  "reportWarningSummary": 12,
+  "routers": 16,
+  "securityGroups": 5,
+  "subnets": 766,
+  "transitGatewayDevices": 6,
+  "virtualServers": 413,
+  "vlans": 227,
+}
+`;

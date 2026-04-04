@@ -625,35 +625,6 @@
     ]
   },
   {
-    "key": "virtualHosts",
-    "label": "Hypervisors",
-    "category": "Compute",
-    "worksheetName": "vVirtualHosts",
-    "columns": [
-      {
-        "field": "id",
-        "header": "ID",
-        "dataType": "number",
-        "defaultVisible": true,
-        "sortable": true
-      },
-      {
-        "field": "name",
-        "header": "Name",
-        "dataType": "string",
-        "defaultVisible": true,
-        "sortable": true
-      },
-      {
-        "field": "datacenter",
-        "header": "Datacenter",
-        "dataType": "string",
-        "defaultVisible": true,
-        "sortable": true
-      }
-    ]
-  },
-  {
     "key": "dedicatedHosts",
     "label": "Dedicated Hosts",
     "category": "Compute",

@@ -9,7 +9,7 @@ const log = createLogger('ReportDrawio');
 const MODEL_TYPE_MAP: Record<string, string> = {
   baremetal: 'bareMetal',
   virtualguest: 'virtualServers',
-  virtualhost: 'virtualHosts',
+  virtualhost: 'gateways',
   vlan: 'vlans',
   gateway: 'gateways',
   router: 'routers',
@@ -201,6 +201,7 @@ function extractUserObjectAttributes(
       break;
     }
 
+    case 'virtualhost':
     case 'gateway':
       attrs.hostname = attrs.name;
       attrs.publicIpAddress = attrs.PublicIP;

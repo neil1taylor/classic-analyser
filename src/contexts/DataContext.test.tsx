@@ -41,7 +41,11 @@ describe('DataContext', () => {
       );
     });
 
-    expect(result.current.collectedData.virtualServers).toEqual([{ id: 1 }]);
+    // importData runs transformItems which enriches raw data with computed fields
+    expect(result.current.collectedData.virtualServers).toHaveLength(1);
+    expect(result.current.collectedData.virtualServers![0]).toEqual(
+      expect.objectContaining({ id: 1 })
+    );
     expect(result.current.dataSource).toBe('imported');
     expect(result.current.importFilename).toBe('export.xlsx');
     expect(result.current.importTimestamp).toBeInstanceOf(Date);
