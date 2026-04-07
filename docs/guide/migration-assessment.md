@@ -62,7 +62,7 @@ Key checks include:
 ### Storage Checks (12)
 
 - Block storage volume size and IOPS limits
-- File storage compatibility
+- File storage per-volume profile selection (rfs for ≤35K IOPS, dp2 for >35K IOPS)
 - Multi-attach storage detection
 - Snapshot requirements
 - Gen 2 SDP profile boot volume warning — sdp is not recommended for boot volumes (GPT detection issue; may boot BIOS instead of UEFI; no secure boot support). See [Block Storage profiles](https://cloud.ibm.com/docs/vpc?topic=vpc-block-storage-profiles)

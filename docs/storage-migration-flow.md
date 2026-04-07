@@ -83,7 +83,9 @@ Map the Classic storage tier to a Gen 1 VPC profile:
 |---|---|
 | Source is Classic File Storage (NFS v3) | Migrate to VPC File Share (NFS v4.1) |
 | | Verify application compatibility with NFS v4.1 |
-| | `dp2` profile recommended (independent IOPS/capacity) |
+| Volume IOPS ≤ 35,000 | `rfs` profile recommended (Regional File Service, lower cost) |
+| Volume IOPS > 35,000 | `dp2` profile recommended (rfs max IOPS exceeded) |
+| | Profile selected per volume by `mapFileStorageProfile()` in `storageTiers.ts` |
 
 ## Decision Flow: Object Storage
 
