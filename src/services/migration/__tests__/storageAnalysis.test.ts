@@ -117,6 +117,59 @@ describe('analyzeStorage — K8s filtering', () => {
   });
 });
 
+describe('analyzeStorage — file volume profile selection', () => {
+  it('assigns rfs profile to low-IOPS file volumes', () => {
+    const data = {
+      fileStorage: [makeFile({ id: 10, iops: 2000, storageTierLevel: '2 IOPS/GB' })],
+    };
+
+    const result = analyzeStorage(data, prefs);
+    const vol = result.fileStorage.volumeAssessments[0];
+
+    expect(vol.vpcProfile).toBe('rfs');
+    expect(vol.tier).toBe('2 IOPS/GB');
+    expect(vol.iops).toBe(2000);
+    expect(vol.notes[0]).toContain('rfs');
+  });
+
+  it('assigns dp2 profile to high-IOPS file volumes exceeding 35K', () => {
+    const data = {
+      fileStorage: [makeFile({ id: 11, iops: 40000, storageTierLevel: '10 IOPS/GB' })],
+    };
+
+    const result = analyzeStorage(data, prefs);
+    const vol = result.fileStorage.volumeAssessments[0];
+
+    expect(vol.vpcProfile).toBe('dp2');
+    expect(vol.notes[0]).toContain('dp2');
+  });
+
+  it('includes alternative profile note when rfs is primary', () => {
+    const data = {
+      fileStorage: [makeFile({ id: 12, iops: 1000, storageTierLevel: '0.25 IOPS/GB' })],
+    };
+
+    const result = analyzeStorage(data, prefs);
+    const vol = result.fileStorage.volumeAssessments[0];
+
+    expect(vol.profileNotes).toEqual(
+      expect.arrayContaining([expect.stringContaining('dp2')])
+    );
+  });
+
+  it('handles file volumes with zero IOPS', () => {
+    const data = {
+      fileStorage: [makeFile({ id: 13 })],
+    };
+
+    const result = analyzeStorage(data, prefs);
+    const vol = result.fileStorage.volumeAssessments[0];
+
+    expect(vol.vpcProfile).toBe('rfs');
+    expect(vol.iops).toBe(0);
+  });
+});
+
 describe('mapFileStorageProfile', () => {
   it('recommends rfs for volumes within rfs IOPS limits', () => {
     const result = mapFileStorageProfile('2 IOPS/GB', 2000);

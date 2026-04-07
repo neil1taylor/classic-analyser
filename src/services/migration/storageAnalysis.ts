@@ -1,5 +1,5 @@
 import type { StorageAssessment, BlockVolumeAssessment, FileVolumeAssessment, MigrationPreferences, StorageMigrationStrategy } from '@/types/migration';
-import { mapStorageTier, isSdpAvailable, getFileStorageProfile, type StorageTierContext } from './data/storageTiers';
+import { mapStorageTier, isSdpAvailable, mapFileStorageProfile, type StorageTierContext } from './data/storageTiers';
 
 function num(item: unknown, key: string): number {
   return Number((item as Record<string, unknown>)[key] ?? 0);
@@ -85,13 +85,31 @@ function assessBlockVolume(
 }
 
 function assessFileVolume(item: unknown): FileVolumeAssessment {
-  const { primary, traditional } = getFileStorageProfile();
+  const capacityGB = num(item, 'capacityGb');
+  const iops = num(item, 'iops');
+  const tierLevel = str(item, 'storageTierLevel');
+  const profile = mapFileStorageProfile(tierLevel, iops);
+
+  const notes: string[] = [];
+  notes.push(profile.notes);
+  notes.push('VPC File Share uses NFS v4.1 — verify application compatibility (Classic uses NFS v3)');
+
+  const profileNotes: string[] = [];
+  if (profile.alternative) {
+    profileNotes.push(`Alternative: ${profile.alternative} profile (higher IOPS ceiling)`);
+  }
+
   return {
     id: num(item, 'id'),
     username: str(item, 'username'),
-    capacityGB: num(item, 'capacityGb'),
+    capacityGB,
+    iops,
+    tier: tierLevel,
+    vpcProfile: profile.vpcProfile,
+    vpcIOPS: profile.vpcIOPS,
+    profileNotes,
     currentFee: num(item, 'recurringFee'),
-    notes: [`Migrate to VPC File Share (NFS v4.1, ${primary} profile recommended, ${traditional} as traditional alternative) — verify application compatibility with NFS version`],
+    notes,
   };
 }
 
