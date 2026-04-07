@@ -8,6 +8,9 @@
           "Kubernetes storage detection — IMS NAS imports now detect storage volumes consumed by IKS/ROKS clusters (via PVC, storageclass, and plugin metadata in notes). Detected volumes are flagged with _isKubeStorage and excluded from migration assessment since they migrate with the cluster. A new storage-kube-consumed pre-requisite check lists affected volumes with cluster ID and PVC name",
           "K8s storage warning banner on Block Storage and File Storage resource tables when Kubernetes-consumed volumes are present",
           "Hidden 'K8s Storage' column on block and file storage tables (opt-in via column settings)"
+        ],
+        "fixed": [
+          "Corrected SDP boot volume limitation — sdp can technically be used for boot volumes but is not recommended (GPT detection issue, may boot BIOS instead of UEFI, no secure boot support). Previously stated as 'cannot be used'. Added IBM docs and fullvalence reference links"
         ]
       }
     },

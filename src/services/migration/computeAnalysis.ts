@@ -2,6 +2,7 @@ import type { ComputeAssessment, VSIMigration, BareMetalMigration, VPCProfile, M
 import { VPC_PROFILES, VPC_BARE_METAL_PROFILES, isBurstableProfile, isGen3Profile, hasInstanceStorage } from './data/vpcProfiles';
 import { matchOS } from './data/osCompatibility';
 import { mapDatacenterToVPC } from './data/datacenterMapping';
+import { lookupBareMetalMapping } from './data/bmMappingLookup';
 
 let activeProfiles: VPCProfile[] = VPC_PROFILES;
 let activeBareMetalProfiles: VPCProfile[] = VPC_BARE_METAL_PROFILES;
@@ -402,19 +403,38 @@ function assessBareMetal(item: unknown, _preferences: MigrationPreferences): Bar
     status = 'blocked';
   }
 
-  // Map to a recommended VPC profile based on migration path
+  // Map to a recommended VPC profile based on migration path.
+  // Try spreadsheet-based lookup first, fall back to algorithmic matching.
   let recommendedProfile: VPCProfile | null = null;
-  if (migrationPath === 'vpc-bare-metal') {
-    recommendedProfile = mapToBareMetalProfile(cores, memoryGB);
+  const processorDesc = str(item, 'processorDescription') || str(item, 'hardwareComponentModel');
+  const bmLookup = lookupBareMetalMapping(processorDesc, cores, memoryGB);
+
+  if (bmLookup && migrationPath === 'vpc-bare-metal' && bmLookup.vpcBmProfile) {
+    recommendedProfile = activeBareMetalProfiles.find((p) => p.name === bmLookup.vpcBmProfile) ?? null;
     if (recommendedProfile) {
-      notes.push(`Recommended VPC Bare Metal profile: ${recommendedProfile.name} (${recommendedProfile.vcpu} vCPU, ${recommendedProfile.memory} GB)`);
+      notes.push(`Recommended VPC Bare Metal profile: ${recommendedProfile.name} (${recommendedProfile.vcpu} vCPU, ${recommendedProfile.memory} GB) — mapped from Classic-to-VPC migration guide`);
     }
-  } else if (migrationPath === 'vpc-vsi') {
-    const memoryMB = memoryGB * 1024;
-    const { primary } = mapToVPCProfile(cores, memoryMB);
-    recommendedProfile = primary;
+  } else if (bmLookup && migrationPath === 'vpc-vsi' && bmLookup.vpcVsiProfile) {
+    recommendedProfile = activeProfiles.find((p) => p.name === bmLookup.vpcVsiProfile) ?? null;
     if (recommendedProfile) {
-      notes.push(`Recommended VPC VSI profile: ${recommendedProfile.name} (${recommendedProfile.vcpu} vCPU, ${recommendedProfile.memory} GB)`);
+      notes.push(`Recommended VPC VSI profile: ${recommendedProfile.name} (${recommendedProfile.vcpu} vCPU, ${recommendedProfile.memory} GB) — mapped from Classic-to-VPC migration guide`);
+    }
+  }
+
+  // Fall back to algorithmic matching if spreadsheet lookup didn't produce a result
+  if (!recommendedProfile) {
+    if (migrationPath === 'vpc-bare-metal') {
+      recommendedProfile = mapToBareMetalProfile(cores, memoryGB);
+      if (recommendedProfile) {
+        notes.push(`Recommended VPC Bare Metal profile: ${recommendedProfile.name} (${recommendedProfile.vcpu} vCPU, ${recommendedProfile.memory} GB)`);
+      }
+    } else if (migrationPath === 'vpc-vsi') {
+      const memoryMB = memoryGB * 1024;
+      const { primary } = mapToVPCProfile(cores, memoryMB);
+      recommendedProfile = primary;
+      if (recommendedProfile) {
+        notes.push(`Recommended VPC VSI profile: ${recommendedProfile.name} (${recommendedProfile.vcpu} vCPU, ${recommendedProfile.memory} GB)`);
+      }
     }
   }
 

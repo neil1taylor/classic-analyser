@@ -19,7 +19,8 @@
     "test:roundtrip": "vitest run --reporter=verbose server/src/services/__tests__/export-roundtrip",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
-    "test:e2e:debug": "playwright test --debug"
+    "test:e2e:debug": "playwright test --debug",
+    "import:mappings": "tsx scripts/import-migration-mappings.ts"
   },
   "dependencies": {
     "@carbon/charts": "^1.27.2",

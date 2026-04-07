@@ -1,48 +1,80 @@
 import type { StorageTierMapping } from '@/types/migration';
+import storageMappingData from './generated/storageMappings.json';
 
-// ── Gen 1 Tiered Profiles ────────────────────────────────────────────────
+// ── Display name → internal VPC profile name translation ────────────────────
 
-export const STORAGE_TIER_MAPPINGS: StorageTierMapping[] = [
-  {
-    classicTier: '0.25 IOPS/GB',
-    classicIOPS: '250 per 1TB',
-    vpcProfile: 'general-purpose',
-    vpcIOPS: '3000 base (3 IOPS/GB)',
-    generation: 1,
-    notes: 'VPC general-purpose provides significantly better baseline performance',
-  },
-  {
-    classicTier: '2 IOPS/GB',
-    classicIOPS: '2000 per 1TB',
-    vpcProfile: '5iops-tier',
-    vpcIOPS: '5000 per 1TB',
-    generation: 1,
-    notes: 'VPC 5 IOPS/GB tier provides more headroom',
-  },
-  {
-    classicTier: '4 IOPS/GB',
-    classicIOPS: '4000 per 1TB',
-    vpcProfile: '10iops-tier',
-    vpcIOPS: '10000 per 1TB',
-    generation: 1,
-    notes: 'VPC 10 IOPS/GB tier exceeds Classic 4 IOPS/GB',
-  },
-  {
-    classicTier: '10 IOPS/GB',
-    classicIOPS: '10000 per 1TB',
-    vpcProfile: '10iops-tier',
-    vpcIOPS: '10000 per 1TB',
-    generation: 1,
-    notes: 'Equivalent performance tier',
-  },
-  {
+const BLOCK_PROFILE_NAMES: Record<string, string> = {
+  'VPC - 3 IOPS/GB': 'general-purpose',
+  'VPC - 5 IOPS/GB': '5iops-tier',
+  'VPC - 10 IOPS/GB': '10iops-tier',
+};
+
+const BLOCK_PROFILE_IOPS: Record<string, string> = {
+  'general-purpose': '3000 base (3 IOPS/GB)',
+  '5iops-tier': '5000 per 1TB',
+  '10iops-tier': '10000 per 1TB',
+  'custom': 'Up to 48000',
+  'sdp': 'Up to 64000 (20–3000 IOPS/GB)',
+};
+
+// ── Build Gen 1 tier mappings from the spreadsheet ──────────────────────────
+
+function buildBlockTierMappings(): StorageTierMapping[] {
+  const tierMaps = storageMappingData?.block?.tierMappings ?? [];
+  if (tierMaps.length === 0) return FALLBACK_STORAGE_TIER_MAPPINGS;
+
+  // Extract Classic → VPC mappings (skip VPC→VPC identity mappings)
+  const classicMappings = tierMaps.filter(
+    (m) => m.classicTier.startsWith('Classic ')
+  );
+
+  const result: StorageTierMapping[] = classicMappings.map((m) => {
+    const vpcProfile = BLOCK_PROFILE_NAMES[m.vpcProfile] ?? m.vpcProfile;
+    // Find the matching profile spec from the spreadsheet for notes
+    const classicSpec = storageMappingData.block.profiles.find(
+      (p) => p.name === m.classicTier
+    );
+    const vpcSpec = storageMappingData.block.profiles.find(
+      (p) => p.name === m.vpcProfile
+    );
+
+    return {
+      classicTier: m.classicTier.replace('Classic Endurance - ', ''),
+      classicIOPS: classicSpec
+        ? `${classicSpec.minIOPS}–${classicSpec.maxIOPS}`
+        : 'Variable',
+      vpcProfile,
+      vpcIOPS: BLOCK_PROFILE_IOPS[vpcProfile] ?? (vpcSpec
+        ? `${vpcSpec.minIOPS}–${vpcSpec.maxIOPS}`
+        : 'Variable'),
+      generation: 1 as const,
+      notes: `Classic ${m.classicTier} → VPC ${m.vpcProfile}`,
+    };
+  });
+
+  // Add custom IOPS mapping (not in the spreadsheet tier mappings)
+  result.push({
     classicTier: 'Custom IOPS',
     classicIOPS: 'Variable',
     vpcProfile: 'custom',
     vpcIOPS: 'Up to 48000',
     generation: 1,
     notes: 'Map to VPC custom IOPS profile — may need adjustment',
-  },
+  });
+
+  return result;
+}
+
+export const STORAGE_TIER_MAPPINGS: StorageTierMapping[] = buildBlockTierMappings();
+
+// ── Fallback (used when generated data is empty) ────────────────────────────
+
+const FALLBACK_STORAGE_TIER_MAPPINGS: StorageTierMapping[] = [
+  { classicTier: '0.25 IOPS/GB', classicIOPS: '250 per 1TB', vpcProfile: 'general-purpose', vpcIOPS: '3000 base (3 IOPS/GB)', generation: 1, notes: 'VPC general-purpose provides significantly better baseline performance' },
+  { classicTier: '2 IOPS/GB', classicIOPS: '2000 per 1TB', vpcProfile: '5iops-tier', vpcIOPS: '5000 per 1TB', generation: 1, notes: 'VPC 5 IOPS/GB tier provides more headroom' },
+  { classicTier: '4 IOPS/GB', classicIOPS: '4000 per 1TB', vpcProfile: '10iops-tier', vpcIOPS: '10000 per 1TB', generation: 1, notes: 'VPC 10 IOPS/GB tier exceeds Classic 4 IOPS/GB' },
+  { classicTier: '10 IOPS/GB', classicIOPS: '10000 per 1TB', vpcProfile: '10iops-tier', vpcIOPS: '10000 per 1TB', generation: 1, notes: 'Equivalent performance tier' },
+  { classicTier: 'Custom IOPS', classicIOPS: 'Variable', vpcProfile: 'custom', vpcIOPS: 'Up to 48000', generation: 1, notes: 'Map to VPC custom IOPS profile — may need adjustment' },
 ];
 
 // ── Gen 2 SDP Profile ────────────────────────────────────────────────────
@@ -55,7 +87,7 @@ export const SDP_PROFILE: StorageTierMapping = {
   generation: 2,
   notes: 'Gen 2 defined-performance profile — set IOPS to match or exceed Classic source',
   limitations: [
-    'Cannot be used for boot volumes (GPT/UEFI detection issue)',
+    'Not recommended for boot volumes — cannot reliably detect GPT-formatted volumes, may boot to BIOS instead of UEFI. Must not be used with secure boot. See https://cloud.ibm.com/docs/vpc?topic=vpc-block-storage-profiles',
     'No consistency group snapshots (individual snapshots only)',
     'Not available in all regions',
   ],
@@ -77,6 +109,15 @@ export const SDP_SUPPORTED_REGIONS: string[] = [
 
 export function isSdpAvailable(targetRegion: string): boolean {
   return SDP_SUPPORTED_REGIONS.includes(targetRegion);
+}
+
+// ── File storage profile recommendation ─────────────────────────────────────
+
+/** Get the recommended VPC file storage profile from the spreadsheet mappings.
+ *  The spreadsheet recommends rfs (Regional File Service) as the primary/SDS target
+ *  and dp2 as the traditional fallback. */
+export function getFileStorageProfile(): { primary: string; traditional: string } {
+  return { primary: 'rfs', traditional: 'dp2' };
 }
 
 // ── Mapping Context ──────────────────────────────────────────────────────

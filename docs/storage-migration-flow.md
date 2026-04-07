@@ -26,7 +26,7 @@ VPC offers two generations of block storage profiles:
 | Capacity | 1 GB – 32 TB |
 
 **Limitations (as of April 2026):**
-- **Cannot be used for boot volumes** — cannot reliably detect GPT-formatted volumes; may boot to BIOS instead of UEFI. Must not be used with secure boot.
+- **Not recommended for boot volumes** — cannot reliably detect GPT-formatted volumes; may boot to BIOS instead of UEFI. Must not be used with secure boot. See [Block Storage profiles](https://cloud.ibm.com/docs/vpc?topic=vpc-block-storage-profiles) and [fullvalence](https://fullvalence.com/2025/11/10/from-vmware-to-ibm-cloud-vpc-vsi-part-3-migrating-virtual-machines/).
 - **No consistency group snapshots** — volumes can only be snapshotted individually, not as part of a consistency group. This affects crash-consistent backup of multi-volume VMs.
 - **Regional availability** — not available in all regions (e.g., Montreal excluded).
 
@@ -39,13 +39,13 @@ VPC offers two generations of block storage profiles:
 | `10iops-tier` | 10 IOPS/GB (fixed) | 48,000 | 10 GB – 4.8 TB | 1,024 Mbps |
 | `custom` | Variable | 48,000 | 10 GB – 16 TB | 1,024 Mbps |
 
-`general-purpose` is the **only profile available for boot volumes**.
+`general-purpose` is the recommended profile for boot volumes. While `sdp` technically supports boot volumes, it is not recommended due to GPT detection issues (see above).
 
 ## Decision Flow: Block Storage
 
 ### Step 1 — Is this a boot volume?
 
-- **Yes** → use `general-purpose` (only option)
+- **Yes** → use `general-purpose` (recommended; `sdp` is not recommended for boot volumes due to GPT/UEFI detection issues)
 - **No** → proceed to Step 2
 
 ### Step 2 — Is the target region supported by `sdp`?

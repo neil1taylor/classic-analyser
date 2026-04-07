@@ -672,6 +672,8 @@ interface NetworkAssessment {
 | 10 IOPS/GB | 200–40000 | 10iops-tier | 10000 per 1TB | Equivalent |
 | Custom IOPS | Variable | custom | Up to 48000 | May need adjustment |
 
+> **SDP boot volume note:** The Gen 2 `sdp` profile can technically be used for boot volumes but is **not recommended** — it cannot reliably detect GPT-formatted volumes and may boot to BIOS instead of UEFI. Must not be used with secure boot. Use `general-purpose` for boot volumes. See [Block Storage profiles](https://cloud.ibm.com/docs/vpc?topic=vpc-block-storage-profiles) and [fullvalence migration guide](https://fullvalence.com/2025/11/10/from-vmware-to-ibm-cloud-vpc-vsi-part-3-migrating-virtual-machines/).
+
 **Block Storage Migration Strategy:**
 
 ```

@@ -1,0 +1,2474 @@
+{
+  "generatedAt": "2026-04-07T13:41:38.923Z",
+  "sources": [
+    "Overall Profile Mapping - Classic BM to VPC.xlsx"
+  ],
+  "vsiProfiles": [
+    {
+      "name": "bx2-2x8",
+      "family": "balanced",
+      "vcpu": 2,
+      "memory": 8,
+      "bandwidth": 0,
+      "hourlyRate": 0.1
+    },
+    {
+      "name": "bx2-4x16",
+      "family": "balanced",
+      "vcpu": 4,
+      "memory": 16,
+      "bandwidth": 0,
+      "hourlyRate": 0.201
+    },
+    {
+      "name": "bx2-8x32",
+      "family": "balanced",
+      "vcpu": 8,
+      "memory": 32,
+      "bandwidth": 0,
+      "hourlyRate": 0.401
+    },
+    {
+      "name": "bx2-16x64",
+      "family": "balanced",
+      "vcpu": 16,
+      "memory": 64,
+      "bandwidth": 0,
+      "hourlyRate": 0.803
+    },
+    {
+      "name": "bx2-32x128",
+      "family": "balanced",
+      "vcpu": 32,
+      "memory": 128,
+      "bandwidth": 0,
+      "hourlyRate": 1.606
+    },
+    {
+      "name": "bx2-48x192",
+      "family": "balanced",
+      "vcpu": 48,
+      "memory": 192,
+      "bandwidth": 0,
+      "hourlyRate": 2.408
+    },
+    {
+      "name": "bx2-64x256",
+      "family": "balanced",
+      "vcpu": 64,
+      "memory": 256,
+      "bandwidth": 0,
+      "hourlyRate": 3.211
+    },
+    {
+      "name": "bx2-96x384",
+      "family": "balanced",
+      "vcpu": 96,
+      "memory": 384,
+      "bandwidth": 0,
+      "hourlyRate": 4.817
+    },
+    {
+      "name": "bx2-128x512",
+      "family": "balanced",
+      "vcpu": 128,
+      "memory": 512,
+      "bandwidth": 0,
+      "hourlyRate": 6.422
+    },
+    {
+      "name": "bx2d-2x8",
+      "family": "balanced",
+      "vcpu": 2,
+      "memory": 8,
+      "bandwidth": 0,
+      "hourlyRate": 0.109
+    },
+    {
+      "name": "bx2d-4x16",
+      "family": "balanced",
+      "vcpu": 4,
+      "memory": 16,
+      "bandwidth": 0,
+      "hourlyRate": 0.218
+    },
+    {
+      "name": "bx2d-8x32",
+      "family": "balanced",
+      "vcpu": 8,
+      "memory": 32,
+      "bandwidth": 0,
+      "hourlyRate": 0.436
+    },
+    {
+      "name": "bx2d-16x64",
+      "family": "balanced",
+      "vcpu": 16,
+      "memory": 64,
+      "bandwidth": 0,
+      "hourlyRate": 0.872
+    },
+    {
+      "name": "bx2d-32x128",
+      "family": "balanced",
+      "vcpu": 32,
+      "memory": 128,
+      "bandwidth": 0,
+      "hourlyRate": 1.743
+    },
+    {
+      "name": "bx2d-48x192",
+      "family": "balanced",
+      "vcpu": 48,
+      "memory": 192,
+      "bandwidth": 0,
+      "hourlyRate": 2.615
+    },
+    {
+      "name": "bx2d-64x256",
+      "family": "balanced",
+      "vcpu": 64,
+      "memory": 256,
+      "bandwidth": 0,
+      "hourlyRate": 3.486
+    },
+    {
+      "name": "bx2d-96x384",
+      "family": "balanced",
+      "vcpu": 96,
+      "memory": 384,
+      "bandwidth": 0,
+      "hourlyRate": 5.229
+    },
+    {
+      "name": "bx2d-128x512",
+      "family": "balanced",
+      "vcpu": 128,
+      "memory": 512,
+      "bandwidth": 0,
+      "hourlyRate": 6.972
+    },
+    {
+      "name": "cx2-2x4",
+      "family": "compute",
+      "vcpu": 2,
+      "memory": 4,
+      "bandwidth": 0,
+      "hourlyRate": 0.089
+    },
+    {
+      "name": "cx2-4x8",
+      "family": "compute",
+      "vcpu": 4,
+      "memory": 8,
+      "bandwidth": 0,
+      "hourlyRate": 0.178
+    },
+    {
+      "name": "cx2-8x16",
+      "family": "compute",
+      "vcpu": 8,
+      "memory": 16,
+      "bandwidth": 0,
+      "hourlyRate": 0.355
+    },
+    {
+      "name": "cx2-16x32",
+      "family": "compute",
+      "vcpu": 16,
+      "memory": 32,
+      "bandwidth": 0,
+      "hourlyRate": 0.711
+    },
+    {
+      "name": "cx2-32x64",
+      "family": "compute",
+      "vcpu": 32,
+      "memory": 64,
+      "bandwidth": 0,
+      "hourlyRate": 1.421
+    },
+    {
+      "name": "cx2-48x96",
+      "family": "compute",
+      "vcpu": 48,
+      "memory": 96,
+      "bandwidth": 0,
+      "hourlyRate": 2.132
+    },
+    {
+      "name": "cx2-64x128",
+      "family": "compute",
+      "vcpu": 64,
+      "memory": 128,
+      "bandwidth": 0,
+      "hourlyRate": 2.843
+    },
+    {
+      "name": "cx2-96x192",
+      "family": "compute",
+      "vcpu": 96,
+      "memory": 192,
+      "bandwidth": 0,
+      "hourlyRate": 4.264
+    },
+    {
+      "name": "cx2-128x256",
+      "family": "compute",
+      "vcpu": 128,
+      "memory": 256,
+      "bandwidth": 0,
+      "hourlyRate": 5.686
+    },
+    {
+      "name": "cx2d-2x4",
+      "family": "compute",
+      "vcpu": 2,
+      "memory": 4,
+      "bandwidth": 0,
+      "hourlyRate": 0.097
+    },
+    {
+      "name": "cx2d-4x8",
+      "family": "compute",
+      "vcpu": 4,
+      "memory": 8,
+      "bandwidth": 0,
+      "hourlyRate": 0.195
+    },
+    {
+      "name": "cx2d-8x16",
+      "family": "compute",
+      "vcpu": 8,
+      "memory": 16,
+      "bandwidth": 0,
+      "hourlyRate": 0.39
+    },
+    {
+      "name": "cx2d-16x32",
+      "family": "compute",
+      "vcpu": 16,
+      "memory": 32,
+      "bandwidth": 0,
+      "hourlyRate": 0.779
+    },
+    {
+      "name": "cx2d-32x64",
+      "family": "compute",
+      "vcpu": 32,
+      "memory": 64,
+      "bandwidth": 0,
+      "hourlyRate": 1.559
+    },
+    {
+      "name": "cx2d-48x96",
+      "family": "compute",
+      "vcpu": 48,
+      "memory": 96,
+      "bandwidth": 0,
+      "hourlyRate": 2.338
+    },
+    {
+      "name": "cx2d-64x128",
+      "family": "compute",
+      "vcpu": 64,
+      "memory": 128,
+      "bandwidth": 0,
+      "hourlyRate": 3.118
+    },
+    {
+      "name": "cx2d-96x192",
+      "family": "compute",
+      "vcpu": 96,
+      "memory": 192,
+      "bandwidth": 0,
+      "hourlyRate": 4.677
+    },
+    {
+      "name": "cx2d-128x256",
+      "family": "compute",
+      "vcpu": 128,
+      "memory": 256,
+      "bandwidth": 0,
+      "hourlyRate": 6.236
+    },
+    {
+      "name": "mx2-2x16",
+      "family": "memory",
+      "vcpu": 2,
+      "memory": 16,
+      "bandwidth": 0,
+      "hourlyRate": 0.13
+    },
+    {
+      "name": "mx2-4x32",
+      "family": "memory",
+      "vcpu": 4,
+      "memory": 32,
+      "bandwidth": 0,
+      "hourlyRate": 0.26
+    },
+    {
+      "name": "mx2-8x64",
+      "family": "memory",
+      "vcpu": 8,
+      "memory": 64,
+      "bandwidth": 0,
+      "hourlyRate": 0.519
+    },
+    {
+      "name": "mx2-16x128",
+      "family": "memory",
+      "vcpu": 16,
+      "memory": 128,
+      "bandwidth": 0,
+      "hourlyRate": 1.038
+    },
+    {
+      "name": "mx2-32x256",
+      "family": "memory",
+      "vcpu": 32,
+      "memory": 256,
+      "bandwidth": 0,
+      "hourlyRate": 2.077
+    },
+    {
+      "name": "mx2-48x384",
+      "family": "memory",
+      "vcpu": 48,
+      "memory": 384,
+      "bandwidth": 0,
+      "hourlyRate": 3.115
+    },
+    {
+      "name": "mx2-64x512",
+      "family": "memory",
+      "vcpu": 64,
+      "memory": 512,
+      "bandwidth": 0,
+      "hourlyRate": 4.153
+    },
+    {
+      "name": "mx2-96x768",
+      "family": "memory",
+      "vcpu": 96,
+      "memory": 768,
+      "bandwidth": 0,
+      "hourlyRate": 6.23
+    },
+    {
+      "name": "mx2-128x1024",
+      "family": "memory",
+      "vcpu": 128,
+      "memory": 1024,
+      "bandwidth": 0,
+      "hourlyRate": 8.306
+    },
+    {
+      "name": "mx2d-2x16",
+      "family": "memory",
+      "vcpu": 2,
+      "memory": 16,
+      "bandwidth": 0,
+      "hourlyRate": 0.138
+    },
+    {
+      "name": "mx2d-4x32",
+      "family": "memory",
+      "vcpu": 4,
+      "memory": 32,
+      "bandwidth": 0,
+      "hourlyRate": 0.277
+    },
+    {
+      "name": "mx2d-8x64",
+      "family": "memory",
+      "vcpu": 8,
+      "memory": 64,
+      "bandwidth": 0,
+      "hourlyRate": 0.554
+    },
+    {
+      "name": "mx2d-16x128",
+      "family": "memory",
+      "vcpu": 16,
+      "memory": 128,
+      "bandwidth": 0,
+      "hourlyRate": 1.107
+    },
+    {
+      "name": "mx2d-32x256",
+      "family": "memory",
+      "vcpu": 32,
+      "memory": 256,
+      "bandwidth": 0,
+      "hourlyRate": 2.214
+    },
+    {
+      "name": "mx2d-48x384",
+      "family": "memory",
+      "vcpu": 48,
+      "memory": 384,
+      "bandwidth": 0,
+      "hourlyRate": 3.321
+    },
+    {
+      "name": "mx2d-64x512",
+      "family": "memory",
+      "vcpu": 64,
+      "memory": 512,
+      "bandwidth": 0,
+      "hourlyRate": 4.428
+    },
+    {
+      "name": "mx2d-96x768",
+      "family": "memory",
+      "vcpu": 96,
+      "memory": 768,
+      "bandwidth": 0,
+      "hourlyRate": 6.642
+    },
+    {
+      "name": "mx2d-128x1024",
+      "family": "memory",
+      "vcpu": 128,
+      "memory": 1024,
+      "bandwidth": 0,
+      "hourlyRate": 8.856
+    },
+    {
+      "name": "vx2d-2x32",
+      "family": "very-high-memory",
+      "vcpu": 2,
+      "memory": 32,
+      "bandwidth": 0,
+      "hourlyRate": 0.216
+    },
+    {
+      "name": "vx2-4x64",
+      "family": "very-high-memory",
+      "vcpu": 4,
+      "memory": 64,
+      "bandwidth": 0,
+      "hourlyRate": 0.432
+    },
+    {
+      "name": "vx2-8x128",
+      "family": "very-high-memory",
+      "vcpu": 8,
+      "memory": 128,
+      "bandwidth": 0,
+      "hourlyRate": 0.865
+    },
+    {
+      "name": "vx2-16x256",
+      "family": "very-high-memory",
+      "vcpu": 16,
+      "memory": 256,
+      "bandwidth": 0,
+      "hourlyRate": 1.729
+    },
+    {
+      "name": "vx2-44x704",
+      "family": "very-high-memory",
+      "vcpu": 44,
+      "memory": 704,
+      "bandwidth": 0,
+      "hourlyRate": 4.755
+    },
+    {
+      "name": "vx2-88x1408",
+      "family": "very-high-memory",
+      "vcpu": 88,
+      "memory": 1408,
+      "bandwidth": 0,
+      "hourlyRate": 9.51
+    },
+    {
+      "name": "vx2-144x2304",
+      "family": "very-high-memory",
+      "vcpu": 144,
+      "memory": 2304,
+      "bandwidth": 0,
+      "hourlyRate": 15.561
+    },
+    {
+      "name": "vx2-176x2816",
+      "family": "very-high-memory",
+      "vcpu": 176,
+      "memory": 2816,
+      "bandwidth": 0,
+      "hourlyRate": 19.02
+    },
+    {
+      "name": "ux2d-2x56",
+      "family": "ultra-high-memory",
+      "vcpu": 2,
+      "memory": 56,
+      "bandwidth": 0,
+      "hourlyRate": 0.402
+    },
+    {
+      "name": "ux2d-4x112",
+      "family": "ultra-high-memory",
+      "vcpu": 4,
+      "memory": 112,
+      "bandwidth": 0,
+      "hourlyRate": 0.803
+    },
+    {
+      "name": "ux2d-8x224",
+      "family": "ultra-high-memory",
+      "vcpu": 8,
+      "memory": 224,
+      "bandwidth": 0,
+      "hourlyRate": 1.606
+    },
+    {
+      "name": "ux2d-16x448",
+      "family": "ultra-high-memory",
+      "vcpu": 16,
+      "memory": 448,
+      "bandwidth": 0,
+      "hourlyRate": 3.213
+    },
+    {
+      "name": "ux2d-36x1008",
+      "family": "ultra-high-memory",
+      "vcpu": 36,
+      "memory": 1008,
+      "bandwidth": 0,
+      "hourlyRate": 7.228
+    },
+    {
+      "name": "ux2d-48x1344",
+      "family": "ultra-high-memory",
+      "vcpu": 48,
+      "memory": 1344,
+      "bandwidth": 0,
+      "hourlyRate": 9.638
+    },
+    {
+      "name": "ux2d-72x2016",
+      "family": "ultra-high-memory",
+      "vcpu": 72,
+      "memory": 2016,
+      "bandwidth": 0,
+      "hourlyRate": 14.456
+    },
+    {
+      "name": "ux2d-100x2800",
+      "family": "ultra-high-memory",
+      "vcpu": 100,
+      "memory": 2800,
+      "bandwidth": 0,
+      "hourlyRate": 20.078
+    },
+    {
+      "name": "ux2d-200x5600",
+      "family": "ultra-high-memory",
+      "vcpu": 200,
+      "memory": 5600,
+      "bandwidth": 0,
+      "hourlyRate": 40.157
+    },
+    {
+      "name": "ox2-2x16",
+      "family": "storage-optimized",
+      "vcpu": 2,
+      "memory": 16,
+      "bandwidth": 0,
+      "hourlyRate": 0.198
+    },
+    {
+      "name": "ox2-4x32",
+      "family": "storage-optimized",
+      "vcpu": 4,
+      "memory": 32,
+      "bandwidth": 0,
+      "hourlyRate": 0.397
+    },
+    {
+      "name": "ox2-8x64",
+      "family": "storage-optimized",
+      "vcpu": 8,
+      "memory": 64,
+      "bandwidth": 0,
+      "hourlyRate": 0.794
+    },
+    {
+      "name": "ox2-16x128",
+      "family": "storage-optimized",
+      "vcpu": 16,
+      "memory": 128,
+      "bandwidth": 0,
+      "hourlyRate": 1.588
+    },
+    {
+      "name": "ox2-32x256",
+      "family": "storage-optimized",
+      "vcpu": 32,
+      "memory": 256,
+      "bandwidth": 0,
+      "hourlyRate": 3.176
+    },
+    {
+      "name": "ox2-64x512",
+      "family": "storage-optimized",
+      "vcpu": 64,
+      "memory": 512,
+      "bandwidth": 0,
+      "hourlyRate": 6.352
+    },
+    {
+      "name": "ox2-96x768",
+      "family": "storage-optimized",
+      "vcpu": 96,
+      "memory": 768,
+      "bandwidth": 0,
+      "hourlyRate": 9.528
+    },
+    {
+      "name": "ox2-128x1024",
+      "family": "storage-optimized",
+      "vcpu": 128,
+      "memory": 1024,
+      "bandwidth": 0,
+      "hourlyRate": 12.704
+    },
+    {
+      "name": "gx2-8x64",
+      "family": "gpu",
+      "vcpu": 8,
+      "memory": 64,
+      "bandwidth": 0,
+      "hourlyRate": 2.609
+    },
+    {
+      "name": "gx2-16x128",
+      "family": "gpu",
+      "vcpu": 16,
+      "memory": 128,
+      "bandwidth": 0,
+      "hourlyRate": 5.218
+    },
+    {
+      "name": "gx2-16x128",
+      "family": "gpu",
+      "vcpu": 16,
+      "memory": 128,
+      "bandwidth": 0,
+      "hourlyRate": 3.128
+    },
+    {
+      "name": "gx2-32x256",
+      "family": "gpu",
+      "vcpu": 32,
+      "memory": 256,
+      "bandwidth": 0,
+      "hourlyRate": 6.257
+    },
+    {
+      "name": "bx2a-2x8",
+      "family": "balanced",
+      "vcpu": 2,
+      "memory": 8,
+      "bandwidth": 0,
+      "hourlyRate": 0.1
+    },
+    {
+      "name": "bx2a-4x16",
+      "family": "balanced",
+      "vcpu": 4,
+      "memory": 16,
+      "bandwidth": 0,
+      "hourlyRate": 0.201
+    },
+    {
+      "name": "bx2a-8x32",
+      "family": "balanced",
+      "vcpu": 8,
+      "memory": 32,
+      "bandwidth": 0,
+      "hourlyRate": 0.401
+    },
+    {
+      "name": "bx2a-16x64",
+      "family": "balanced",
+      "vcpu": 16,
+      "memory": 64,
+      "bandwidth": 0,
+      "hourlyRate": 0.803
+    },
+    {
+      "name": "bx2a-32x128",
+      "family": "balanced",
+      "vcpu": 32,
+      "memory": 128,
+      "bandwidth": 0,
+      "hourlyRate": 1.606
+    },
+    {
+      "name": "bx2a-48x192",
+      "family": "balanced",
+      "vcpu": 48,
+      "memory": 192,
+      "bandwidth": 0,
+      "hourlyRate": 2.408
+    },
+    {
+      "name": "bx2a-64x256",
+      "family": "balanced",
+      "vcpu": 64,
+      "memory": 256,
+      "bandwidth": 0,
+      "hourlyRate": 3.211
+    },
+    {
+      "name": "bx2a-96x384",
+      "family": "balanced",
+      "vcpu": 96,
+      "memory": 384,
+      "bandwidth": 0,
+      "hourlyRate": 4.817
+    },
+    {
+      "name": "bx2a-128x512",
+      "family": "balanced",
+      "vcpu": 128,
+      "memory": 512,
+      "bandwidth": 0,
+      "hourlyRate": 6.422
+    },
+    {
+      "name": "bx2a-228x912",
+      "family": "balanced",
+      "vcpu": 228,
+      "memory": 912,
+      "bandwidth": 0,
+      "hourlyRate": 11.40408
+    },
+    {
+      "name": "bx3-2x10",
+      "family": "balanced",
+      "vcpu": 2,
+      "memory": 10,
+      "bandwidth": 0,
+      "hourlyRate": 0.109
+    },
+    {
+      "name": "bx3-4x20",
+      "family": "balanced",
+      "vcpu": 4,
+      "memory": 20,
+      "bandwidth": 0,
+      "hourlyRate": 0.218
+    },
+    {
+      "name": "bx3-8x40",
+      "family": "balanced",
+      "vcpu": 8,
+      "memory": 40,
+      "bandwidth": 0,
+      "hourlyRate": 0.436
+    },
+    {
+      "name": "bx3-16x80",
+      "family": "balanced",
+      "vcpu": 16,
+      "memory": 80,
+      "bandwidth": 0,
+      "hourlyRate": 0.872
+    },
+    {
+      "name": "bx3-24x120",
+      "family": "balanced",
+      "vcpu": 24,
+      "memory": 120,
+      "bandwidth": 0,
+      "hourlyRate": 1.308
+    },
+    {
+      "name": "bx3-32x160",
+      "family": "balanced",
+      "vcpu": 32,
+      "memory": 160,
+      "bandwidth": 0,
+      "hourlyRate": 1.744
+    },
+    {
+      "name": "bx3-48x240",
+      "family": "balanced",
+      "vcpu": 48,
+      "memory": 240,
+      "bandwidth": 0,
+      "hourlyRate": 2.616
+    },
+    {
+      "name": "bx3-64x320",
+      "family": "balanced",
+      "vcpu": 64,
+      "memory": 320,
+      "bandwidth": 0,
+      "hourlyRate": 3.488
+    },
+    {
+      "name": "bx3-96x480",
+      "family": "balanced",
+      "vcpu": 96,
+      "memory": 480,
+      "bandwidth": 0,
+      "hourlyRate": 5.232
+    },
+    {
+      "name": "bx3-128x640",
+      "family": "balanced",
+      "vcpu": 128,
+      "memory": 640,
+      "bandwidth": 0,
+      "hourlyRate": 6.976
+    },
+    {
+      "name": "bx3-176x880",
+      "family": "balanced",
+      "vcpu": 176,
+      "memory": 880,
+      "bandwidth": 0,
+      "hourlyRate": 9.592
+    },
+    {
+      "name": "cx3-2x5",
+      "family": "compute",
+      "vcpu": 2,
+      "memory": 5,
+      "bandwidth": 0,
+      "hourlyRate": 0.0974
+    },
+    {
+      "name": "cx3-4x10",
+      "family": "compute",
+      "vcpu": 4,
+      "memory": 10,
+      "bandwidth": 0,
+      "hourlyRate": 0.1948
+    },
+    {
+      "name": "cx3-8x20",
+      "family": "compute",
+      "vcpu": 8,
+      "memory": 20,
+      "bandwidth": 0,
+      "hourlyRate": 0.3896
+    },
+    {
+      "name": "cx3-16x40",
+      "family": "compute",
+      "vcpu": 16,
+      "memory": 40,
+      "bandwidth": 0,
+      "hourlyRate": 0.7792
+    },
+    {
+      "name": "cx3-24x60",
+      "family": "compute",
+      "vcpu": 24,
+      "memory": 60,
+      "bandwidth": 0,
+      "hourlyRate": 1.1688
+    },
+    {
+      "name": "cx3-32x80",
+      "family": "compute",
+      "vcpu": 32,
+      "memory": 80,
+      "bandwidth": 0,
+      "hourlyRate": 1.5584
+    },
+    {
+      "name": "cx3-48x120",
+      "family": "compute",
+      "vcpu": 48,
+      "memory": 120,
+      "bandwidth": 0,
+      "hourlyRate": 2.3376
+    },
+    {
+      "name": "cx3-64x160",
+      "family": "compute",
+      "vcpu": 64,
+      "memory": 160,
+      "bandwidth": 0,
+      "hourlyRate": 3.1168
+    },
+    {
+      "name": "cx3-96x240",
+      "family": "compute",
+      "vcpu": 96,
+      "memory": 240,
+      "bandwidth": 0,
+      "hourlyRate": 4.6752
+    },
+    {
+      "name": "cx3-128x320",
+      "family": "compute",
+      "vcpu": 128,
+      "memory": 320,
+      "bandwidth": 0,
+      "hourlyRate": 6.2336
+    },
+    {
+      "name": "cx3-176x440",
+      "family": "compute",
+      "vcpu": 176,
+      "memory": 440,
+      "bandwidth": 0,
+      "hourlyRate": 8.5712
+    },
+    {
+      "name": "mx3-2x20",
+      "family": "memory",
+      "vcpu": 2,
+      "memory": 20,
+      "bandwidth": 0,
+      "hourlyRate": 0.1382
+    },
+    {
+      "name": "mx3-4x40",
+      "family": "memory",
+      "vcpu": 4,
+      "memory": 40,
+      "bandwidth": 0,
+      "hourlyRate": 0.2764
+    },
+    {
+      "name": "mx3-8x80",
+      "family": "memory",
+      "vcpu": 8,
+      "memory": 80,
+      "bandwidth": 0,
+      "hourlyRate": 0.5528
+    },
+    {
+      "name": "mx3-16x160",
+      "family": "memory",
+      "vcpu": 16,
+      "memory": 160,
+      "bandwidth": 0,
+      "hourlyRate": 1.1056
+    },
+    {
+      "name": "mx3-24x240",
+      "family": "memory",
+      "vcpu": 24,
+      "memory": 240,
+      "bandwidth": 0,
+      "hourlyRate": 1.6583999999999999
+    },
+    {
+      "name": "mx3-32x320",
+      "family": "memory",
+      "vcpu": 32,
+      "memory": 320,
+      "bandwidth": 0,
+      "hourlyRate": 2.2112
+    },
+    {
+      "name": "mx3-48x480",
+      "family": "memory",
+      "vcpu": 48,
+      "memory": 480,
+      "bandwidth": 0,
+      "hourlyRate": 3.3167999999999997
+    },
+    {
+      "name": "mx3-64x640",
+      "family": "memory",
+      "vcpu": 64,
+      "memory": 640,
+      "bandwidth": 0,
+      "hourlyRate": 4.4224
+    },
+    {
+      "name": "mx3-96x960",
+      "family": "memory",
+      "vcpu": 96,
+      "memory": 960,
+      "bandwidth": 0,
+      "hourlyRate": 6.6335999999999995
+    },
+    {
+      "name": "mx3-128x1280",
+      "family": "memory",
+      "vcpu": 128,
+      "memory": 1280,
+      "bandwidth": 0,
+      "hourlyRate": 8.8448
+    },
+    {
+      "name": "mx3-176x1760",
+      "family": "memory",
+      "vcpu": 176,
+      "memory": 1760,
+      "bandwidth": 0,
+      "hourlyRate": 12.1616
+    },
+    {
+      "name": "bx3d-2x10",
+      "family": "balanced",
+      "vcpu": 2,
+      "memory": 10,
+      "bandwidth": 0,
+      "hourlyRate": 0.11227
+    },
+    {
+      "name": "bx3d-4x20",
+      "family": "balanced",
+      "vcpu": 4,
+      "memory": 20,
+      "bandwidth": 0,
+      "hourlyRate": 0.22454
+    },
+    {
+      "name": "bx3d-8x40",
+      "family": "balanced",
+      "vcpu": 8,
+      "memory": 40,
+      "bandwidth": 0,
+      "hourlyRate": 0.44908
+    },
+    {
+      "name": "bx3d-16x80",
+      "family": "balanced",
+      "vcpu": 16,
+      "memory": 80,
+      "bandwidth": 0,
+      "hourlyRate": 0.89816
+    },
+    {
+      "name": "bx3d-24x120",
+      "family": "balanced",
+      "vcpu": 24,
+      "memory": 120,
+      "bandwidth": 0,
+      "hourlyRate": 1.346725
+    },
+    {
+      "name": "bx3d-32x160",
+      "family": "balanced",
+      "vcpu": 32,
+      "memory": 160,
+      "bandwidth": 0,
+      "hourlyRate": 1.79529
+    },
+    {
+      "name": "bx3d-48x240",
+      "family": "balanced",
+      "vcpu": 48,
+      "memory": 240,
+      "bandwidth": 0,
+      "hourlyRate": 2.6934500000000003
+    },
+    {
+      "name": "bx3d-64x320",
+      "family": "balanced",
+      "vcpu": 64,
+      "memory": 320,
+      "bandwidth": 0,
+      "hourlyRate": 3.59058
+    },
+    {
+      "name": "bx3d-96x480",
+      "family": "balanced",
+      "vcpu": 96,
+      "memory": 480,
+      "bandwidth": 0,
+      "hourlyRate": 5.38587
+    },
+    {
+      "name": "bx3d-128x640",
+      "family": "balanced",
+      "vcpu": 128,
+      "memory": 640,
+      "bandwidth": 0,
+      "hourlyRate": 7.18116
+    },
+    {
+      "name": "bx3d-176x880",
+      "family": "balanced",
+      "vcpu": 176,
+      "memory": 880,
+      "bandwidth": 0,
+      "hourlyRate": 8.97645
+    },
+    {
+      "name": "cx3d-2x5",
+      "family": "compute",
+      "vcpu": 2,
+      "memory": 5,
+      "bandwidth": 0,
+      "hourlyRate": 0.09991
+    },
+    {
+      "name": "cx3d-4x10",
+      "family": "compute",
+      "vcpu": 4,
+      "memory": 10,
+      "bandwidth": 0,
+      "hourlyRate": 0.20085
+    },
+    {
+      "name": "cx3d-8x20",
+      "family": "compute",
+      "vcpu": 8,
+      "memory": 20,
+      "bandwidth": 0,
+      "hourlyRate": 0.4017
+    },
+    {
+      "name": "cx3d-16x40",
+      "family": "compute",
+      "vcpu": 16,
+      "memory": 40,
+      "bandwidth": 0,
+      "hourlyRate": 0.80237
+    },
+    {
+      "name": "cx3d-24x60",
+      "family": "compute",
+      "vcpu": 24,
+      "memory": 60,
+      "bandwidth": 0,
+      "hourlyRate": 1.20407
+    },
+    {
+      "name": "cx3d-32x80",
+      "family": "compute",
+      "vcpu": 32,
+      "memory": 80,
+      "bandwidth": 0,
+      "hourlyRate": 1.60577
+    },
+    {
+      "name": "cx3d-48x120",
+      "family": "compute",
+      "vcpu": 48,
+      "memory": 120,
+      "bandwidth": 0,
+      "hourlyRate": 2.40814
+    },
+    {
+      "name": "cx3d-64x160",
+      "family": "compute",
+      "vcpu": 64,
+      "memory": 160,
+      "bandwidth": 0,
+      "hourlyRate": 3.21154
+    },
+    {
+      "name": "cx3d-96x240",
+      "family": "compute",
+      "vcpu": 96,
+      "memory": 240,
+      "bandwidth": 0,
+      "hourlyRate": 4.81731
+    },
+    {
+      "name": "cx3d-128x320",
+      "family": "compute",
+      "vcpu": 128,
+      "memory": 320,
+      "bandwidth": 0,
+      "hourlyRate": 6.42308
+    },
+    {
+      "name": "cx3d-176x440",
+      "family": "compute",
+      "vcpu": 176,
+      "memory": 440,
+      "bandwidth": 0,
+      "hourlyRate": 8.028849999999998
+    },
+    {
+      "name": "mx3d-2x20",
+      "family": "memory",
+      "vcpu": 2,
+      "memory": 20,
+      "bandwidth": 0,
+      "hourlyRate": 0.13596
+    },
+    {
+      "name": "mx3d-4x40",
+      "family": "memory",
+      "vcpu": 4,
+      "memory": 40,
+      "bandwidth": 0,
+      "hourlyRate": 0.27295
+    },
+    {
+      "name": "mx3d-8x80",
+      "family": "memory",
+      "vcpu": 8,
+      "memory": 80,
+      "bandwidth": 0,
+      "hourlyRate": 0.5459
+    },
+    {
+      "name": "mx3d-16x160",
+      "family": "memory",
+      "vcpu": 16,
+      "memory": 160,
+      "bandwidth": 0,
+      "hourlyRate": 1.09077
+    },
+    {
+      "name": "mx3d-24x240",
+      "family": "memory",
+      "vcpu": 24,
+      "memory": 240,
+      "bandwidth": 0,
+      "hourlyRate": 2.182055
+    },
+    {
+      "name": "mx3d-32x320",
+      "family": "memory",
+      "vcpu": 32,
+      "memory": 320,
+      "bandwidth": 0,
+      "hourlyRate": 3.27334
+    },
+    {
+      "name": "mx3d-48x480",
+      "family": "memory",
+      "vcpu": 48,
+      "memory": 480,
+      "bandwidth": 0,
+      "hourlyRate": 4.36411
+    },
+    {
+      "name": "mx3d-64x640",
+      "family": "memory",
+      "vcpu": 64,
+      "memory": 640,
+      "bandwidth": 0,
+      "hourlyRate": 4.56084
+    },
+    {
+      "name": "mx3d-96x960",
+      "family": "memory",
+      "vcpu": 96,
+      "memory": 960,
+      "bandwidth": 0,
+      "hourlyRate": 6.84126
+    },
+    {
+      "name": "mx3d-128x1280",
+      "family": "memory",
+      "vcpu": 128,
+      "memory": 1280,
+      "bandwidth": 0,
+      "hourlyRate": 9.12168
+    },
+    {
+      "name": "mx3d-176x1760",
+      "family": "memory",
+      "vcpu": 176,
+      "memory": 1760,
+      "bandwidth": 0,
+      "hourlyRate": 11.402099999999999
+    },
+    {
+      "name": "vx3d-2x32",
+      "family": "very-high-memory",
+      "vcpu": 2,
+      "memory": 32,
+      "bandwidth": 0,
+      "hourlyRate": 0.223
+    },
+    {
+      "name": "vx3d-4x64",
+      "family": "very-high-memory",
+      "vcpu": 4,
+      "memory": 64,
+      "bandwidth": 0,
+      "hourlyRate": 0.445
+    },
+    {
+      "name": "vx3d-8x128",
+      "family": "very-high-memory",
+      "vcpu": 8,
+      "memory": 128,
+      "bandwidth": 0,
+      "hourlyRate": 0.89
+    },
+    {
+      "name": "vx3d-16x256",
+      "family": "very-high-memory",
+      "vcpu": 16,
+      "memory": 256,
+      "bandwidth": 0,
+      "hourlyRate": 1.781
+    },
+    {
+      "name": "vx3d-22x352-spl",
+      "family": "very-high-memory",
+      "vcpu": 22,
+      "memory": 352,
+      "bandwidth": 0,
+      "hourlyRate": 2.449
+    },
+    {
+      "name": "vx3d-24x384",
+      "family": "very-high-memory",
+      "vcpu": 24,
+      "memory": 384,
+      "bandwidth": 0,
+      "hourlyRate": 2.671
+    },
+    {
+      "name": "vx3d-32x512",
+      "family": "very-high-memory",
+      "vcpu": 32,
+      "memory": 512,
+      "bandwidth": 0,
+      "hourlyRate": 3.562
+    },
+    {
+      "name": "vx3d-44x704-spl",
+      "family": "very-high-memory",
+      "vcpu": 44,
+      "memory": 704,
+      "bandwidth": 0,
+      "hourlyRate": 4.898
+    },
+    {
+      "name": "vx3d-48x768",
+      "family": "very-high-memory",
+      "vcpu": 48,
+      "memory": 768,
+      "bandwidth": 0,
+      "hourlyRate": 5.343
+    },
+    {
+      "name": "vx3d-64x1024",
+      "family": "very-high-memory",
+      "vcpu": 64,
+      "memory": 1024,
+      "bandwidth": 0,
+      "hourlyRate": 7.124
+    },
+    {
+      "name": "vx3d-88x1408-spl",
+      "family": "very-high-memory",
+      "vcpu": 88,
+      "memory": 1408,
+      "bandwidth": 0,
+      "hourlyRate": 9.795
+    },
+    {
+      "name": "vx3d-88x1408",
+      "family": "very-high-memory",
+      "vcpu": 88,
+      "memory": 1408,
+      "bandwidth": 0,
+      "hourlyRate": 9.795
+    },
+    {
+      "name": "vx3d-96x1536",
+      "family": "very-high-memory",
+      "vcpu": 96,
+      "memory": 1536,
+      "bandwidth": 0,
+      "hourlyRate": 10.686
+    },
+    {
+      "name": "vx3d-128x2048",
+      "family": "very-high-memory",
+      "vcpu": 128,
+      "memory": 2048,
+      "bandwidth": 0,
+      "hourlyRate": 14.248
+    },
+    {
+      "name": "vx3d-176x2816",
+      "family": "very-high-memory",
+      "vcpu": 176,
+      "memory": 2816,
+      "bandwidth": 0,
+      "hourlyRate": 19.591
+    },
+    {
+      "name": "nxf-2x1",
+      "family": "balanced",
+      "vcpu": 2,
+      "memory": 1,
+      "bandwidth": 0,
+      "hourlyRate": 0.07262500000000001
+    },
+    {
+      "name": "nxf-2x2",
+      "family": "balanced",
+      "vcpu": 2,
+      "memory": 2,
+      "bandwidth": 0,
+      "hourlyRate": 0.07625000000000001
+    },
+    {
+      "name": "bxf-2x8",
+      "family": "balanced",
+      "vcpu": 2,
+      "memory": 8,
+      "bandwidth": 0,
+      "hourlyRate": 0.09538
+    },
+    {
+      "name": "bxf-4x16",
+      "family": "balanced",
+      "vcpu": 4,
+      "memory": 16,
+      "bandwidth": 0,
+      "hourlyRate": 0.19076
+    },
+    {
+      "name": "bxf-8x32",
+      "family": "balanced",
+      "vcpu": 8,
+      "memory": 32,
+      "bandwidth": 0,
+      "hourlyRate": 0.38152
+    },
+    {
+      "name": "bxf-16x64",
+      "family": "balanced",
+      "vcpu": 16,
+      "memory": 64,
+      "bandwidth": 0,
+      "hourlyRate": 0.76304
+    },
+    {
+      "name": "bxf-24x96",
+      "family": "balanced",
+      "vcpu": 24,
+      "memory": 96,
+      "bandwidth": 0,
+      "hourlyRate": 1.14456
+    },
+    {
+      "name": "bxf-32x128",
+      "family": "balanced",
+      "vcpu": 32,
+      "memory": 128,
+      "bandwidth": 0,
+      "hourlyRate": 1.52608
+    },
+    {
+      "name": "bxf-48x192",
+      "family": "balanced",
+      "vcpu": 48,
+      "memory": 192,
+      "bandwidth": 0,
+      "hourlyRate": 2.28912
+    },
+    {
+      "name": "bxf-64x256",
+      "family": "balanced",
+      "vcpu": 64,
+      "memory": 256,
+      "bandwidth": 0,
+      "hourlyRate": 3.05216
+    },
+    {
+      "name": "cxf-2x4",
+      "family": "compute",
+      "vcpu": 2,
+      "memory": 4,
+      "bandwidth": 0,
+      "hourlyRate": 0.08436
+    },
+    {
+      "name": "cxf-4x8",
+      "family": "compute",
+      "vcpu": 4,
+      "memory": 8,
+      "bandwidth": 0,
+      "hourlyRate": 0.16872
+    },
+    {
+      "name": "cxf-8x16",
+      "family": "compute",
+      "vcpu": 8,
+      "memory": 16,
+      "bandwidth": 0,
+      "hourlyRate": 0.33744
+    },
+    {
+      "name": "cxf-16x32",
+      "family": "compute",
+      "vcpu": 16,
+      "memory": 32,
+      "bandwidth": 0,
+      "hourlyRate": 0.67488
+    },
+    {
+      "name": "cxf-24x48",
+      "family": "compute",
+      "vcpu": 24,
+      "memory": 48,
+      "bandwidth": 0,
+      "hourlyRate": 1.01232
+    },
+    {
+      "name": "cxf-32x64",
+      "family": "compute",
+      "vcpu": 32,
+      "memory": 64,
+      "bandwidth": 0,
+      "hourlyRate": 1.34976
+    },
+    {
+      "name": "cxf-48x96",
+      "family": "compute",
+      "vcpu": 48,
+      "memory": 96,
+      "bandwidth": 0,
+      "hourlyRate": 2.02464
+    },
+    {
+      "name": "cxf-64x128",
+      "family": "compute",
+      "vcpu": 64,
+      "memory": 128,
+      "bandwidth": 0,
+      "hourlyRate": 2.69952
+    },
+    {
+      "name": "mxf-2x16",
+      "family": "memory",
+      "vcpu": 2,
+      "memory": 16,
+      "bandwidth": 0,
+      "hourlyRate": 0.12331
+    },
+    {
+      "name": "mxf-4x32",
+      "family": "memory",
+      "vcpu": 4,
+      "memory": 32,
+      "bandwidth": 0,
+      "hourlyRate": 0.24662
+    },
+    {
+      "name": "mxf-8x64",
+      "family": "memory",
+      "vcpu": 8,
+      "memory": 64,
+      "bandwidth": 0,
+      "hourlyRate": 0.49324
+    },
+    {
+      "name": "mxf-16x128",
+      "family": "memory",
+      "vcpu": 16,
+      "memory": 128,
+      "bandwidth": 0,
+      "hourlyRate": 0.98648
+    },
+    {
+      "name": "mxf-24x192",
+      "family": "memory",
+      "vcpu": 24,
+      "memory": 192,
+      "bandwidth": 0,
+      "hourlyRate": 1.47972
+    },
+    {
+      "name": "mxf-32x256",
+      "family": "memory",
+      "vcpu": 32,
+      "memory": 256,
+      "bandwidth": 0,
+      "hourlyRate": 1.97296
+    },
+    {
+      "name": "mxf-48x384",
+      "family": "memory",
+      "vcpu": 48,
+      "memory": 384,
+      "bandwidth": 0,
+      "hourlyRate": 2.95944
+    },
+    {
+      "name": "mxf-64x512",
+      "family": "memory",
+      "vcpu": 64,
+      "memory": 512,
+      "bandwidth": 0,
+      "hourlyRate": 3.94592
+    },
+    {
+      "name": "bx4-2x8",
+      "family": "balanced",
+      "vcpu": 2,
+      "memory": 8,
+      "bandwidth": 0,
+      "hourlyRate": 0.10198979999999999
+    },
+    {
+      "name": "bx4-4x16",
+      "family": "balanced",
+      "vcpu": 4,
+      "memory": 16,
+      "bandwidth": 0,
+      "hourlyRate": 0.20397959999999998
+    },
+    {
+      "name": "bx4-8x32",
+      "family": "balanced",
+      "vcpu": 8,
+      "memory": 32,
+      "bandwidth": 0,
+      "hourlyRate": 0.40795919999999997
+    },
+    {
+      "name": "bx4-16x64",
+      "family": "balanced",
+      "vcpu": 16,
+      "memory": 64,
+      "bandwidth": 0,
+      "hourlyRate": 0.8159183999999999
+    },
+    {
+      "name": "bx4-24x96",
+      "family": "balanced",
+      "vcpu": 24,
+      "memory": 96,
+      "bandwidth": 0,
+      "hourlyRate": 1.2238775999999998
+    },
+    {
+      "name": "bx4-32x128",
+      "family": "balanced",
+      "vcpu": 32,
+      "memory": 128,
+      "bandwidth": 0,
+      "hourlyRate": 1.6318367999999999
+    },
+    {
+      "name": "bx4-48x192",
+      "family": "balanced",
+      "vcpu": 48,
+      "memory": 192,
+      "bandwidth": 0,
+      "hourlyRate": 2.4477551999999996
+    },
+    {
+      "name": "bx4-64x256",
+      "family": "balanced",
+      "vcpu": 64,
+      "memory": 256,
+      "bandwidth": 0,
+      "hourlyRate": 3.2636735999999997
+    },
+    {
+      "name": "bx4-96x384",
+      "family": "balanced",
+      "vcpu": 96,
+      "memory": 384,
+      "bandwidth": 0,
+      "hourlyRate": 4.895510399999999
+    },
+    {
+      "name": "bx4-128x512",
+      "family": "balanced",
+      "vcpu": 128,
+      "memory": 512,
+      "bandwidth": 0,
+      "hourlyRate": 6.5273471999999995
+    },
+    {
+      "name": "bx4-176x704",
+      "family": "balanced",
+      "vcpu": 176,
+      "memory": 704,
+      "bandwidth": 0,
+      "hourlyRate": 8.975102399999999
+    },
+    {
+      "name": "bx4d-2x8",
+      "family": "balanced",
+      "vcpu": 2,
+      "memory": 8,
+      "bandwidth": 0,
+      "hourlyRate": 0.11332199999999999
+    },
+    {
+      "name": "bx4d-4x16",
+      "family": "balanced",
+      "vcpu": 4,
+      "memory": 16,
+      "bandwidth": 0,
+      "hourlyRate": 0.22664399999999998
+    },
+    {
+      "name": "bx4d-8x32",
+      "family": "balanced",
+      "vcpu": 8,
+      "memory": 32,
+      "bandwidth": 0,
+      "hourlyRate": 0.45328799999999997
+    },
+    {
+      "name": "bx4d-16x64",
+      "family": "balanced",
+      "vcpu": 16,
+      "memory": 64,
+      "bandwidth": 0,
+      "hourlyRate": 0.9065759999999999
+    },
+    {
+      "name": "bx4d-24x96",
+      "family": "balanced",
+      "vcpu": 24,
+      "memory": 96,
+      "bandwidth": 0,
+      "hourlyRate": 1.359864
+    },
+    {
+      "name": "bx4d-32x128",
+      "family": "balanced",
+      "vcpu": 32,
+      "memory": 128,
+      "bandwidth": 0,
+      "hourlyRate": 1.8131519999999999
+    },
+    {
+      "name": "bx4d-48x192",
+      "family": "balanced",
+      "vcpu": 48,
+      "memory": 192,
+      "bandwidth": 0,
+      "hourlyRate": 2.719728
+    },
+    {
+      "name": "bx4d-64x256",
+      "family": "balanced",
+      "vcpu": 64,
+      "memory": 256,
+      "bandwidth": 0,
+      "hourlyRate": 3.6263039999999997
+    },
+    {
+      "name": "bx4d-96x384",
+      "family": "balanced",
+      "vcpu": 96,
+      "memory": 384,
+      "bandwidth": 0,
+      "hourlyRate": 5.439456
+    },
+    {
+      "name": "bx4d-128x512",
+      "family": "balanced",
+      "vcpu": 128,
+      "memory": 512,
+      "bandwidth": 0,
+      "hourlyRate": 7.2526079999999995
+    },
+    {
+      "name": "bx4d-176x704",
+      "family": "balanced",
+      "vcpu": 176,
+      "memory": 704,
+      "bandwidth": 0,
+      "hourlyRate": 9.972335999999999
+    },
+    {
+      "name": "cx4-2x4",
+      "family": "compute",
+      "vcpu": 2,
+      "memory": 4,
+      "bandwidth": 0,
+      "hourlyRate": 0.0912636
+    },
+    {
+      "name": "cx4-4x8",
+      "family": "compute",
+      "vcpu": 4,
+      "memory": 8,
+      "bandwidth": 0,
+      "hourlyRate": 0.1825272
+    },
+    {
+      "name": "cx4-8x16",
+      "family": "compute",
+      "vcpu": 8,
+      "memory": 16,
+      "bandwidth": 0,
+      "hourlyRate": 0.3650544
+    },
+    {
+      "name": "cx4-16x32",
+      "family": "compute",
+      "vcpu": 16,
+      "memory": 32,
+      "bandwidth": 0,
+      "hourlyRate": 0.7301088
+    },
+    {
+      "name": "cx4-24x48",
+      "family": "compute",
+      "vcpu": 24,
+      "memory": 48,
+      "bandwidth": 0,
+      "hourlyRate": 1.0951632
+    },
+    {
+      "name": "cx4-32x64",
+      "family": "compute",
+      "vcpu": 32,
+      "memory": 64,
+      "bandwidth": 0,
+      "hourlyRate": 1.4602176
+    },
+    {
+      "name": "cx4-48x96",
+      "family": "compute",
+      "vcpu": 48,
+      "memory": 96,
+      "bandwidth": 0,
+      "hourlyRate": 2.1903264
+    },
+    {
+      "name": "cx4-64x128",
+      "family": "compute",
+      "vcpu": 64,
+      "memory": 128,
+      "bandwidth": 0,
+      "hourlyRate": 2.9204352
+    },
+    {
+      "name": "cx4-96x192",
+      "family": "compute",
+      "vcpu": 96,
+      "memory": 192,
+      "bandwidth": 0,
+      "hourlyRate": 4.3806528
+    },
+    {
+      "name": "cx4-128x256",
+      "family": "compute",
+      "vcpu": 128,
+      "memory": 256,
+      "bandwidth": 0,
+      "hourlyRate": 5.8408704
+    },
+    {
+      "name": "cx4-176x352",
+      "family": "compute",
+      "vcpu": 176,
+      "memory": 352,
+      "bandwidth": 0,
+      "hourlyRate": 8.0311968
+    },
+    {
+      "name": "cx4d-2x4",
+      "family": "compute",
+      "vcpu": 2,
+      "memory": 4,
+      "bandwidth": 0,
+      "hourlyRate": 0.10140400000000001
+    },
+    {
+      "name": "cx4d-4x8",
+      "family": "compute",
+      "vcpu": 4,
+      "memory": 8,
+      "bandwidth": 0,
+      "hourlyRate": 0.20280800000000002
+    },
+    {
+      "name": "cx4d-8x16",
+      "family": "compute",
+      "vcpu": 8,
+      "memory": 16,
+      "bandwidth": 0,
+      "hourlyRate": 0.40561600000000003
+    },
+    {
+      "name": "cx4d-16x32",
+      "family": "compute",
+      "vcpu": 16,
+      "memory": 32,
+      "bandwidth": 0,
+      "hourlyRate": 0.8112320000000001
+    },
+    {
+      "name": "cx4d-24x48",
+      "family": "compute",
+      "vcpu": 24,
+      "memory": 48,
+      "bandwidth": 0,
+      "hourlyRate": 1.2168480000000002
+    },
+    {
+      "name": "cx4d-32x64",
+      "family": "compute",
+      "vcpu": 32,
+      "memory": 64,
+      "bandwidth": 0,
+      "hourlyRate": 1.6224640000000001
+    },
+    {
+      "name": "cx4d-48x96",
+      "family": "compute",
+      "vcpu": 48,
+      "memory": 96,
+      "bandwidth": 0,
+      "hourlyRate": 2.4336960000000003
+    },
+    {
+      "name": "cx4d-64x128",
+      "family": "compute",
+      "vcpu": 64,
+      "memory": 128,
+      "bandwidth": 0,
+      "hourlyRate": 3.2449280000000003
+    },
+    {
+      "name": "cx4d-96x192",
+      "family": "compute",
+      "vcpu": 96,
+      "memory": 192,
+      "bandwidth": 0,
+      "hourlyRate": 4.867392000000001
+    },
+    {
+      "name": "cx4d-128x256",
+      "family": "compute",
+      "vcpu": 128,
+      "memory": 256,
+      "bandwidth": 0,
+      "hourlyRate": 6.4898560000000005
+    },
+    {
+      "name": "cx4d-176x352",
+      "family": "compute",
+      "vcpu": 176,
+      "memory": 352,
+      "bandwidth": 0,
+      "hourlyRate": 8.923552
+    },
+    {
+      "name": "mx4-2x16",
+      "family": "memory",
+      "vcpu": 2,
+      "memory": 16,
+      "bandwidth": 0,
+      "hourlyRate": 0.1296234
+    },
+    {
+      "name": "mx4-4x32",
+      "family": "memory",
+      "vcpu": 4,
+      "memory": 32,
+      "bandwidth": 0,
+      "hourlyRate": 0.2592468
+    },
+    {
+      "name": "mx4-8x64",
+      "family": "memory",
+      "vcpu": 8,
+      "memory": 64,
+      "bandwidth": 0,
+      "hourlyRate": 0.5184936
+    },
+    {
+      "name": "mx4-16x128",
+      "family": "memory",
+      "vcpu": 16,
+      "memory": 128,
+      "bandwidth": 0,
+      "hourlyRate": 1.0369872
+    },
+    {
+      "name": "mx4-24x192",
+      "family": "memory",
+      "vcpu": 24,
+      "memory": 192,
+      "bandwidth": 0,
+      "hourlyRate": 1.5554808
+    },
+    {
+      "name": "mx4-32x256",
+      "family": "memory",
+      "vcpu": 32,
+      "memory": 256,
+      "bandwidth": 0,
+      "hourlyRate": 2.0739744
+    },
+    {
+      "name": "mx4-48x384",
+      "family": "memory",
+      "vcpu": 48,
+      "memory": 384,
+      "bandwidth": 0,
+      "hourlyRate": 3.1109616
+    },
+    {
+      "name": "mx4-64x512",
+      "family": "memory",
+      "vcpu": 64,
+      "memory": 512,
+      "bandwidth": 0,
+      "hourlyRate": 4.1479488
+    },
+    {
+      "name": "mx4-96x768",
+      "family": "memory",
+      "vcpu": 96,
+      "memory": 768,
+      "bandwidth": 0,
+      "hourlyRate": 6.2219232
+    },
+    {
+      "name": "mx4-128x1024",
+      "family": "memory",
+      "vcpu": 128,
+      "memory": 1024,
+      "bandwidth": 0,
+      "hourlyRate": 8.2958976
+    },
+    {
+      "name": "mx4-176x1408",
+      "family": "memory",
+      "vcpu": 176,
+      "memory": 1408,
+      "bandwidth": 0,
+      "hourlyRate": 11.4068592
+    },
+    {
+      "name": "mx4d-2x16",
+      "family": "memory",
+      "vcpu": 2,
+      "memory": 16,
+      "bandwidth": 0,
+      "hourlyRate": 0.14402600000000002
+    },
+    {
+      "name": "mx4d-4x32",
+      "family": "memory",
+      "vcpu": 4,
+      "memory": 32,
+      "bandwidth": 0,
+      "hourlyRate": 0.28805200000000003
+    },
+    {
+      "name": "mx4d-8x64",
+      "family": "memory",
+      "vcpu": 8,
+      "memory": 64,
+      "bandwidth": 0,
+      "hourlyRate": 0.5761040000000001
+    },
+    {
+      "name": "mx4d-16x128",
+      "family": "memory",
+      "vcpu": 16,
+      "memory": 128,
+      "bandwidth": 0,
+      "hourlyRate": 1.1522080000000001
+    },
+    {
+      "name": "mx4d-24x192",
+      "family": "memory",
+      "vcpu": 24,
+      "memory": 192,
+      "bandwidth": 0,
+      "hourlyRate": 1.7283120000000003
+    },
+    {
+      "name": "mx4d-32x256",
+      "family": "memory",
+      "vcpu": 32,
+      "memory": 256,
+      "bandwidth": 0,
+      "hourlyRate": 2.3044160000000002
+    },
+    {
+      "name": "mx4d-48x384",
+      "family": "memory",
+      "vcpu": 48,
+      "memory": 384,
+      "bandwidth": 0,
+      "hourlyRate": 3.4566240000000006
+    },
+    {
+      "name": "mx4d-64x512",
+      "family": "memory",
+      "vcpu": 64,
+      "memory": 512,
+      "bandwidth": 0,
+      "hourlyRate": 4.6088320000000005
+    },
+    {
+      "name": "mx4d-96x768",
+      "family": "memory",
+      "vcpu": 96,
+      "memory": 768,
+      "bandwidth": 0,
+      "hourlyRate": 6.913248000000001
+    },
+    {
+      "name": "mx4d-128x1024",
+      "family": "memory",
+      "vcpu": 128,
+      "memory": 1024,
+      "bandwidth": 0,
+      "hourlyRate": 9.217664000000001
+    },
+    {
+      "name": "mx4d-176x1408",
+      "family": "memory",
+      "vcpu": 176,
+      "memory": 1408,
+      "bandwidth": 0,
+      "hourlyRate": 12.674288
+    }
+  ],
+  "bareMetalProfiles": [
+    {
+      "name": "mx3-metal-16x128",
+      "family": "memory",
+      "vcpu": 16,
+      "memory": 128,
+      "bandwidth": 0,
+      "hourlyRate": 2.137
+    },
+    {
+      "name": "cx3-metal-48x128",
+      "family": "compute",
+      "vcpu": 48,
+      "memory": 128,
+      "bandwidth": 0,
+      "hourlyRate": 2.309
+    },
+    {
+      "name": "cx3-metal-64x128",
+      "family": "compute",
+      "vcpu": 64,
+      "memory": 128,
+      "bandwidth": 0,
+      "hourlyRate": 2.493
+    },
+    {
+      "name": "mx3d-metal-16x128",
+      "family": "memory",
+      "vcpu": 16,
+      "memory": 128,
+      "bandwidth": 0,
+      "hourlyRate": 3.638
+    },
+    {
+      "name": "cx3d-metal-48x128",
+      "family": "compute",
+      "vcpu": 48,
+      "memory": 128,
+      "bandwidth": 0,
+      "hourlyRate": 3.809
+    },
+    {
+      "name": "cx3d-metal-64x128",
+      "family": "compute",
+      "vcpu": 64,
+      "memory": 128,
+      "bandwidth": 0,
+      "hourlyRate": 3.993
+    },
+    {
+      "name": "vx3-metal-16x256",
+      "family": "very-high-memory",
+      "vcpu": 16,
+      "memory": 256,
+      "bandwidth": 0,
+      "hourlyRate": 2.565
+    },
+    {
+      "name": "bx3-metal-48x256",
+      "family": "balanced",
+      "vcpu": 48,
+      "memory": 256,
+      "bandwidth": 0,
+      "hourlyRate": 2.77
+    },
+    {
+      "name": "bx3-metal-64x256",
+      "family": "balanced",
+      "vcpu": 64,
+      "memory": 256,
+      "bandwidth": 0,
+      "hourlyRate": 2.992
+    },
+    {
+      "name": "vx3d-metal-16x256",
+      "family": "very-high-memory",
+      "vcpu": 16,
+      "memory": 256,
+      "bandwidth": 0,
+      "hourlyRate": 4.065
+    },
+    {
+      "name": "bx3d-metal-48x256",
+      "family": "balanced",
+      "vcpu": 48,
+      "memory": 256,
+      "bandwidth": 0,
+      "hourlyRate": 4.27
+    },
+    {
+      "name": "bx3d-metal-64x256",
+      "family": "balanced",
+      "vcpu": 64,
+      "memory": 256,
+      "bandwidth": 0,
+      "hourlyRate": 4.492
+    },
+    {
+      "name": "ux3-metal-16x512",
+      "family": "ultra-high-memory",
+      "vcpu": 16,
+      "memory": 512,
+      "bandwidth": 0,
+      "hourlyRate": 3.335
+    },
+    {
+      "name": "mx3-metal-48x512",
+      "family": "memory",
+      "vcpu": 48,
+      "memory": 512,
+      "bandwidth": 0,
+      "hourlyRate": 3.601
+    },
+    {
+      "name": "mx3-metal-64x512",
+      "family": "memory",
+      "vcpu": 64,
+      "memory": 512,
+      "bandwidth": 0,
+      "hourlyRate": 3.889
+    },
+    {
+      "name": "ux3d-metal-16x512",
+      "family": "ultra-high-memory",
+      "vcpu": 16,
+      "memory": 512,
+      "bandwidth": 0,
+      "hourlyRate": 4.835
+    },
+    {
+      "name": "mx3d-metal-48x512",
+      "family": "memory",
+      "vcpu": 48,
+      "memory": 512,
+      "bandwidth": 0,
+      "hourlyRate": 5.101
+    },
+    {
+      "name": "mx3d-metal-64x512",
+      "family": "memory",
+      "vcpu": 64,
+      "memory": 512,
+      "bandwidth": 0,
+      "hourlyRate": 5.389
+    },
+    {
+      "name": "mx3-metal-96x1024",
+      "family": "memory",
+      "vcpu": 96,
+      "memory": 1024,
+      "bandwidth": 0,
+      "hourlyRate": 8.371
+    },
+    {
+      "name": "mx3-metal-128x1024",
+      "family": "memory",
+      "vcpu": 128,
+      "memory": 1024,
+      "bandwidth": 0,
+      "hourlyRate": 9.041
+    },
+    {
+      "name": "bx3-metal-192x1024",
+      "family": "balanced",
+      "vcpu": 192,
+      "memory": 1024,
+      "bandwidth": 0,
+      "hourlyRate": 9.764
+    },
+    {
+      "name": "mx3d-metal-96x1024",
+      "family": "memory",
+      "vcpu": 96,
+      "memory": 1024,
+      "bandwidth": 0,
+      "hourlyRate": 11.371
+    },
+    {
+      "name": "mx3d-metal-128x1024",
+      "family": "memory",
+      "vcpu": 128,
+      "memory": 1024,
+      "bandwidth": 0,
+      "hourlyRate": 12.041
+    },
+    {
+      "name": "bx3d-metal-192x1024",
+      "family": "balanced",
+      "vcpu": 192,
+      "memory": 1024,
+      "bandwidth": 0,
+      "hourlyRate": 12.764
+    },
+    {
+      "name": "ux3d-metal-96x2048",
+      "family": "ultra-high-memory",
+      "vcpu": 96,
+      "memory": 2048,
+      "bandwidth": 0,
+      "hourlyRate": 14.555
+    },
+    {
+      "name": "vx3d-metal-128x2048",
+      "family": "very-high-memory",
+      "vcpu": 128,
+      "memory": 2048,
+      "bandwidth": 0,
+      "hourlyRate": 15.719
+    },
+    {
+      "name": "mx3d-metal-192x2048",
+      "family": "memory",
+      "vcpu": 192,
+      "memory": 2048,
+      "bandwidth": 0,
+      "hourlyRate": 16.977
+    },
+    {
+      "name": "ux3d-metal-96x3072",
+      "family": "ultra-high-memory",
+      "vcpu": 96,
+      "memory": 3072,
+      "bandwidth": 0,
+      "hourlyRate": 18.63
+    },
+    {
+      "name": "ux3d-metal-128x3072",
+      "family": "ultra-high-memory",
+      "vcpu": 128,
+      "memory": 3072,
+      "bandwidth": 0,
+      "hourlyRate": 20.12
+    },
+    {
+      "name": "vx3d-metal-192x3072",
+      "family": "very-high-memory",
+      "vcpu": 192,
+      "memory": 3072,
+      "bandwidth": 0,
+      "hourlyRate": 21.73
+    },
+    {
+      "name": "ux3d-metal-96x4096",
+      "family": "ultra-high-memory",
+      "vcpu": 96,
+      "memory": 4096,
+      "bandwidth": 0,
+      "hourlyRate": 23.846
+    },
+    {
+      "name": "ux3d-metal-128x4096",
+      "family": "ultra-high-memory",
+      "vcpu": 128,
+      "memory": 4096,
+      "bandwidth": 0,
+      "hourlyRate": 25.754
+    },
+    {
+      "name": "ux3d-metal-192x4096",
+      "family": "ultra-high-memory",
+      "vcpu": 192,
+      "memory": 4096,
+      "bandwidth": 0,
+      "hourlyRate": 27.814
+    },
+    {
+      "name": "cx2-metal-96x192",
+      "family": "compute",
+      "vcpu": 96,
+      "memory": 192,
+      "bandwidth": 0,
+      "hourlyRate": 2.8329999999999997
+    },
+    {
+      "name": "cx2d-metal-96x192",
+      "family": "compute",
+      "vcpu": 96,
+      "memory": 192,
+      "bandwidth": 0,
+      "hourlyRate": 4.665000000000001
+    },
+    {
+      "name": "bx2-metal-96x384",
+      "family": "balanced",
+      "vcpu": 96,
+      "memory": 384,
+      "bandwidth": 0,
+      "hourlyRate": 3.384
+    },
+    {
+      "name": "bx2d-metal-96x384",
+      "family": "balanced",
+      "vcpu": 96,
+      "memory": 384,
+      "bandwidth": 0,
+      "hourlyRate": 5.215999999999999
+    },
+    {
+      "name": "mx2-metal-96x768",
+      "family": "memory",
+      "vcpu": 96,
+      "memory": 768,
+      "bandwidth": 0,
+      "hourlyRate": 4.797000000000001
+    },
+    {
+      "name": "mx2d-metal-96x768",
+      "family": "memory",
+      "vcpu": 96,
+      "memory": 768,
+      "bandwidth": 0,
+      "hourlyRate": 6.629
+    },
+    {
+      "name": "vx2d-metal-96x1536",
+      "family": "very-high-memory",
+      "vcpu": 96,
+      "memory": 1536,
+      "bandwidth": 0,
+      "hourlyRate": 10.094999999999999
+    },
+    {
+      "name": "mx2de-metal-96x768",
+      "family": "balanced",
+      "vcpu": 96,
+      "memory": 768,
+      "bandwidth": 0,
+      "hourlyRate": 13.734
+    },
+    {
+      "name": "mx3de-metal-64x512",
+      "family": "balanced",
+      "vcpu": 64,
+      "memory": 512,
+      "bandwidth": 0,
+      "hourlyRate": 19.127
+    }
+  ]
+}

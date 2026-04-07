@@ -85,13 +85,13 @@ function assessBlockVolume(
 }
 
 function assessFileVolume(item: unknown): FileVolumeAssessment {
-  const fileProfile = getFileStorageProfile();
+  const { primary, traditional } = getFileStorageProfile();
   return {
     id: num(item, 'id'),
     username: str(item, 'username'),
     capacityGB: num(item, 'capacityGb'),
     currentFee: num(item, 'recurringFee'),
-    notes: [`Migrate to VPC File Share (NFS v4.1, ${fileProfile} profile) — verify application compatibility with NFS version`],
+    notes: [`Migrate to VPC File Share (NFS v4.1, ${primary} profile recommended, ${traditional} as traditional alternative) — verify application compatibility with NFS version`],
   };
 }
 
@@ -138,7 +138,7 @@ export function analyzeStorage(
   if (sdpAvailable && sdpCount > 0) {
     recommendations.push(
       `${sdpCount} volume(s) recommended for Gen 2 sdp profile (up to 64K IOPS, 32 TB). ` +
-      'Note: sdp does not support consistency group snapshots and cannot be used for boot volumes.',
+      'Note: sdp does not support consistency group snapshots. Not recommended for boot volumes (GPT detection issue — may boot BIOS instead of UEFI; must not be used with secure boot).',
     );
   }
   if (!sdpAvailable && blockStorage.length > 0) {

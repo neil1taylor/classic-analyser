@@ -22,7 +22,7 @@ const blockColumns: MigrationColumnDef[] = [
   { key: 'tier', header: 'Classic Tier', group: 'classic' },
   { key: 'fee', header: 'Classic Monthly', group: 'classic' },
   { key: 'vpcProfile', header: 'VPC Profile', group: 'vpc' },
-  { key: 'profileGen', header: 'Gen', group: 'vpc', headerTooltip: 'VPC storage profile generation. Gen 2 (sdp) offers higher IOPS/capacity but does not support boot volumes or consistency group snapshots.' },
+  { key: 'profileGen', header: 'Gen', group: 'vpc', headerTooltip: 'VPC storage profile generation. Gen 2 (sdp) offers higher IOPS/capacity but does not support consistency group snapshots and is not recommended for boot volumes (GPT detection issue).' },
   { key: 'strategy', header: 'Strategy', group: 'vpc', headerTooltip: 'Recommended migration strategy for this volume' },
 ];
 

@@ -202,7 +202,25 @@ function parseProfileFamily(profileName: string): ProfileFamily {
 }
 ```
 
-### 3.3 Profile Data Refresh Schedule
+### 3.3 Spreadsheet-Based Profile Import
+
+In addition to the VPC API, profile data can be imported from IBM's Classic-to-VPC migration spreadsheets:
+
+```bash
+npm run import:mappings
+```
+
+This reads two XLSX files from the `mappings/` directory (not committed to git) and generates three JSON files in `src/services/migration/data/generated/` (committed to git):
+
+| Generated File | Source Sheet(s) | Contents |
+|----------------|-----------------|----------|
+| `vpcProfileCatalog.json` | VPC VSI Price, VPC BM Price | 266 VSI + 42 BM profiles with hourly pricing |
+| `bmMappings.json` | Aggregare Mapping V3 | 666 explicit Classic BM → VPC profile mappings |
+| `storageMappings.json` | Block - Data, File - Data | Storage tier mappings, pricing, zone mappings |
+
+The generated catalog is the primary source for `VPC_PROFILES` and `VPC_BARE_METAL_PROFILES` in `vpcProfiles.ts`. Hardcoded fallback arrays are used if the generated files are empty. Re-run the script when the spreadsheets are updated.
+
+### 3.4 Profile Data Refresh Schedule
 
 ```typescript
 import cron from 'node-cron';

@@ -65,6 +65,7 @@ Key checks include:
 - File storage compatibility
 - Multi-attach storage detection
 - Snapshot requirements
+- Gen 2 SDP profile boot volume warning — sdp is not recommended for boot volumes (GPT detection issue; may boot BIOS instead of UEFI; no secure boot support). See [Block Storage profiles](https://cloud.ibm.com/docs/vpc?topic=vpc-block-storage-profiles)
 - **VPC quota: volumes per region** (300 default)
 - **VPC quota: file shares per account** (300 default)
 

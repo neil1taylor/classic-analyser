@@ -1,0 +1,1667 @@
+{
+  "generatedAt": "2026-04-07T13:41:39.023Z",
+  "sources": [
+    "Classic-to-vpc-profile-mapping-separate-sheets.xlsx"
+  ],
+  "block": {
+    "profiles": [
+      {
+        "name": "Classic Endurance - 0.25 IOPS/GB",
+        "throughputMultiplier": 16,
+        "iopsMultiplier": 0.25,
+        "minSize": 20,
+        "maxSize": 12000,
+        "minThroughput": 1.5625,
+        "maxThroughput": 46.875,
+        "minIOPS": 100,
+        "maxIOPS": 3000
+      },
+      {
+        "name": "Classic Endurance - 2 IOPS/GB",
+        "throughputMultiplier": 16,
+        "iopsMultiplier": 2,
+        "minSize": 20,
+        "maxSize": 12000,
+        "minThroughput": 1.5625,
+        "maxThroughput": 375,
+        "minIOPS": 100,
+        "maxIOPS": 24000
+      },
+      {
+        "name": "Classic Endurance - 4 IOPS/GB",
+        "throughputMultiplier": 16,
+        "iopsMultiplier": 4,
+        "minSize": 20,
+        "maxSize": 12000,
+        "minThroughput": 1.5625,
+        "maxThroughput": 750,
+        "minIOPS": 100,
+        "maxIOPS": 48000
+      },
+      {
+        "name": "Classic Endurance - 10 IOPS/GB",
+        "throughputMultiplier": 16,
+        "iopsMultiplier": 10,
+        "minSize": 20,
+        "maxSize": 4000,
+        "minThroughput": 3.125,
+        "maxThroughput": 625,
+        "minIOPS": 200,
+        "maxIOPS": 40000
+      },
+      {
+        "name": "VPC - 3 IOPS/GB",
+        "throughputMultiplier": 16,
+        "iopsMultiplier": 3,
+        "minSize": 10,
+        "maxSize": 16000,
+        "minThroughput": 46.875,
+        "maxThroughput": 670,
+        "minIOPS": 3000,
+        "maxIOPS": 48000
+      },
+      {
+        "name": "VPC - 5 IOPS/GB",
+        "throughputMultiplier": 16,
+        "iopsMultiplier": 5,
+        "minSize": 10,
+        "maxSize": 9600,
+        "minThroughput": 46.875,
+        "maxThroughput": 750,
+        "minIOPS": 3000,
+        "maxIOPS": 48000
+      },
+      {
+        "name": "VPC - 10 IOPS/GB",
+        "throughputMultiplier": 256,
+        "iopsMultiplier": 10,
+        "minSize": 10,
+        "maxSize": 4800,
+        "minThroughput": 750,
+        "maxThroughput": 1024,
+        "minIOPS": 3000,
+        "maxIOPS": 48000
+      },
+      {
+        "name": "SDS",
+        "throughputMultiplier": 0,
+        "iopsMultiplier": 0,
+        "minSize": 1,
+        "maxSize": 32000,
+        "minThroughput": 125,
+        "maxThroughput": 1024,
+        "minIOPS": 3000,
+        "maxIOPS": 64000
+      },
+      {
+        "name": "Classic Performance (Custom)",
+        "throughputMultiplier": 16,
+        "iopsMultiplier": 0,
+        "minSize": 20,
+        "maxSize": 12000,
+        "minThroughput": 1.5625,
+        "maxThroughput": 768,
+        "minIOPS": 100,
+        "maxIOPS": 48000
+      },
+      {
+        "name": "VPC Custom",
+        "throughputMultiplier": 256,
+        "iopsMultiplier": 0,
+        "minSize": 10,
+        "maxSize": 16000,
+        "minThroughput": 25,
+        "maxThroughput": 1024,
+        "minIOPS": 100,
+        "maxIOPS": 48000
+      },
+      {
+        "name": "SDS",
+        "throughputMultiplier": 0,
+        "iopsMultiplier": 0,
+        "minSize": 1,
+        "maxSize": 32000,
+        "minThroughput": 125,
+        "maxThroughput": 1024,
+        "minIOPS": 3000,
+        "maxIOPS": 64000
+      }
+    ],
+    "tierMappings": [
+      {
+        "classicTier": "Classic Endurance - 0.25 IOPS/GB",
+        "vpcProfile": "VPC - 3 IOPS/GB"
+      },
+      {
+        "classicTier": "Classic Endurance - 2 IOPS/GB",
+        "vpcProfile": "VPC - 3 IOPS/GB"
+      },
+      {
+        "classicTier": "Classic Endurance - 4 IOPS/GB",
+        "vpcProfile": "VPC - 5 IOPS/GB"
+      },
+      {
+        "classicTier": "Classic Endurance - 10 IOPS/GB",
+        "vpcProfile": "VPC - 10 IOPS/GB"
+      },
+      {
+        "classicTier": "VPC - 3 IOPS/GB",
+        "vpcProfile": "VPC - 3 IOPS/GB"
+      },
+      {
+        "classicTier": "VPC - 5 IOPS/GB",
+        "vpcProfile": "VPC - 5 IOPS/GB"
+      },
+      {
+        "classicTier": "VPC - 10 IOPS/GB",
+        "vpcProfile": "VPC - 10 IOPS/GB"
+      }
+    ],
+    "vpcPricing": [
+      {
+        "profile": "VPC - 3 IOPS/GB",
+        "hourlyRatePerGB": 0.00012025
+      },
+      {
+        "profile": "VPC - 5 IOPS/GB",
+        "hourlyRatePerGB": 0.00021043
+      },
+      {
+        "profile": "VPC - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.00079019
+      }
+    ],
+    "sdpPricing": [
+      {
+        "component": "Data storage (per GB)",
+        "hourlyRate": 0.00011
+      },
+      {
+        "component": "IOPS provisioned (per IOP)",
+        "hourlyRate": 0.000007
+      },
+      {
+        "component": "Throughput (per MB/s)",
+        "hourlyRate": 0.000055
+      }
+    ],
+    "classicPricingByZone": [
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.0000736111111111111,
+        "zone": "dal08"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.00007777777777777778,
+        "zone": "dal09"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.0000726027397260274,
+        "zone": "dal10"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.0000726027397260274,
+        "zone": "dal12"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.0000726027397260274,
+        "zone": "dal13"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.0000726027397260274,
+        "zone": "dal14"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.0000767123287671233,
+        "zone": "sjc03"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.0000767123287671233,
+        "zone": "sjc04"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.00008150684931506848,
+        "zone": "mon01"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.0000767123287671233,
+        "zone": "tor01"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.0000767123287671233,
+        "zone": "tor04"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.0000767123287671233,
+        "zone": "tor05"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.0000726027397260274,
+        "zone": "wdc04"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.0000726027397260274,
+        "zone": "wdc06"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.0000726027397260274,
+        "zone": "wdc07"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.0001,
+        "zone": "sao01"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.0001,
+        "zone": "sao04"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.0001,
+        "zone": "sao05"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.00008150684931506848,
+        "zone": "ams03"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.00008356164383561643,
+        "zone": "fra02"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.00008356164383561643,
+        "zone": "fra04"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.00008356164383561643,
+        "zone": "fra05"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.00008698630136986301,
+        "zone": "lon02"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.00008150684931506848,
+        "zone": "lon04"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.00008150684931506848,
+        "zone": "lon05"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.00008150684931506848,
+        "zone": "lon06"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.00008356164383561643,
+        "zone": "mad02"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.00008356164383561643,
+        "zone": "mad04"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.000173287671232877,
+        "zone": "dal08"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00018424657534246575,
+        "zone": "dal09"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00017328767123287668,
+        "zone": "dal10"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.000173287671232877,
+        "zone": "dal12"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.000173287671232877,
+        "zone": "dal13"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00017328767123287668,
+        "zone": "dal14"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00018424657534246575,
+        "zone": "sjc03"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00018424657534246575,
+        "zone": "sjc04"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.0001958904109589041,
+        "zone": "mon01"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00018424657534246575,
+        "zone": "tor01"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00018424657534246575,
+        "zone": "tor04"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00018424657534246575,
+        "zone": "tor05"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00017328767123287668,
+        "zone": "wdc04"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00017328767123287668,
+        "zone": "wdc06"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00017328767123287668,
+        "zone": "wdc07"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.0002397260273972603,
+        "zone": "sao01"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.0002397260273972603,
+        "zone": "sao04"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.0002397260273972603,
+        "zone": "sao05"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.0001958904109589041,
+        "zone": "ams03"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00020136986301369863,
+        "zone": "fra02"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00020136986301369863,
+        "zone": "fra04"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00020136986301369863,
+        "zone": "fra05"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00020821917808219178,
+        "zone": "lon02"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.0001958904109589041,
+        "zone": "lon04"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.0001958904109589041,
+        "zone": "lon05"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.0001958904109589041,
+        "zone": "lon06"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00020136986301369863,
+        "zone": "mad02"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00020136986301369863,
+        "zone": "mad04"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.000231506849315068,
+        "zone": "dal08"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.0002452054794520548,
+        "zone": "dal09"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00023150684931506847,
+        "zone": "dal10"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00023150684931506847,
+        "zone": "dal12"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00023150684931506847,
+        "zone": "dal13"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00023150684931506847,
+        "zone": "dal14"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.0002452054794520548,
+        "zone": "sjc03"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.0002452054794520548,
+        "zone": "sjc04"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00026164383561643834,
+        "zone": "mon01"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.0002452054794520548,
+        "zone": "tor01"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.0002452054794520548,
+        "zone": "tor04"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.0002452054794520548,
+        "zone": "tor05"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00023150684931506847,
+        "zone": "wdc04"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00023150684931506847,
+        "zone": "wdc06"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00023150684931506847,
+        "zone": "wdc07"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.0003054794520547945,
+        "zone": "sao01"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.0003054794520547945,
+        "zone": "sao04"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.0003054794520547945,
+        "zone": "sao05"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00026164383561643834,
+        "zone": "ams03"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.0002678082191780822,
+        "zone": "fra02"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.0002678082191780822,
+        "zone": "fra04"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.0002678082191780822,
+        "zone": "fra05"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.0002773972602739726,
+        "zone": "lon02"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00026164383561643834,
+        "zone": "lon04"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00026164383561643834,
+        "zone": "lon05"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00026164383561643834,
+        "zone": "lon06"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.0002678082191780822,
+        "zone": "mad02"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.0002678082191780822,
+        "zone": "mad04"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.000693835616438356,
+        "zone": "dal08"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0007356164383561644,
+        "zone": "dal09"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.000693835616438356,
+        "zone": "dal10"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0006938356164383562,
+        "zone": "dal12"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0006938356164383562,
+        "zone": "dal13"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0006938356164383562,
+        "zone": "dal14"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0007356164383561644,
+        "zone": "sjc03"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0007356164383561644,
+        "zone": "sjc04"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0007842465753424658,
+        "zone": "mon01"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0007356164383561644,
+        "zone": "tor01"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0007356164383561644,
+        "zone": "tor04"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0007356164383561644,
+        "zone": "tor05"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0006938356164383562,
+        "zone": "wdc04"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0006938356164383562,
+        "zone": "wdc06"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0006938356164383562,
+        "zone": "wdc07"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0009575342465753424,
+        "zone": "sao01"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0009575342465753424,
+        "zone": "sao04"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0009575342465753424,
+        "zone": "sao05"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0007842465753424658,
+        "zone": "ams03"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0008041095890410959,
+        "zone": "fra02"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0008041095890410959,
+        "zone": "fra04"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0008041095890410959,
+        "zone": "fra05"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0008321917808219179,
+        "zone": "lon02"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0007842465753424658,
+        "zone": "lon04"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0007842465753424658,
+        "zone": "lon05"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0007842465753424658,
+        "zone": "lon06"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0008041095890410959,
+        "zone": "mad02"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0008041095890410959,
+        "zone": "mad04"
+      }
+    ]
+  },
+  "file": {
+    "profiles": [
+      {
+        "name": "Classic Endurance - 0.25 IOPS/GB",
+        "throughputMultiplier": 16,
+        "iopsMultiplier": 0.25,
+        "minSize": 20,
+        "maxSize": 12000,
+        "minThroughput": 1.5625,
+        "maxThroughput": 46.875,
+        "minIOPS": 100,
+        "maxIOPS": 3000
+      },
+      {
+        "name": "Classic Endurance - 2 IOPS/GB",
+        "throughputMultiplier": 16,
+        "iopsMultiplier": 2,
+        "minSize": 20,
+        "maxSize": 12000,
+        "minThroughput": 1.5625,
+        "maxThroughput": 375,
+        "minIOPS": 100,
+        "maxIOPS": 24000
+      },
+      {
+        "name": "Classic Endurance - 4 IOPS/GB",
+        "throughputMultiplier": 16,
+        "iopsMultiplier": 4,
+        "minSize": 20,
+        "maxSize": 12000,
+        "minThroughput": 1.5625,
+        "maxThroughput": 750,
+        "minIOPS": 100,
+        "maxIOPS": 48000
+      },
+      {
+        "name": "Classic Endurance - 10 IOPS/GB",
+        "throughputMultiplier": 16,
+        "iopsMultiplier": 10,
+        "minSize": 20,
+        "maxSize": 4000,
+        "minThroughput": 3.125,
+        "maxThroughput": 625,
+        "minIOPS": 200,
+        "maxIOPS": 40000
+      },
+      {
+        "name": "dp2",
+        "throughputMultiplier": 0,
+        "iopsMultiplier": 0,
+        "minSize": 10,
+        "maxSize": 32000,
+        "minThroughput": 100,
+        "maxThroughput": 1024,
+        "minIOPS": 100,
+        "maxIOPS": 96000
+      },
+      {
+        "name": "rfs",
+        "throughputMultiplier": 0,
+        "iopsMultiplier": 0,
+        "minSize": 1,
+        "maxSize": 32000,
+        "minThroughput": 100,
+        "maxThroughput": 1024,
+        "minIOPS": 100,
+        "maxIOPS": 35000
+      },
+      {
+        "name": "Classic Performance (Custom)",
+        "throughputMultiplier": 16,
+        "iopsMultiplier": 0,
+        "minSize": 20,
+        "maxSize": 12000,
+        "minThroughput": 1.5625,
+        "maxThroughput": 16,
+        "minIOPS": 100,
+        "maxIOPS": 1000
+      },
+      {
+        "name": "VPC Custom",
+        "throughputMultiplier": 256,
+        "iopsMultiplier": 0,
+        "minSize": 10,
+        "maxSize": 16000,
+        "minThroughput": 25,
+        "maxThroughput": 1024,
+        "minIOPS": 100,
+        "maxIOPS": 48000
+      },
+      {
+        "name": "SDS",
+        "throughputMultiplier": 0,
+        "iopsMultiplier": 0,
+        "minSize": 1,
+        "maxSize": 32000,
+        "minThroughput": 125,
+        "maxThroughput": 1024,
+        "minIOPS": 3000,
+        "maxIOPS": 64000
+      }
+    ],
+    "tierMappings": [
+      {
+        "classicTier": "Classic Endurance - 0.25 IOPS/GB",
+        "vpcProfile": "dp2"
+      },
+      {
+        "classicTier": "Classic Endurance - 2 IOPS/GB",
+        "vpcProfile": "dp2"
+      },
+      {
+        "classicTier": "Classic Endurance - 4 IOPS/GB",
+        "vpcProfile": "dp2"
+      },
+      {
+        "classicTier": "Classic Endurance - 10 IOPS/GB",
+        "vpcProfile": "dp2"
+      },
+      {
+        "classicTier": "dp2",
+        "vpcProfile": "dp2"
+      },
+      {
+        "classicTier": "Classic Performance (Custom)",
+        "vpcProfile": "dp2"
+      }
+    ],
+    "vpcPricing": [
+      {
+        "profile": "VPC - dp2 (per GB)",
+        "hourlyRatePerGB": 0.00020753424657534244
+      },
+      {
+        "profile": "VPC - dp2 (per IOP)",
+        "hourlyRatePerGB": 0.00013835616438356166
+      },
+      {
+        "profile": "VPC - rfs (per GB)",
+        "hourlyRatePerGB": 0.00034246575342465754
+      },
+      {
+        "profile": "VPC - rfs (per MB/s)",
+        "hourlyRatePerGB": 0.00006849315068493152
+      }
+    ],
+    "classicPricingByZone": [
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.000043273972602739724,
+        "zone": "dal09"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.00004080707762557078,
+        "zone": "dal10"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.00004080707762557078,
+        "zone": "dal12"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.00004080707762557078,
+        "zone": "dal13"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.00004080707762557078,
+        "zone": "dal14"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.000043273972602739724,
+        "zone": "sjc03"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.000043273972602739724,
+        "zone": "sjc04"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.000046131278538812786,
+        "zone": "mon01"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.000043273972602739724,
+        "zone": "tor01"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.000043273972602739724,
+        "zone": "tor04"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.000043273972602739724,
+        "zone": "tor05"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.00004080707762557078,
+        "zone": "wdc04"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.00004080707762557078,
+        "zone": "wdc06"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.00004080707762557078,
+        "zone": "wdc07"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.00005631392694063927,
+        "zone": "sao01"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.00005631392694063927,
+        "zone": "sao04"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.00005631392694063927,
+        "zone": "sao05"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.000046131278538812786,
+        "zone": "ams03"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.00004729908675799087,
+        "zone": "fra02"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.00004729908675799087,
+        "zone": "fra04"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.00004729908675799087,
+        "zone": "fra05"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.00004894977168949772,
+        "zone": "lon02"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.000046131278538812786,
+        "zone": "lon04"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.000046131278538812786,
+        "zone": "lon05"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.000046131278538812786,
+        "zone": "lon06"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.00004729908675799087,
+        "zone": "mad02"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.00004729908675799087,
+        "zone": "mad04"
+      },
+      {
+        "tier": "Classic Endurance - 0.25 IOPS/GB",
+        "hourlyRatePerGB": 0.00004729908675799087,
+        "zone": "mad05"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00010385730593607306,
+        "zone": "dal09"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00009793721461187215,
+        "zone": "dal10"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00009793721461187215,
+        "zone": "dal12"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00009793721461187215,
+        "zone": "dal13"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00009793721461187215,
+        "zone": "dal14"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00010385730593607306,
+        "zone": "sjc03"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00010385730593607306,
+        "zone": "sjc04"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00011071575342465754,
+        "zone": "mon01"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00010385730593607306,
+        "zone": "tor01"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00010385730593607306,
+        "zone": "tor04"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00010385730593607306,
+        "zone": "tor05"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00009793721461187215,
+        "zone": "wdc04"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00009793721461187215,
+        "zone": "wdc06"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00009793721461187215,
+        "zone": "wdc07"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.0001351529680365297,
+        "zone": "sao01"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.0001351529680365297,
+        "zone": "sao04"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.0001351529680365297,
+        "zone": "sao05"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00011071575342465754,
+        "zone": "ams03"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00011351712328767123,
+        "zone": "fra02"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00011351712328767123,
+        "zone": "fra04"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00011351712328767123,
+        "zone": "fra05"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00011747945205479451,
+        "zone": "lon02"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00011071575342465754,
+        "zone": "lon04"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00011071575342465754,
+        "zone": "lon05"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00011071575342465754,
+        "zone": "lon06"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00011351712328767123,
+        "zone": "mad02"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00011351712328767123,
+        "zone": "mad04"
+      },
+      {
+        "tier": "Classic Endurance - 2 IOPS/GB",
+        "hourlyRatePerGB": 0.00011351712328767123,
+        "zone": "mad05"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00013847602739726028,
+        "zone": "dal09"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00013058333333333335,
+        "zone": "dal10"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00013058333333333335,
+        "zone": "dal12"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00013058333333333335,
+        "zone": "dal13"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00013058333333333335,
+        "zone": "dal14"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00013847602739726028,
+        "zone": "sjc03"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00013847602739726028,
+        "zone": "sjc04"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00014762100456621006,
+        "zone": "mon01"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00013847602739726028,
+        "zone": "tor01"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00013847602739726028,
+        "zone": "tor04"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00013847602739726028,
+        "zone": "tor05"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00013058333333333335,
+        "zone": "wdc04"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00013058333333333335,
+        "zone": "wdc06"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00013058333333333335,
+        "zone": "wdc07"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00018020319634703196,
+        "zone": "sao01"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00018020319634703196,
+        "zone": "sao04"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00018020319634703196,
+        "zone": "sao05"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00014762100456621006,
+        "zone": "ams03"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00015135616438356165,
+        "zone": "fra02"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00015135616438356165,
+        "zone": "fra04"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00015135616438356165,
+        "zone": "fra05"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.0001566392694063927,
+        "zone": "lon02"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00014762100456621006,
+        "zone": "lon04"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00014762100456621006,
+        "zone": "lon05"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00014762100456621006,
+        "zone": "lon06"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00015135616438356165,
+        "zone": "mad02"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00015135616438356165,
+        "zone": "mad04"
+      },
+      {
+        "tier": "Classic Endurance - 4 IOPS/GB",
+        "hourlyRatePerGB": 0.00015135616438356165,
+        "zone": "mad05"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0004154280821917808,
+        "zone": "dal09"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.00039175,
+        "zone": "dal10"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.00039175,
+        "zone": "dal12"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.00039175,
+        "zone": "dal13"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.00039175,
+        "zone": "dal14"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0004154280821917808,
+        "zone": "sjc03"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0004154280821917808,
+        "zone": "sjc04"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.00044286643835616445,
+        "zone": "mon01"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0004154280821917808,
+        "zone": "tor01"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0004154280821917808,
+        "zone": "tor04"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0004154280821917808,
+        "zone": "tor05"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.00039175,
+        "zone": "wdc04"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.00039175,
+        "zone": "wdc06"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.00039175,
+        "zone": "wdc07"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0005406095890410958,
+        "zone": "sao01"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0005406095890410958,
+        "zone": "sao04"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0005406095890410958,
+        "zone": "sao05"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.00044286643835616445,
+        "zone": "ams03"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.00045406849315068496,
+        "zone": "fra02"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.00045406849315068496,
+        "zone": "fra04"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.00045406849315068496,
+        "zone": "fra05"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.0004699178082191781,
+        "zone": "lon02"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.00014762214611872148,
+        "zone": "lon04"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.00014762214611872148,
+        "zone": "lon05"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.00014762214611872148,
+        "zone": "lon06"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.00045406849315068496,
+        "zone": "mad02"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.00045406849315068496,
+        "zone": "mad04"
+      },
+      {
+        "tier": "Classic Endurance - 10 IOPS/GB",
+        "hourlyRatePerGB": 0.00045406849315068496,
+        "zone": "mad05"
+      }
+    ]
+  },
+  "zoneMappings": [
+    {
+      "classicDC": "dal08",
+      "vpcZone": "us-south-1",
+      "vpcRegion": "us-south"
+    },
+    {
+      "classicDC": "dal09",
+      "vpcZone": "us-south-1",
+      "vpcRegion": "us-south"
+    },
+    {
+      "classicDC": "dal10",
+      "vpcZone": "us-south-1",
+      "vpcRegion": "us-south"
+    },
+    {
+      "classicDC": "dal12",
+      "vpcZone": "us-south-2",
+      "vpcRegion": "us-south"
+    },
+    {
+      "classicDC": "dal13",
+      "vpcZone": "us-south-3",
+      "vpcRegion": "us-south"
+    },
+    {
+      "classicDC": "dal14",
+      "vpcZone": "us-south-1",
+      "vpcRegion": "us-south"
+    },
+    {
+      "classicDC": "sjc03",
+      "vpcZone": "us-south-1",
+      "vpcRegion": "us-south"
+    },
+    {
+      "classicDC": "sjc04",
+      "vpcZone": "us-south-1",
+      "vpcRegion": "us-south"
+    },
+    {
+      "classicDC": "mon01",
+      "vpcZone": "ca-mon-1",
+      "vpcRegion": "ca-mon"
+    },
+    {
+      "classicDC": "tor01",
+      "vpcZone": "ca-tor-1",
+      "vpcRegion": "ca-tor"
+    },
+    {
+      "classicDC": "tor04",
+      "vpcZone": "ca-tor-2",
+      "vpcRegion": "ca-tor"
+    },
+    {
+      "classicDC": "tor05",
+      "vpcZone": "ca-tor-3",
+      "vpcRegion": "ca-tor"
+    },
+    {
+      "classicDC": "wdc04",
+      "vpcZone": "us-east-1",
+      "vpcRegion": "us-east"
+    },
+    {
+      "classicDC": "wdc06",
+      "vpcZone": "us-east-2",
+      "vpcRegion": "us-east"
+    },
+    {
+      "classicDC": "wdc07",
+      "vpcZone": "us-east-3",
+      "vpcRegion": "us-east"
+    },
+    {
+      "classicDC": "sao01",
+      "vpcZone": "br-sao-1",
+      "vpcRegion": "br-sao"
+    },
+    {
+      "classicDC": "sao04",
+      "vpcZone": "br-sao-2",
+      "vpcRegion": "br-sao"
+    },
+    {
+      "classicDC": "sao05",
+      "vpcZone": "br-sao-3",
+      "vpcRegion": "br-sao"
+    },
+    {
+      "classicDC": "ams03",
+      "vpcZone": "us-south-1",
+      "vpcRegion": "eu-de"
+    },
+    {
+      "classicDC": "fra02",
+      "vpcZone": "eu-de-1",
+      "vpcRegion": "eu-de"
+    },
+    {
+      "classicDC": "fra04",
+      "vpcZone": "eu-de-2",
+      "vpcRegion": "eu-de"
+    },
+    {
+      "classicDC": "fra05",
+      "vpcZone": "eu-de-3",
+      "vpcRegion": "eu-de"
+    },
+    {
+      "classicDC": "lon02",
+      "vpcZone": "eu-gb-1",
+      "vpcRegion": "eu-gb"
+    },
+    {
+      "classicDC": "lon04",
+      "vpcZone": "eu-gb-2",
+      "vpcRegion": "eu-gb"
+    },
+    {
+      "classicDC": "lon05",
+      "vpcZone": "eu-gb-3",
+      "vpcRegion": "eu-gb"
+    },
+    {
+      "classicDC": "lon06",
+      "vpcZone": "eu-gb-1",
+      "vpcRegion": "eu-gb"
+    },
+    {
+      "classicDC": "mad02",
+      "vpcZone": "eu-es-1",
+      "vpcRegion": "eu-es"
+    },
+    {
+      "classicDC": "mad04",
+      "vpcZone": "eu-es-2",
+      "vpcRegion": "eu-es"
+    },
+    {
+      "classicDC": "mad05",
+      "vpcZone": "eu-es-3",
+      "vpcRegion": "eu-es"
+    },
+    {
+      "classicDC": "par01",
+      "vpcZone": "us-south-1",
+      "vpcRegion": "eu-fr2"
+    },
+    {
+      "classicDC": "che01",
+      "vpcZone": "in-che-1",
+      "vpcRegion": "in-che"
+    },
+    {
+      "classicDC": "osa21",
+      "vpcZone": "jp-osa-1",
+      "vpcRegion": "jp-osa"
+    },
+    {
+      "classicDC": "osa22",
+      "vpcZone": "jp-osa-2",
+      "vpcRegion": "jp-osa"
+    },
+    {
+      "classicDC": "osa23",
+      "vpcZone": "jp-osa-3",
+      "vpcRegion": "jp-osa"
+    },
+    {
+      "classicDC": "sng01",
+      "vpcZone": "us-south-1",
+      "vpcRegion": "jp-osa"
+    },
+    {
+      "classicDC": "syd01",
+      "vpcZone": "au-syd-1",
+      "vpcRegion": "au-syd"
+    },
+    {
+      "classicDC": "syd04",
+      "vpcZone": "au-syd-2",
+      "vpcRegion": "au-syd"
+    },
+    {
+      "classicDC": "syd05",
+      "vpcZone": "au-syd-3",
+      "vpcRegion": "au-syd"
+    },
+    {
+      "classicDC": "tok02",
+      "vpcZone": "jp-tok-1",
+      "vpcRegion": "jp-tok"
+    },
+    {
+      "classicDC": "tok04",
+      "vpcZone": "jp-tok-2",
+      "vpcRegion": "jp-tok"
+    },
+    {
+      "classicDC": "tok05",
+      "vpcZone": "jp-tok-3",
+      "vpcRegion": "jp-tok"
+    }
+  ]
+}
