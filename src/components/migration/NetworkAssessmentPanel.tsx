@@ -118,6 +118,28 @@ const NetworkAssessmentPanel: React.FC<Props> = ({ assessment, prereqChecks }) =
         </div>
       )}
 
+      {/* Load balancer mapping */}
+      {loadBalancerAnalysis.totalLBs > 0 && (
+        <div style={{ marginTop: '1.5rem' }}>
+          <h5 style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+            Load Balancer Mapping
+          </h5>
+          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+            {loadBalancerAnalysis.mappings.map((lb) => (
+              <Tile key={lb.classicId} style={{ padding: '0.75rem', minWidth: '200px' }}>
+                <div style={{ fontWeight: 500, marginBottom: '0.25rem' }}>{lb.classicName}</div>
+                <Tag type={lb.vpcType === 'network' ? 'teal' : 'blue'} size="sm">
+                  VPC {lb.vpcType === 'network' ? 'Network' : 'Application'} LB
+                </Tag>
+                <div style={{ fontSize: '0.75rem', color: 'var(--cds-text-helper)', marginTop: '0.25rem' }}>
+                  {lb.classicType}
+                </div>
+              </Tile>
+            ))}
+          </div>
+        </div>
+      )}
+
       {prereqChecks && prereqChecks.length > 0 && (
         <RemediationChecklist checks={prereqChecks} title="Pre-Requisite Checks" />
       )}

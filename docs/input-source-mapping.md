@@ -29,7 +29,7 @@ This document maps each data input source to the resource tables it populates.
 | `firewalls` | Firewalls | `vFirewalls` | Y | Y | - | - | |
 | `securityGroups` | Security Groups | `vSecurityGroups` | Y | Y | Y | - | securitygroups CSV, inventory HTML, consolidated XLSX |
 | `securityGroupRules` | Security Group Rules | `vSecurityGroupRules` | Y | Y | - | - | |
-| `loadBalancers` | Load Balancers | `vLoadBalancers` | Y | Y | - | Y | MDL key: `applicationDeliveryController` |
+| `loadBalancers` | Load Balancers | `vLoadBalancers` | Y | Y | Y | Y | drawio (modelType: `applicationDeliveryController`), MDL key: `applicationDeliveryController` |
 | `blockStorage` | Block Storage | `vBlockStorage` | Y | Y | Y | - | NAS CSV (nasType=ISCSI), consolidated XLSX |
 | `fileStorage` | File Storage | `vFileStorage` | Y | Y | Y | Y | NAS CSV (nasType=NAS), inventory HTML, consolidated XLSX |
 | `objectStorage` | Object Storage | `vObjectStorage` | Y | Y | - | - | |
@@ -169,7 +169,7 @@ Each IMS file format is identified by filename suffix and parsed by a dedicated 
 | `{id}_overview.html` | `overview_html` | `parseOverviewHtml` | `reportDistributions`, `reportCosts` |
 | `{id}_summary.html` | `summary_html` | `parseSummaryHtml` | `reportResourceCounts`, `reportWarningSummary`, `reportChecks` |
 | `{id}_inventory.html` | `inventory_html` | `parseInventoryHtml` | `virtualServers`, `bareMetal`, `vlans`, `gateways`, `fileStorage`, `securityGroups` |
-| `{id}.drawio` | `drawio` | `parseDrawio` | `bareMetal`, `virtualServers`, `virtualHosts`, `vlans`, `gateways`, `routers`, `classicTransitGateways`, `classicTransitGatewayConnections`, `transitGatewayDevices`, `directLinkGateways`, `subnets` (extracted), `_topology` (edges) |
+| `{id}.drawio` | `drawio` | `parseDrawio` | `bareMetal`, `virtualServers`, `virtualHosts`, `vlans`, `gateways`, `routers`, `classicTransitGateways`, `classicTransitGatewayConnections`, `transitGatewayDevices`, `directLinkGateways`, `loadBalancers`, `subnets` (extracted), `_topology` (edges) |
 | `{id}.json` | `json` | `parseReportJson` | All keys from MDL-converted JSON (see MDL section) |
 | `{id}_deviceinventory.xlsx` | `deviceinventory_xlsx` | `parseDeviceInventoryXlsx` | `bareMetal`, `virtualServers` |
 | `{id}_consolidated.xlsx` | `consolidated_xlsx` | `parseConsolidatedXlsx` | `bareMetal`, `virtualServers`, `fileStorage`, `blockStorage`, `directLinkGateways`, `securityGroups`, `bandwidthUsage`, `bandwidthPooling` |

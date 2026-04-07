@@ -44,7 +44,23 @@ function assessGateways(gateways: unknown[]): GatewayAssessment[] {
   return gateways.map((gw) => {
     const memberCount = num(gw, 'memberCount');
     const insideVlanCount = num(gw, 'insideVlanCount');
+    const insideVlans = ((gw as Record<string, unknown>)['insideVlans'] ?? []) as Record<string, unknown>[];
+    const allBypassed = insideVlans.length > 0 && insideVlans.every((v) => v['bypassFlag'] === true);
     const notes: string[] = [];
+
+    if (allBypassed) {
+      notes.push('All inside VLANs are in bypass — gateway likely provides VPN/firewall services only');
+      notes.push('Consider replacing with VPC VPN Gateway (native service)');
+      return {
+        id: num(gw, 'id'),
+        name: str(gw, 'name'),
+        canUseNativeVPC: true,
+        requiresAppliance: false,
+        isVpnOnly: true,
+        recommendation: 'Replace with VPC VPN Gateway — no routed VLANs detected',
+        notes,
+      };
+    }
 
     // Simple heuristic: if few VLANs and members, native VPC routing suffices
     const isSimple = insideVlanCount <= 4 && memberCount <= 2;
@@ -59,6 +75,7 @@ function assessGateways(gateways: unknown[]): GatewayAssessment[] {
       name: str(gw, 'name'),
       canUseNativeVPC: isSimple,
       requiresAppliance: !isSimple,
+      isVpnOnly: false,
       recommendation: isSimple
         ? 'Use VPC Routes + Security Groups + NACLs'
         : 'Deploy vSRX or FortiGate appliance on VPC',
@@ -94,7 +111,7 @@ function translateFirewalls(firewalls: unknown[]): FirewallTranslation[] {
 function assessLoadBalancers(lbs: unknown[]): LoadBalancerMapping[] {
   return lbs.map((lb) => {
     const lbType = str(lb, 'loadBalancerType').toLowerCase();
-    const vpcType: 'application' | 'network' = lbType.includes('network') ? 'network' : 'application';
+    const vpcType: 'application' | 'network' = (lbType.includes('network') || lbType.includes('netscaler')) ? 'network' : 'application';
     return {
       classicId: num(lb, 'id'),
       classicName: str(lb, 'name'),

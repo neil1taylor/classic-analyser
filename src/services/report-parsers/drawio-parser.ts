@@ -19,6 +19,7 @@ const MODEL_TYPE_MAP: Record<string, string> = {
   directLinkTenant: 'directLinkGateways',
   directLinkVlan: 'vlans',
   directLinkRouter: 'routers',
+  applicationDeliveryController: 'loadBalancers',
 };
 
 /**
@@ -249,6 +250,11 @@ function extractUserObjectAttributes(
     case 'directLinkRouter':
       attrs.name = attrs.primaryName;
       attrs.networkSpace = attrs.domain; // INTERCONNECT
+      break;
+
+    case 'applicationDeliveryController':
+      attrs.ipAddress = attrs.address;
+      attrs.loadBalancerType = attrs.description || attrs.type;
       break;
   }
 
