@@ -462,6 +462,19 @@ const QUOTA_PLACEMENT_GROUPS: PreRequisiteCheck = {
   ],
 };
 
+const VSI_BANDWIDTH_EXCEEDS_PROFILE: PreRequisiteCheck = {
+  id: 'compute-bandwidth-exceeds-profile',
+  name: 'Bandwidth Usage vs VPC Profile Cap',
+  category: 'compute',
+  description: 'Checks whether average monthly egress bandwidth could exceed the recommended VPC profile bandwidth allocation. VPC profiles have defined bandwidth caps that throttle traffic when exceeded.',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-bandwidth-profiles',
+  remediationSteps: [
+    'Consider a VPC profile with higher bandwidth allocation',
+    'Implement traffic shaping or caching to reduce peak bandwidth',
+    'Use IBM Cloud Object Storage or CDN for high-bandwidth static content delivery',
+  ],
+};
+
 // ── Runner ──────────────────────────────────────────────────────────────
 
 export function runComputeChecks(collectedData: Record<string, unknown[]>): CheckResult[] {
@@ -1014,6 +1027,21 @@ export function runComputeChecks(collectedData: Record<string, unknown[]>): Chec
     }
   }
   results.push(evaluateCheck(QUOTA_PLACEMENT_GROUPS, 'info', placementGroups.length, pgQuotaAffected));
+
+  // Bandwidth usage vs VPC profile cap — flag VSIs with >500 GB/month average egress
+  const bwThresholdGB = 500;
+  const bwAffected: AffectedResource[] = [];
+  for (const server of allServers) {
+    const avgOutGb = num(server, 'publicBandwidthAvgOutGb');
+    if (avgOutGb > bwThresholdGB) {
+      bwAffected.push({
+        id: num(server, 'id'),
+        hostname: str(server, 'hostname') || str(server, 'fullyQualifiedDomainName') || `Server ${num(server, 'id')}`,
+        detail: `${Math.round(avgOutGb)} GB/month avg egress (threshold: ${bwThresholdGB} GB)`,
+      });
+    }
+  }
+  results.push(evaluateCheck(VSI_BANDWIDTH_EXCEEDS_PROFILE, 'warning', allServers.length, bwAffected));
 
   return results;
 }

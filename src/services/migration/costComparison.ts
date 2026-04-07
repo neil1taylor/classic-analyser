@@ -3,12 +3,45 @@ import { getVPCStorageCostPerGB, getVPCFileCostPerGB, getVPCLBMonthlyCost, getVP
 import { getDiscountRate } from './data/internalDiscounts';
 import { getRegionalMultiplier } from './data/regionalPricing';
 
+function calculateEgressCost(monthlyEgressGB: number): number {
+  if (monthlyEgressGB <= 0) return 0;
+
+  let cost = 0;
+  let remaining = monthlyEgressGB;
+
+  // First 1 GB free
+  remaining = Math.max(0, remaining - 1);
+
+  // 1 GB – 10 TB: $0.09/GB
+  const tier1 = Math.min(remaining, 10 * 1024 - 1);
+  cost += tier1 * 0.09;
+  remaining -= tier1;
+
+  // 10 TB – 50 TB: $0.07/GB
+  const tier2 = Math.min(remaining, 40 * 1024);
+  cost += tier2 * 0.07;
+  remaining -= tier2;
+
+  // 50 TB – 150 TB: $0.05/GB
+  const tier3 = Math.min(remaining, 100 * 1024);
+  cost += tier3 * 0.05;
+  remaining -= tier3;
+
+  // 150 TB+: $0.03/GB
+  if (remaining > 0) {
+    cost += remaining * 0.03;
+  }
+
+  return cost;
+}
+
 export function analyzeCosts(
   compute: ComputeAssessment,
   storage: StorageAssessment,
   network: NetworkAssessment,
   preferences: MigrationPreferences,
   pricing?: VPCPricingData | null,
+  collectedData?: Record<string, unknown[]>,
 ): CostAnalysis {
   // Classic compute costs
   let classicComputeCost =
@@ -52,6 +85,24 @@ export function analyzeCosts(
   let vpcNetworkCost =
     (network.loadBalancerAnalysis.totalLBs * getVPCLBMonthlyCost(pricing)) +
     (network.vpnAnalysis.totalTunnels * getVPCVPNMonthlyCost(pricing));
+
+  // Egress cost — sum publicBandwidthAvgOutGb from all servers in collectedData
+  let totalMonthlyEgressGB = 0;
+  let egressCostIncluded = false;
+  if (collectedData) {
+    const vsis = (collectedData['virtualServers'] ?? []) as Record<string, unknown>[];
+    const bms = (collectedData['bareMetal'] ?? []) as Record<string, unknown>[];
+    for (const server of [...vsis, ...bms]) {
+      const avgOut = typeof server['publicBandwidthAvgOutGb'] === 'number'
+        ? server['publicBandwidthAvgOutGb'] as number
+        : 0;
+      totalMonthlyEgressGB += avgOut;
+    }
+    if (totalMonthlyEgressGB > 0) {
+      vpcNetworkCost += calculateEgressCost(totalMonthlyEgressGB);
+      egressCostIncluded = true;
+    }
+  }
 
   // Apply regional price uplift to VPC costs
   const regionalMultiplier = getRegionalMultiplier(preferences.targetRegion);
@@ -103,6 +154,8 @@ export function analyzeCosts(
     percentageChange,
     breakEvenMonths,
     threeYearSavings: Math.round(threeYearSavings * 100) / 100,
+    egressCostIncluded,
+    monthlyEgressGB: egressCostIncluded ? Math.round(totalMonthlyEgressGB * 100) / 100 : undefined,
     costByCategory: {
       compute: {
         classic: Math.round(classicComputeCost * 100) / 100,

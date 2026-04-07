@@ -385,6 +385,8 @@ export interface CostAnalysis {
   percentageChange: number;
   breakEvenMonths: number;
   threeYearSavings: number;
+  egressCostIncluded?: boolean;
+  monthlyEgressGB?: number;
   costByCategory: {
     compute: { classic: number; vpc: number };
     storage: { classic: number; vpc: number };

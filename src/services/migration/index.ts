@@ -32,7 +32,7 @@ export function runMigrationAnalysis(
     securityAssessment,
     featureGaps,
   );
-  const costAnalysis = analyzeCosts(computeAssessment, storageAssessment, networkAssessment, preferences, pricing);
+  const costAnalysis = analyzeCosts(computeAssessment, storageAssessment, networkAssessment, preferences, pricing, collectedData);
   const migrationWaves = planWaves(computeAssessment, networkAssessment, storageAssessment, securityAssessment);
   const prereqChecks = runAllPreReqChecks(collectedData, accountInfo);
 
