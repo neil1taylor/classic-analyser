@@ -1,6 +1,15 @@
 {
   "releases": [
     {
+      "version": "1.1.2",
+      "date": "2026-04-07",
+      "sections": {
+        "added": [
+          "New vsi-boot-mode-uefi migration check — flags that Gen3 VPC profiles (bx3, cx3, mx3) require UEFI boot mode; Classic instances using BIOS/MBR need boot disk conversion or Gen2 profile fallback"
+        ]
+      }
+    },
+    {
       "version": "1.1.1",
       "date": "2026-04-07",
       "sections": {

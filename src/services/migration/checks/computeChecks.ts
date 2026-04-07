@@ -181,6 +181,20 @@ const VSI_WINDOWS_CLOUDBASE_INIT: PreRequisiteCheck = {
   ],
 };
 
+const VSI_BOOT_MODE_UEFI: PreRequisiteCheck = {
+  id: 'vsi-boot-mode-uefi',
+  name: 'Boot Mode (UEFI Required for Gen3 Profiles)',
+  category: 'compute',
+  description: 'Gen3 VPC profiles (bx3, cx3, mx3, etc.) require UEFI boot mode. Classic instances using BIOS/MBR will fail to boot on Gen3 profiles. Boot mode cannot be determined from Classic API data.',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-migrate-vsi-to-vpc',
+  remediationSteps: [
+    'Verify the Classic instance boots via UEFI/GPT (not BIOS/MBR).',
+    'If BIOS/MBR: convert the boot disk to GPT and configure UEFI boot before creating the image template.',
+    'Alternative: use a Gen2 profile (bx2, cx2, mx2) which supports both BIOS and UEFI boot modes.',
+    'See https://fullvalence.com/2025/11/10/from-vmware-to-ibm-cloud-vpc-vsi-part-3-migrating-virtual-machines/',
+  ],
+};
+
 // ── Bare Metal Check Definitions ────────────────────────────────────────
 
 const BM_GATEWAY_MEMBER: PreRequisiteCheck = {
@@ -619,6 +633,9 @@ export function runComputeChecks(collectedData: Record<string, unknown[]>): Chec
   if (windowsVsis.length > 0) {
     results.push(unknownCheck(VSI_WINDOWS_CLOUDBASE_INIT, windowsVsis.length));
   }
+
+  // UEFI boot mode — Gen3 profiles require UEFI; cannot determine boot mode from API
+  results.push(unknownCheck(VSI_BOOT_MODE_UEFI, vsiCount));
 
   // Bare Metal checks
   const bmCount = bms.length;

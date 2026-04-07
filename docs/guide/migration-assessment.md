@@ -22,9 +22,9 @@ The migration assessment is organized into nine tabs:
 
 ## Pre-Requisite Checks
 
-The assessment runs **65 pre-requisite checks** across four categories:
+The assessment runs **66 pre-requisite checks** across four categories:
 
-### Compute Checks (32)
+### Compute Checks (33)
 
 Key checks include:
 
@@ -39,6 +39,7 @@ Key checks include:
 - Datacenter availability in VPC regions
 - IKS/ROKS worker node identification
 - Dedicated host compatibility
+- Boot mode (UEFI for Gen3 profiles) — Gen3 VPC profiles require UEFI boot; BIOS/MBR instances need conversion or Gen2 fallback
 - **VPC quota: vCPU per region** (200 default)
 - **VPC quota: memory per region** (5,600 GB default)
 - **VPC quota: bare metal servers per account** (25 default)
