@@ -182,6 +182,7 @@ export interface GatewayAssessment {
   name: string;
   canUseNativeVPC: boolean;
   requiresAppliance: boolean;
+  isVpnOnly: boolean;
   recommendation: string;
   notes: string[];
 }

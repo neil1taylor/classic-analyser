@@ -72,6 +72,21 @@ const GATEWAY_APPLIANCE: PreRequisiteCheck = {
   ],
 };
 
+const GATEWAY_VPN_ONLY: PreRequisiteCheck = {
+  id: 'net-gateway-vpn-only',
+  name: 'Gateway Providing VPN Services Only',
+  category: 'network',
+  description:
+    'Gateway appliances with no routed VLANs (all inside VLANs in bypass mode) are likely providing VPN or firewall services only. These can typically be replaced with VPC VPN Gateway rather than a full NFV appliance.',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-vpn-overview',
+  remediationSteps: [
+    'Confirm the gateway is used solely for VPN termination or stateful firewall.',
+    'If VPN-only, plan migration to VPC VPN Gateway (site-to-site or client-to-site).',
+    'Migrate VPN configuration (IKE policies, tunnels, PSKs) to the VPC VPN Gateway.',
+    'If firewall rules are also present, map them to VPC security groups and NACLs.',
+  ],
+};
+
 const VLAN_DC_MAPPING: PreRequisiteCheck = {
   id: 'net-vlan-dc-mapping',
   name: 'VLAN Subnet Mapping',
@@ -353,6 +368,22 @@ export function runNetworkChecks(collectedData: Record<string, unknown[]>): Chec
     }
   }
   results.push(evaluateCheck(GATEWAY_APPLIANCE, 'warning', gateways.length, gwAffected));
+
+  // Gateway appliances with no routed VLANs — likely VPN-only
+  const vpnOnlyAffected: AffectedResource[] = [];
+  for (const gw of gateways) {
+    const insideVlans = (gw['insideVlans'] ?? []) as Record<string, unknown>[];
+    if (insideVlans.length === 0) continue;
+    const allBypassed = insideVlans.every((v) => v['bypassFlag'] === true);
+    if (allBypassed) {
+      vpnOnlyAffected.push({
+        id: toNum(gw['id']),
+        hostname: toStr(gw['name']) || `Gateway ${toNum(gw['id'])}`,
+        detail: `All ${insideVlans.length} inside VLAN(s) in bypass — likely VPN/firewall only`,
+      });
+    }
+  }
+  results.push(evaluateCheck(GATEWAY_VPN_ONLY, 'info', gateways.length, vpnOnlyAffected));
 
   // VLANs in DCs without VPC region
   const vlanAffected: AffectedResource[] = [];
