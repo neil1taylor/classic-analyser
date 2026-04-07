@@ -29,7 +29,7 @@ Browser → Express.js (/api/* proxy routes + / static SPA) → SoftLayer REST A
 
 **IMS Report Import** provides three alternative data input methods (no API key required):
 - **Import XLSX** — re-imports a previously exported XLSX file (cloud-harvester output)
-- **Import IMS Reports** — multi-file import of CSVs, HTMLs, drawio, report XLSXs (assessment/device inventory) from IBM's IMS reporting tool. Parsers in `src/services/report-parsers/` handle each format. The merger deduplicates by `id` with `hostname` fallback.
+- **Import IMS Reports** — multi-file import of CSVs, HTMLs, drawio, report XLSXs (device inventory/consolidated) from IBM's IMS reporting tool. Parsers in `src/services/report-parsers/` handle each format. The merger deduplicates by `id` with `hostname` fallback. Note: `_assessment.xlsx` files are post-assessment outputs and are intentionally excluded from import.
 - **Import MDL** — uploads an IMS `.mdl` file to `POST /api/convert/mdl`, which runs `scripts/mdl-to-json.py` (Python) server-side to convert the serialized SoftLayer data model to JSON. This is the most complete data source (~13K+ resources per large account).
 
 **Navigation** uses a 4-domain tab switcher (Carbon ContentSwitcher) in the SideNav. The `InfrastructureMode` is an array of `InfrastructureDomain` values (`'classic' | 'vpc' | 'powervs' | 'platform'`). Login validates Classic, VPC, and PowerVS in parallel via `Promise.allSettled` and builds the mode array from whichever succeed. Platform Services is implicitly enabled whenever VPC or PowerVS auth succeeds (all use IAM tokens). Only domains the user has access to appear as tabs.
@@ -169,7 +169,7 @@ npm run lint            # Lint
 
 **IMS Report Types:** 2 additional types added for IMS report import: Report Warnings (`reportWarnings` — priority, issue, type, recommendation) and Health Checks (`reportChecks` — checks performed with priority and rationale). These appear in Classic tables when importing IMS report files.
 
-**IMS Report Import Formats:** The app supports importing data from IBM's IMS reporting tool in multiple formats: CSV (warnings, gateways, NAS, security groups), HTML (warnings with embedded JS arrays, overview with Chart.js data, summary tables, inventory with nested DOM trees), drawio (XML network topology), report XLSX (assessment with VPC mapping, device inventory with physical location), JSON (converted from .mdl), and .mdl (serialized SoftLayer API responses, converted server-side via Python). The merger deduplicates across all sources using `id` as primary key and `hostname` as fallback.
+**IMS Report Import Formats:** The app supports importing data from IBM's IMS reporting tool in multiple formats: CSV (warnings, gateways, NAS, security groups), HTML (warnings with embedded JS arrays, overview with Chart.js data, summary tables, inventory with nested DOM trees), drawio (XML network topology), report XLSX (device inventory with physical location, consolidated with bandwidth metrics), JSON (converted from .mdl), and .mdl (serialized SoftLayer API responses, converted server-side via Python). The `_assessment.xlsx` file is a post-assessment output and is not imported. The merger deduplicates across all sources using `id` as primary key and `hostname` as fallback.
 
 ## Migration Assessment
 

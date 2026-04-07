@@ -92,8 +92,7 @@ function createMergedResourceMap(): MergedResourceMap {
  * Priority order (later wins on field conflicts):
  *   overview_html < summary_html < warnings_csv/html < nas_csv, securitygroups_csv, gateway_csv < drawio < inventory_html
  *
- * Deduplication uses `id` as primary key, with `hostname` as fallback
- * (assessment XLSX has hostnames but no IDs).
+ * Deduplication uses `id` as primary key, with `hostname` as fallback.
  */
 export function mergeReportData(
   results: ReportParserResult[],

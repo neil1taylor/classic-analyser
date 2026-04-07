@@ -29,7 +29,6 @@ import {
   parseGatewayCsv,
   parseNasCsv,
   parseDrawio,
-  parseAssessmentXlsx,
   parseDeviceInventoryXlsx,
   parseConsolidatedXlsx,
   mergeReportData,
@@ -52,12 +51,6 @@ async function parseAllAccount3Files(): Promise<ReportParserResult[]> {
   // XLSX-based parsers (higher priority)
   const xlsxMime = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
-  const assessmentFile = createFileFromBuffer(
-    readTestFileBuffer(ACCOUNT3_DIR, '1703429_assessment.xlsx'),
-    '1703429_assessment.xlsx', xlsxMime
-  );
-  results.push(await parseAssessmentXlsx(assessmentFile));
-
   const deviceInvFile = createFileFromBuffer(
     readTestFileBuffer(ACCOUNT3_DIR, '1703429_deviceinventory.xlsx'),
     '1703429_deviceinventory.xlsx', xlsxMime
@@ -79,7 +72,7 @@ describe('Account 3 (1703429) — Merger', () => {
     const filenames = [
       '1703429_summary.html', '1703429.html', '1703429_nas.csv',
       '1703429_gw.csv', '1703429.drawio',
-      '1703429_assessment.xlsx', '1703429_deviceinventory.xlsx', '1703429_consolidated.xlsx',
+      '1703429_deviceinventory.xlsx', '1703429_consolidated.xlsx',
     ].join(', ');
 
     const merged = mergeReportData(results, filenames);
@@ -151,7 +144,6 @@ describe('Account 3 (1703429) — classifyReportFiles', () => {
       new File([''], '1703429_gw.csv', { type: 'text/csv' }),
       new File([''], '1703429_nas.csv', { type: 'text/csv' }),
       new File([''], '1703429.drawio', { type: 'application/xml' }),
-      new File([''], '1703429_assessment.xlsx', { type: xlsxMime }),
       new File([''], '1703429_deviceinventory.xlsx', { type: xlsxMime }),
       new File([''], '1703429_consolidated.xlsx', { type: xlsxMime }),
     ];
@@ -160,13 +152,12 @@ describe('Account 3 (1703429) — classifyReportFiles', () => {
     const result = classifyReportFiles(fileList);
 
     expect(result.accountId).toBe('1703429');
-    expect(result.files.size).toBe(8);
+    expect(result.files.size).toBe(7);
     expect(result.files.has('warnings_html')).toBe(true);
     expect(result.files.has('summary_html')).toBe(true);
     expect(result.files.has('gateway_csv')).toBe(true);
     expect(result.files.has('nas_csv')).toBe(true);
     expect(result.files.has('drawio')).toBe(true);
-    expect(result.files.has('assessment_xlsx')).toBe(true);
     expect(result.files.has('deviceinventory_xlsx')).toBe(true);
     expect(result.files.has('consolidated_xlsx')).toBe(true);
   });
@@ -197,10 +188,6 @@ describe('Account 3 (1703429) — Full Pipeline (parseReportFiles)', () => {
       createFileFromBuffer(
         readTestFileBuffer(ACCOUNT3_DIR, '1703429.drawio'),
         '1703429.drawio', 'application/xml'
-      ),
-      createFileFromBuffer(
-        readTestFileBuffer(ACCOUNT3_DIR, '1703429_assessment.xlsx'),
-        '1703429_assessment.xlsx', xlsxMime
       ),
       createFileFromBuffer(
         readTestFileBuffer(ACCOUNT3_DIR, '1703429_deviceinventory.xlsx'),

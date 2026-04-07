@@ -28,7 +28,6 @@ import {
   parseGatewayCsv,
   parseNasCsv,
   parseDrawio,
-  parseAssessmentXlsx,
   parseDeviceInventoryXlsx,
   parseConsolidatedXlsx,
 } from '../index';
@@ -122,23 +121,6 @@ describe('Account 3 (1703429) — Individual Parsers', () => {
   });
 
   // ── XLSX-based parsers (async, need File objects) ──
-
-  describe('parseAssessmentXlsx', () => {
-    it('returns VPC mapping data', async () => {
-      const buffer = readTestFileBuffer(ACCOUNT3_DIR, '1703429_assessment.xlsx');
-      const file = createFileFromBuffer(buffer, '1703429_assessment.xlsx',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-
-      const result = await parseAssessmentXlsx(file);
-
-      expect(result.data).toBeDefined();
-      const keys = Object.keys(result.data);
-      expect(keys.length).toBeGreaterThan(0);
-
-      const totalRecords = Object.values(result.data).reduce((sum, arr) => sum + arr.length, 0);
-      expect(totalRecords).toBeGreaterThan(0);
-    });
-  });
 
   describe('parseDeviceInventoryXlsx', () => {
     it('returns physical location data', async () => {

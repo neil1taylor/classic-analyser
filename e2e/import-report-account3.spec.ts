@@ -15,7 +15,6 @@ const ACCOUNT3_FILES = [
   '1703429_gw.csv',
   '1703429_nas.csv',
   '1703429.drawio',
-  '1703429_assessment.xlsx',
   '1703429_deviceinventory.xlsx',
   '1703429_consolidated.xlsx',
 ].map(f => path.join(ALT_INPUT_3, f));

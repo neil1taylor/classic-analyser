@@ -11,7 +11,6 @@ import {
   parseInventoryHtml,
   parseDrawio,
   parseReportJson,
-  parseAssessmentXlsx,
   parseDeviceInventoryXlsx,
   parseConsolidatedXlsx,
   mergeReportData,
@@ -35,7 +34,6 @@ const FILE_PATTERNS: { suffix: RegExp; type: ReportFileType }[] = [
   { suffix: /\.html?$/i, type: 'warnings_html' },
   { suffix: /\.drawio$/i, type: 'drawio' },
   { suffix: /\.json$/i, type: 'json' },
-  { suffix: /_assessment\.xlsx$/i, type: 'assessment_xlsx' },
   { suffix: /_deviceinventory\.xlsx$/i, type: 'deviceinventory_xlsx' },
   { suffix: /_consolidated\.xlsx$/i, type: 'consolidated_xlsx' },
 ];
@@ -110,7 +108,6 @@ const FILE_PARSER_DISPATCH: {
   type: ReportFileType;
   parse: (file: File) => Promise<ReportParserResult>;
 }[] = [
-  { type: 'assessment_xlsx', parse: parseAssessmentXlsx },
   { type: 'deviceinventory_xlsx', parse: parseDeviceInventoryXlsx },
   { type: 'consolidated_xlsx', parse: parseConsolidatedXlsx },
 ];

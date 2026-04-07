@@ -35,7 +35,7 @@ Multi-file import from IBM's Infrastructure Management Services (IMS) reporting 
 | CSV      | Warnings, gateways, NAS, security groups                     |
 | HTML     | Warnings, overview data, summary tables, inventory trees     |
 | draw.io  | XML network topology diagrams                                |
-| XLSX     | Assessment reports with VPC mapping, device inventory        |
+| XLSX     | Device inventory, consolidated reports                        |
 | JSON     | Converted from `.mdl` files                                  |
 
 **Steps:**

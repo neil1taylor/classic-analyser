@@ -17,21 +17,21 @@ This document maps each data input source to the resource tables it populates.
 
 | Key | Table Label | Worksheet | API | XLSX | IMS | MDL | IMS Detail |
 |-----|-------------|-----------|:---:|:----:|:---:|:---:|------------|
-| `virtualServers` | Virtual Servers | `vVirtualServers` | Y | Y | Y | Y | inventory HTML, assessment XLSX, device inventory XLSX, drawio, consolidated XLSX |
-| `bareMetal` | Bare Metal Servers | `vBareMetal` | Y | Y | Y | Y | inventory HTML, assessment XLSX, device inventory XLSX, drawio, consolidated XLSX |
+| `virtualServers` | Virtual Servers | `vVirtualServers` | Y | Y | Y | Y | inventory HTML, device inventory XLSX, drawio, consolidated XLSX |
+| `bareMetal` | Bare Metal Servers | `vBareMetal` | Y | Y | Y | Y | inventory HTML, device inventory XLSX, drawio, consolidated XLSX |
 | `virtualHosts` | Virtual Hosts | `vVirtualHosts` | Y | Y | Y | Y | drawio |
 | `dedicatedHosts` | Dedicated Hosts | `vDedicatedHosts` | Y | Y | - | - | |
 | `imageTemplates` | Image Templates | `vImages` | Y | Y | - | - | |
 | `vlans` | VLANs | `vVLANs` | Y | Y | Y | Y | drawio, inventory HTML |
 | `subnets` | Subnets | `vSubnets` | Y | Y | Y | - | drawio (extracted from VLANs) |
-| `gateways` | Network Gateways | `vGateways` | Y | Y | Y | Y | inventory HTML, assessment XLSX, drawio |
+| `gateways` | Network Gateways | `vGateways` | Y | Y | Y | Y | inventory HTML, drawio |
 | `routers` | Routers | `vRouters` | Y | Y | Y | Y | drawio |
 | `firewalls` | Firewalls | `vFirewalls` | Y | Y | - | - | |
 | `securityGroups` | Security Groups | `vSecurityGroups` | Y | Y | Y | - | securitygroups CSV, inventory HTML, consolidated XLSX |
 | `securityGroupRules` | Security Group Rules | `vSecurityGroupRules` | Y | Y | - | - | |
 | `loadBalancers` | Load Balancers | `vLoadBalancers` | Y | Y | - | Y | MDL key: `applicationDeliveryController` |
-| `blockStorage` | Block Storage | `vBlockStorage` | Y | Y | Y | - | NAS CSV (nasType=ISCSI), assessment XLSX, consolidated XLSX |
-| `fileStorage` | File Storage | `vFileStorage` | Y | Y | Y | Y | NAS CSV (nasType=NAS), assessment XLSX, inventory HTML, consolidated XLSX |
+| `blockStorage` | Block Storage | `vBlockStorage` | Y | Y | Y | - | NAS CSV (nasType=ISCSI), consolidated XLSX |
+| `fileStorage` | File Storage | `vFileStorage` | Y | Y | Y | Y | NAS CSV (nasType=NAS), inventory HTML, consolidated XLSX |
 | `objectStorage` | Object Storage | `vObjectStorage` | Y | Y | - | - | |
 | `sslCertificates` | SSL Certificates | `vSSLCertificates` | Y | Y | - | - | |
 | `sshKeys` | SSH Keys | `vSSHKeys` | Y | Y | - | - | |
@@ -171,7 +171,6 @@ Each IMS file format is identified by filename suffix and parsed by a dedicated 
 | `{id}_inventory.html` | `inventory_html` | `parseInventoryHtml` | `virtualServers`, `bareMetal`, `vlans`, `gateways`, `fileStorage`, `securityGroups` |
 | `{id}.drawio` | `drawio` | `parseDrawio` | `bareMetal`, `virtualServers`, `virtualHosts`, `vlans`, `gateways`, `routers`, `classicTransitGateways`, `classicTransitGatewayConnections`, `transitGatewayDevices`, `directLinkGateways`, `subnets` (extracted), `_topology` (edges) |
 | `{id}.json` | `json` | `parseReportJson` | All keys from MDL-converted JSON (see MDL section) |
-| `{id}_assessment.xlsx` | `assessment_xlsx` | `parseAssessmentXlsx` | `bareMetal`, `virtualServers`, `gateways`, `fileStorage`, `blockStorage` |
 | `{id}_deviceinventory.xlsx` | `deviceinventory_xlsx` | `parseDeviceInventoryXlsx` | `bareMetal`, `virtualServers` |
 | `{id}_consolidated.xlsx` | `consolidated_xlsx` | `parseConsolidatedXlsx` | `bareMetal`, `virtualServers`, `fileStorage`, `blockStorage`, `directLinkGateways`, `securityGroups`, `bandwidthUsage`, `bandwidthPooling` |
 
@@ -189,9 +188,8 @@ When multiple IMS files contribute to the same resource key, later parsers win o
 8. `drawio`
 9. `inventory_html`
 10. `json` (MDL-converted)
-11. `assessment_xlsx`
-12. `deviceinventory_xlsx`
-13. `consolidated_xlsx` (highest priority)
+11. `deviceinventory_xlsx`
+12. `consolidated_xlsx` (highest priority)
 
 Deduplication merges records by `id` (primary key) with `hostname` as fallback. Later values overwrite earlier non-empty fields.
 
@@ -236,6 +234,6 @@ In flat mode (default), the converter strips deeply nested data and keeps only f
 | `src/services/report-parsers/csv-parsers.ts` | CSV parser functions |
 | `src/services/report-parsers/html-parsers.ts` | HTML parser functions |
 | `src/services/report-parsers/drawio-parser.ts` | Drawio parser + MODEL_TYPE_MAP |
-| `src/services/report-parsers/xlsx-parsers.ts` | Assessment, device inventory, consolidated XLSX parsers |
+| `src/services/report-parsers/xlsx-parsers.ts` | Device inventory and consolidated XLSX parsers |
 | `src/services/report-parsers/json-parser.ts` | MDL-converted JSON parser |
 | `scripts/mdl-to-json.py` | MDL to JSON converter |

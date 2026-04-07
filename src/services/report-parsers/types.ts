@@ -11,7 +11,6 @@ export type ReportFileType =
   | 'inventory_html'
   | 'drawio'
   | 'json'
-  | 'assessment_xlsx'
   | 'deviceinventory_xlsx'
   | 'consolidated_xlsx';
 

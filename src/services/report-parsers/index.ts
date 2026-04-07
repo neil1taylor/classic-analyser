@@ -3,5 +3,5 @@ export { parseWarningsCsv, parseGatewayCsv, parseNasCsv, parseSecurityGroupsCsv 
 export { parseWarningsHtml, parseOverviewHtml, parseSummaryHtml, parseInventoryHtml } from './html-parsers';
 export { parseDrawio } from './drawio-parser';
 export { parseReportJson } from './json-parser';
-export { parseAssessmentXlsx, parseDeviceInventoryXlsx, parseConsolidatedXlsx } from './xlsx-parsers';
+export { parseDeviceInventoryXlsx, parseConsolidatedXlsx } from './xlsx-parsers';
 export { mergeReportData } from './merger';

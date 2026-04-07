@@ -22,7 +22,6 @@ Files are classified by matching their filename against the patterns below. More
 | `*.html` | Warnings HTML | Embedded JS arrays with warning data |
 | `*.drawio` | draw.io XML | Network topology diagrams |
 | `*.json` | JSON | Converted MDL data |
-| `*_assessment.xlsx` | Assessment XLSX | VPC mapping and cost estimates |
 | `*_deviceinventory.xlsx` | Device Inventory XLSX | Physical location and hardware details |
 | `*_consolidated.xlsx` | Consolidated XLSX | Combined data with bandwidth metrics |
 
@@ -49,9 +48,8 @@ Lower-priority parsers are processed first; higher-priority parsers overwrite co
 
 **File parsers (higher priority):**
 
-11. Assessment XLSX
-12. Device Inventory XLSX
-13. Consolidated XLSX
+11. Device Inventory XLSX
+12. Consolidated XLSX
 
 ---
 
@@ -60,7 +58,7 @@ Lower-priority parsers are processed first; higher-priority parsers overwrite co
 Resources are deduplicated per resource type using a merged resource map:
 
 - **Primary key:** `id` field -- if two records share the same `id`, their fields are merged.
-- **Fallback key:** `hostname` field -- for sources like Assessment XLSX that have hostnames but no IDs, hostname is used to match against existing records.
+- **Fallback key:** `hostname` field -- for sources that have hostnames but no IDs, hostname is used to match against existing records.
 - **Merge rule:** Later non-empty values overwrite earlier values. Fields that are `undefined`, `null`, or empty string in the incoming record do not overwrite existing values.
 - **Anonymous records:** Resources without `id` or `hostname` are assigned synthetic keys (`_anon_0`, `_anon_1`, etc.) and are never merged with other records.
 
@@ -357,110 +355,6 @@ Model-specific normalization is applied:
 ---
 
 ## XLSX Report Formats
-
-### Assessment XLSX (`*_assessment.xlsx`)
-
-#### Account sheet
-
-Key-value pairs (Column A = key, Column B = value). The `Name` key maps to `accountInfo.companyName`.
-
-#### BMs sheet
-
-**Output resource type:** `bareMetal`
-
-| Column | Maps To |
-|--------|---------|
-| Hostname | `hostname` |
-| DC | `datacenter` |
-| Processor Description | `processorDescription` |
-| Core/Proc | `coresPerProcessor` |
-| Processor Count | `processorCount` |
-| Total Cores | `processorPhysicalCoreAmount` |
-| RAM Total Capacity | `memoryCapacity` |
-| NVMe (Yes/No) | `nvme` |
-| Drive Total Capacity (GBs) | `driveCapacityGb` |
-| Drive Units | `driveUnits` |
-| BW Allocated (GBs) | `bandwidthAllocated` |
-| BW Used (GBs) | `bandwidthUsed` |
-| BW Pool Capacity (GBs) | `bandwidthPoolCapacity` |
-| OS | `operatingSystemReferenceCode` |
-| EOS Date | `eosDate` |
-| SW AddOns | `softwareAddons` |
-| Region | `region` |
-| VPC VSI  Profile Mapping | `vpcVsiProfile` |
-| BM Profile Mapping | `vpcBmProfile` |
-| VPC VSI Cost($) | `vpcVsiCost` |
-| VPC BM Cost($) | `vpcBmCost` |
-
-> **Note:** The "VPC VSI  Profile Mapping" header contains a double space in the source IMS report. The parser matches this exact string.
-
-#### VSI sheet
-
-**Output resource type:** `virtualServers`
-
-| Column | Maps To |
-|--------|---------|
-| Hostname | `hostname` |
-| DC | `datacenter` |
-| Cores | `maxCpu` |
-| Memory | `maxMemory` |
-| OS/Version | `operatingSystemReferenceCode` |
-| EOS Date | `eosDate` |
-| Addons | `addons` |
-| #Volumes | `volumeCount` |
-| BW Allocated (GBs) | `bandwidthAllocated` |
-| BW Used (GBs) | `bandwidthUsed` |
-| BW Pool Capacity (GBs) | `bandwidthPoolCapacity` |
-| Instance Storage (Yes/No) | `instanceStorage` |
-| Block Storage (GBs) | `blockStorageGb` |
-| Multi-attach Storage (Yes/No) | `multiAttachStorage` |
-| NAS (GB) | `nasGb` |
-| Region | `region` |
-| Mapped VPC VSI Profile | `vpcVsiProfile` |
-| VPC VSI Cost($) | `vpcVsiCost` |
-
-#### Networking sheet
-
-**Output resource type:** `gateways`
-
-| Column | Maps To |
-|--------|---------|
-| Hostname | `hostname` |
-| DC | `datacenter` |
-| Gateway Device (Vyatta/VRA/vSRX/Fortinet/Other) | `deviceType` |
-| HA Deployment | `haDeployment` |
-| #Pvt VLANs Connected | `privateVlanCount` |
-| #Public VLANs Connected | `publicVlanCount` |
-| BM Cores | `cores` |
-| BM Memory (GB) | `memoryGb` |
-| License | `license` |
-| Map to NFV | `nfvMapping` |
-| Region | `region` |
-| VPC VSI Profile | `vpcProfile` |
-| VPC Cost ($) | `vpcCost` |
-
-#### Storage sheet
-
-**Output resource type:** `fileStorage`
-
-| Column | Maps To |
-|--------|---------|
-| VolumeId | `id` |
-| DC | `datacenter` |
-| Type (iSCSI/SAN/NAS) | `nasType` |
-| Class (Endurance/Performance) | `storageType` |
-| Provisioned(GB) | `capacityGb` |
-| Used (%) | `percentUsed` |
-| Hostname(s) | `connectedHosts` |
-| Classic IOPS | `iops` |
-| Region | `region` |
-| Mapped VPC Profile | `vpcProfile` |
-| VPC IOPS | `vpcIops` |
-| VPC Throughput | `vpcThroughput` |
-| VPC Cost | `vpcCost` |
-| PaaS Target (Yes/No) | `paasTarget` |
-
----
 
 ### Device Inventory XLSX (`*_deviceinventory.xlsx`)
 

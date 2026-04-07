@@ -19,7 +19,7 @@ exports[`Account 3 (1703429) — Merger > produces consistent snapshot of resour
   "securityGroups": 5,
   "subnets": 766,
   "transitGatewayDevices": 6,
-  "virtualServers": 413,
+  "virtualServers": 411,
   "vlans": 227,
 }
 `;

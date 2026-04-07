@@ -294,9 +294,9 @@ IBM Cloud Infrastructure Explorer will address these challenges by providing a u
 | FR-6.8 | Type Coercion | Import coerces cell values based on column data type: numeric strings → numbers, "Yes"/"No" → booleans, currency strings → numbers | Must |
 | FR-6.9 | Account Info from Summary | Import parses the Summary / VPC Summary worksheet to extract Account Name, Account ID, Email, and Account Owner; displays this in the header and dashboard | Should |
 | FR-6.10 | Multi-Domain Import Support | Import recognises Classic, VPC, PowerVS, and Platform Services worksheet names, routing each domain's data to its correct context. Infrastructure mode is set automatically based on which domains have data | Must |
-| FR-6.11 | IMS Report Import | Import IMS reporting tool output: CSVs (warnings, gateways, NAS, security groups), HTMLs (warnings, overview, summary, inventory), drawio (topology), and report XLSXs (assessment, device inventory). Multi-file selection, auto-detects account ID from filenames. | Should |
+| FR-6.11 | IMS Report Import | Import IMS reporting tool output: CSVs (warnings, gateways, NAS, security groups), HTMLs (warnings, overview, summary, inventory), drawio (topology), and report XLSXs (device inventory, consolidated). Multi-file selection, auto-detects account ID from filenames. The `_assessment.xlsx` file is a post-assessment output and is excluded from import. | Should |
 | FR-6.12 | MDL Import | Import IMS `.mdl` files (serialized SoftLayer data model) via server-side conversion to JSON. The `.mdl` is the most complete data source with raw API responses for all resource types. Uploaded to `POST /api/convert/mdl`. | Should |
-| FR-6.13 | Report Deduplication | When importing multiple report files, merge/deduplicate resources by `id` (primary) and `hostname` (fallback for files without IDs like assessment XLSX). | Should |
+| FR-6.13 | Report Deduplication | When importing multiple report files, merge/deduplicate resources by `id` (primary) and `hostname` (fallback for files without IDs). | Should |
 | FR-6.14 | Three Import Buttons | Auth page offers three distinct import paths: "Import XLSX" (cloud-harvester), "Import IMS Reports" (CSVs/HTMLs/drawio/XLSXs), and "Import MDL" (.mdl files). Each is independent to avoid double-counting. | Should |
 
 ### 5.7 Developer Diagnostics
