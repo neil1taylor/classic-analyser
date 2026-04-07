@@ -22,13 +22,13 @@ The migration assessment is organized into nine tabs:
 
 ## Pre-Requisite Checks
 
-The assessment runs **50 pre-requisite checks** across four categories:
+The assessment runs **64 pre-requisite checks** across four categories:
 
-### Compute Checks (28)
+### Compute Checks (32)
 
 Key checks include:
 
-- Boot disk size within VPC limits (100 GB max)
+- Boot disk size within VPC limits (250 GB max)
 - vCPU count within VPC profile maximums
 - Memory within VPC profile maximums
 - OS compatibility against 43 entries (stock, BYOL, unsupported)
@@ -39,21 +39,34 @@ Key checks include:
 - Datacenter availability in VPC regions
 - IKS/ROKS worker node identification
 - Dedicated host compatibility
+- **VPC quota: vCPU per region** (200 default)
+- **VPC quota: memory per region** (5,600 GB default)
+- **VPC quota: bare metal servers per account** (25 default)
+- **VPC quota: placement groups per region** (100 default)
 
-### Network Checks (11)
+### Network Checks (17)
 
 - VLAN spanning and VRF requirements
-- Firewall rule compatibility
+- Firewall rule compatibility (200 rules per ACL)
+- Security group rule count (250 rules per SG)
 - Load balancer configuration
 - Gateway appliance migration paths
 - IPv6 usage detection
+- **VPC quota: VPCs per region** (10 default)
+- **VPC quota: subnets per VPC** (100 default)
+- **VPC quota: security groups per VPC** (100 default)
+- **VPC quota: ACLs per VPC** (100 default)
+- **VPC quota: floating IPs per zone** (40 default)
+- **VPC quota: VPN gateways per region** (9 default)
 
-### Storage Checks (8)
+### Storage Checks (12)
 
 - Block storage volume size and IOPS limits
 - File storage compatibility
 - Multi-attach storage detection
 - Snapshot requirements
+- **VPC quota: volumes per region** (300 default)
+- **VPC quota: file shares per account** (300 default)
 
 ### Security Checks (3)
 
@@ -72,6 +85,16 @@ Each check produces one of five severity levels:
 | **Info**    | Informational finding, no action required            |
 | **Unknown** | Insufficient data to determine compatibility         |
 | **Passed**  | Fully compatible, no issues found                    |
+
+## Profile Mapping Data
+
+Migration profile recommendations are driven by curated IBM Classic-to-VPC mapping data:
+
+- **VSI profiles:** 266 VPC VSI profiles (including Gen4: bx4, cx4, mx4) with hourly pricing, matched to Classic VSIs by memory:CPU ratio with Gen3+ preference
+- **Bare metal profiles:** 42 VPC bare metal profiles. Classic bare metal servers are first looked up in a curated table of 666 processor/core/RAM configurations mapped to specific VPC profiles. If no exact match, algorithmic ratio-based matching is used as fallback
+- **Storage tiers:** Block and file storage tier mappings from IBM's storage migration reference, including SDS/SDP and traditional VPC profile recommendations
+
+When a bare metal recommendation comes from the curated mapping data, the note includes "mapped from Classic-to-VPC migration guide".
 
 ## Migration Approach Classification
 

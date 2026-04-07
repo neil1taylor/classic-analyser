@@ -2886,7 +2886,7 @@ The VPC Migration Analysis feature provides rule-based analysis capabilities to 
 
 Each migration assessment tab (Compute, Network, Storage, Security) includes a remediation checklist panel that evaluates per-resource-type pre-requisite checks against the collected Classic data. Checks produce one of five severity levels: **blocker**, **warning**, **info**, **unknown** (cannot determine from API), or **passed**.
 
-**Compute checks (28):**
+**Compute checks (32):**
 
 | Check | Severity | Logic |
 |---|---|---|
@@ -2917,26 +2917,35 @@ Each migration assessment tab (Compute, Network, Storage, Security) includes a r
 | Software Add-on Detected | warning | Billing item `categoryCode` matches `cpanel\|plesk_billing\|anti_virus\|monitoring_agent\|software_license\|control_panel\|cdp\|evault` or description matches add-on patterns. IBM-provisioned add-ons not available on VPC — self-install and license required. |
 | GPU Workload Detected | warning | Billing item `categoryCode` starts with `gpu` or description matches `gpu\|tesla\|nvidia\|cuda`. VPC GPU profiles (gx2/gx3d) use different hardware — driver compatibility must be verified. |
 | Active Reserved Capacity | warning | `collectedData['reservedCapacity']` has entries. Active 1yr/3yr reserved capacity commitments have cost/contractual implications — plan migration timeline around reservation expiry. |
+| **VPC Quota: vCPU per Region (200)** | warning | Aggregate vCPU count per target VPC region exceeds default quota of 200 |
+| **VPC Quota: Memory per Region (5,600 GB)** | warning | Aggregate memory per target VPC region exceeds default quota of 5,600 GB |
+| **VPC Quota: Bare Metal per Account (25)** | warning | Total bare metal server count exceeds default account quota of 25 |
+| **VPC Quota: Placement Groups per Region (100)** | info | Placement group count per target VPC region exceeds default quota of 100 |
 
-**Storage checks (8):**
+**Storage checks (12):**
 
 | Check | Severity | Logic |
 |---|---|---|
-| Block Volume Size (16 TB max) | blocker | `capacityGb > 16384` |
+| Block Volume Size (32 TB max) | blocker | `capacityGb > 32768` (sdp) / `> 16384` (Gen 1) |
 | File Volume Size (32 TB max) | blocker | `capacityGb > 32768` |
-| IOPS Compatibility | warning | Custom IOPS > 48,000 |
+| IOPS Compatibility | warning | Custom IOPS > 64,000 (sdp) / > 48,000 (Gen 1) |
+| Gen 2 SDP Profile Required | warning | Volume >16 TB or >48K IOPS requires sdp profile |
 | Snapshot Configuration | info | Has snapshot schedules |
 | Replication Partners | info | Has replication configured |
 | Volume Attachment Count | info | VSI with > 12 attached volumes |
 | Multi-Attach Block Storage | warning | Block volume authorized for > 1 host or > 1 subnet (false positives possible — authorization ≠ active mount) |
-| Storage Utilization (Right-Sizing) | info | Compares `bytesUsed` to `capacityGb` — flags over-provisioned (<25% used, right-size to smaller VPC volume) and near-capacity (>90% used, provision larger VPC volume). Only evaluated for volumes with `bytesUsed > 0`. |
+| Storage Utilization (Right-Sizing) | info | Compares `bytesUsed` to `capacityGb` — flags over-provisioned (<25% used) and near-capacity (>90% used) |
+| Kubernetes-Consumed Storage | info | Storage volumes with K8s metadata (PVC, storageclass) — migrate with cluster |
+| **VPC Quota: Volumes per Region (300)** | warning | Block + file volumes per target VPC region exceed default quota of 300 |
+| **VPC Quota: File Shares per Account (300)** | warning | Total file storage volumes exceed default account quota of 300 |
 
-**Network checks (10):**
+**Network checks (17):**
 
 | Check | Severity | Logic |
 |---|---|---|
-| Firewall Rule Count | warning | Rules per firewall > 25 |
-| Security Group Rule Count | warning | Rules per SG > 25 |
+| Firewall Rule Count | warning | Rules per firewall > 200 (VPC ACL limit) |
+| Estimated VPC Network ACL Rule Count | warning | Combined inbound + outbound rules > 200 per ACL |
+| Security Group Rule Count | warning | Rules per SG > 250 (VPC SG limit) |
 | Load Balancer Type | info | All LBs listed with type mapping |
 | Gateway Appliance | warning | Gateways requiring appliance migration |
 | VLAN Subnet Mapping | info | VLANs in DCs without VPC region |
@@ -2945,6 +2954,12 @@ Each migration assessment tab (Compute, Network, Storage, Security) includes a r
 | IPv6 Address Usage | warning | Subnet `networkIdentifier` contains `:` or `subnetType` contains IPv6 (false positives possible — IPv6 often auto-assigned) |
 | VRRP High Availability Pattern | unknown | VRRP config not exposed by SoftLayer API — cannot determine |
 | VRF Enablement (Manual Verification) | unknown | VRF must be enabled on the account for Classic-to-VPC private network connectivity via Transit Gateway. VRF status not collected by the SoftLayer API mask — always flagged for manual verification. |
+| **VPC Quota: VPCs per Region (10)** | warning | VLANs per target VPC region exceed default quota of 10 VPCs |
+| **VPC Quota: Subnets per VPC (100)** | warning | Subnets per target VPC region exceed default quota of 100 |
+| **VPC Quota: Security Groups per VPC (100)** | warning | Security group count exceeds default quota of 100 per VPC |
+| **VPC Quota: ACLs per VPC (100)** | info | Firewall count exceeds default quota of 100 ACLs per VPC |
+| **VPC Quota: Floating IPs per Zone (40)** | warning | Public IPs per target VPC zone exceed default quota of 40 floating IPs |
+| **VPC Quota: VPN Gateways per Region (9)** | warning | IPsec VPN tunnels per target VPC region exceed default quota of 9 gateways |
 
 **Security checks (3):**
 

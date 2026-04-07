@@ -30,7 +30,7 @@ IBM Cloud Infrastructure Explorer is a web-based inventory and analysis tool for
 - Network topology diagrams (React Flow + Dagre hierarchical layout)
 - Geographic world maps showing datacenter/region resource distribution
 - Cost analysis with treemaps, donut charts, and monthly breakdowns
-- Classic-to-VPC migration assessment (50 pre-requisite checks, readiness scoring, wave planning, cost comparison)
+- Classic-to-VPC migration assessment (64 pre-requisite checks, readiness scoring, wave planning, cost comparison)
 - Dependency mapping and migration approach classification
 - Optional AI-powered insights via IBM watsonx.ai integration
 

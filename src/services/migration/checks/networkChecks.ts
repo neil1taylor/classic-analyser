@@ -21,13 +21,14 @@ const FIREWALL_RULE_COUNT: PreRequisiteCheck = {
   id: 'net-firewall-rules',
   name: 'Firewall Rule Count',
   category: 'network',
-  description: 'VPC security groups and network ACLs have rule count limits. Firewalls with more than 25 rules may need to be split or reorganized.',
-  threshold: '25 rules per firewall',
-  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-security-groups',
+  description: 'VPC Network ACLs support up to 200 rules per ACL. Classic firewalls with more than 200 rules need rule consolidation or splitting across multiple ACLs/subnets.',
+  threshold: '200 rules per ACL',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-using-acls',
   remediationSteps: [
     'Review firewall rules and remove redundant or obsolete entries.',
     'Consolidate rules using CIDR aggregation where possible.',
-    'Consider splitting complex rule sets across multiple VPC security groups.',
+    'Consider splitting complex rule sets across multiple VPC ACLs or subnets.',
+    'Use VPC security groups (250 rules each) for instance-level rules — ACLs for subnet-level policy.',
   ],
 };
 
@@ -35,8 +36,8 @@ const SG_RULE_COUNT: PreRequisiteCheck = {
   id: 'net-sg-rules',
   name: 'Security Group Rule Count',
   category: 'network',
-  description: 'VPC security groups support a maximum of 25 rules per group. Classic security groups exceeding this limit need restructuring.',
-  threshold: '25 rules per security group',
+  description: 'VPC security groups support a maximum of 250 rules per group. Classic security groups exceeding this limit need restructuring.',
+  threshold: '250 rules per security group',
   docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-security-groups',
   remediationSteps: [
     'Review and consolidate security group rules.',
@@ -143,14 +144,100 @@ const ACL_RULE_ESTIMATE: PreRequisiteCheck = {
   id: 'net-acl-rule-estimate',
   name: 'Estimated VPC Network ACL Rule Count',
   category: 'network',
-  description: 'Classic firewall rules translate to VPC Network ACL (NACL) rules during migration. VPC NACLs support a maximum of 25 inbound and 25 outbound rules per ACL. Firewalls exceeding this need rule consolidation or subnet splitting.',
-  threshold: '25 inbound + 25 outbound rules per ACL',
+  description: 'Classic firewall rules translate to VPC Network ACL (NACL) rules during migration. VPC NACLs support a maximum of 200 rules per ACL (combined inbound and outbound). Firewalls exceeding this need rule consolidation or subnet splitting.',
+  threshold: '200 rules per ACL (combined inbound + outbound)',
   docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-using-acls',
   remediationSteps: [
     'Review Classic firewall rules and identify which translate to ACL vs. security group rules.',
     'Consolidate rules using CIDR aggregation to reduce rule count.',
-    'Split workloads across multiple subnets if a single ACL would exceed 25 rules per direction.',
-    'Use VPC security groups for instance-level rules — ACLs for subnet-level policy only.',
+    'Split workloads across multiple subnets if a single ACL would exceed 200 rules.',
+    'Use VPC security groups (250 rules each) for instance-level rules — ACLs for subnet-level policy only.',
+  ],
+};
+
+// ── Account/Region Quota Checks ─────────────────────────────────────────
+
+const QUOTA_VPCS_PER_REGION: PreRequisiteCheck = {
+  id: 'quota-vpcs-per-region',
+  name: 'VPC Quota per Region (10)',
+  category: 'network',
+  description: 'VPC accounts have a default quota of 10 VPCs per region. If Classic VLANs in a region imply multiple VPCs are needed, the default quota may be exceeded. Quotas can be increased by contacting IBM Cloud Support.',
+  threshold: '10 VPCs per region (default quota)',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-quotas',
+  remediationSteps: [
+    'Request a VPC quota increase via IBM Cloud Support before migration.',
+    'Consolidate Classic VLANs into fewer VPCs where network segmentation allows.',
+    'Use VPC subnets and security groups for isolation instead of separate VPCs.',
+  ],
+};
+
+const QUOTA_SUBNETS_PER_VPC: PreRequisiteCheck = {
+  id: 'quota-subnets-per-vpc',
+  name: 'VPC Subnet Quota (100 per VPC)',
+  category: 'network',
+  description: 'VPC accounts have a default quota of 100 subnets per VPC. Classic environments with many subnets per datacenter region may exceed this quota.',
+  threshold: '100 subnets per VPC (default quota)',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-quotas',
+  remediationSteps: [
+    'Request a subnet quota increase via IBM Cloud Support if needed.',
+    'Consolidate Classic subnets into larger CIDR blocks in VPC.',
+    'Distribute subnets across multiple VPCs if consolidation is not possible.',
+  ],
+};
+
+const QUOTA_SGS_PER_VPC: PreRequisiteCheck = {
+  id: 'quota-sgs-per-vpc',
+  name: 'Security Group Quota per VPC (100)',
+  category: 'network',
+  description: 'VPC accounts have a default quota of 100 security groups per VPC. Classic environments with many security groups may exceed this quota.',
+  threshold: '100 security groups per VPC (default quota)',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-quotas',
+  remediationSteps: [
+    'Request a security group quota increase via IBM Cloud Support if needed.',
+    'Consolidate security groups with similar rules.',
+    'Use shared security groups for common rule sets.',
+  ],
+};
+
+const QUOTA_ACLS_PER_VPC: PreRequisiteCheck = {
+  id: 'quota-acls-per-vpc',
+  name: 'Network ACL Quota per VPC (100)',
+  category: 'network',
+  description: 'VPC accounts have a default quota of 100 network ACLs per VPC. Classic firewalls translate to VPC ACLs during migration.',
+  threshold: '100 ACLs per VPC (default quota)',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-quotas',
+  remediationSteps: [
+    'Request an ACL quota increase via IBM Cloud Support if needed.',
+    'Consolidate firewall rules into fewer ACLs.',
+    'Use VPC security groups for instance-level rules, ACLs for subnet-level policy.',
+  ],
+};
+
+const QUOTA_FLOATING_IPS_PER_ZONE: PreRequisiteCheck = {
+  id: 'quota-floating-ips-per-zone',
+  name: 'Floating IP Quota per Zone (40)',
+  category: 'network',
+  description: 'VPC accounts have a default quota of 40 floating IP addresses per zone. Classic servers with public IPs will each need a floating IP in VPC.',
+  threshold: '40 floating IPs per zone (default quota)',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-quotas',
+  remediationSteps: [
+    'Request a floating IP quota increase via IBM Cloud Support before migration.',
+    'Use VPC load balancers instead of individual floating IPs where possible.',
+    'Reduce public-facing instances by consolidating behind reverse proxies.',
+  ],
+};
+
+const QUOTA_VPN_GATEWAYS_PER_REGION: PreRequisiteCheck = {
+  id: 'quota-vpn-gateways-per-region',
+  name: 'VPN Gateway Quota per Region (9)',
+  category: 'network',
+  description: 'VPC accounts have a default quota of 9 VPN gateways per region (3 per zone). Classic IPsec VPN tunnels migrating to VPC may exceed this quota.',
+  threshold: '9 VPN gateways per region (default quota)',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-quotas',
+  remediationSteps: [
+    'Request a VPN gateway quota increase via IBM Cloud Support if needed.',
+    'Consolidate VPN tunnels using fewer gateways with multiple connections.',
+    'Each VPN gateway supports up to 10 connections.',
   ],
 };
 
@@ -186,22 +273,22 @@ export function runNetworkChecks(collectedData: Record<string, unknown[]>): Chec
   const bareMetal = (collectedData['bareMetal'] ?? []) as Record<string, unknown>[];
   const subnets = (collectedData['subnets'] ?? []) as Record<string, unknown>[];
 
-  // Firewall rule count > 25
+  // Firewall rule count > 200 (VPC ACL limit)
   const fwAffected: AffectedResource[] = [];
   for (const fw of firewalls) {
     const rules = fw['rules'] ?? fw['firewallRules'];
     const ruleCount = Array.isArray(rules) ? rules.length : 0;
-    if (ruleCount > 25) {
+    if (ruleCount > 200) {
       fwAffected.push({
         id: toNum(fw['id']),
         hostname: toStr(fw['name']) || toStr(fw['fullyQualifiedDomainName']) || `Firewall ${toNum(fw['id'])}`,
-        detail: `${ruleCount} rules`,
+        detail: `${ruleCount} rules (VPC ACL limit: 200)`,
       });
     }
   }
   results.push(evaluateCheck(FIREWALL_RULE_COUNT, 'warning', firewalls.length, fwAffected));
 
-  // Estimated ACL rule count from firewall translation
+  // Estimated ACL rule count from firewall translation (200 rules per ACL combined)
   const aclAffected: AffectedResource[] = [];
   for (const fw of firewalls) {
     const rules = fw['rules'] ?? fw['firewallRules'];
@@ -213,26 +300,27 @@ export function runNetworkChecks(collectedData: Record<string, unknown[]>): Chec
       if (/out|egress/i.test(direction)) outbound++;
       else inbound++; // default to inbound if direction unknown
     }
-    if (inbound > 25 || outbound > 25) {
+    const totalRules = inbound + outbound;
+    if (totalRules > 200) {
       aclAffected.push({
         id: toNum(fw['id']),
         hostname: toStr(fw['name']) || toStr(fw['fullyQualifiedDomainName']) || `Firewall ${toNum(fw['id'])}`,
-        detail: `Estimated ACL rules: ${inbound} inbound, ${outbound} outbound (max 25 each)`,
+        detail: `Estimated ACL rules: ${totalRules} total (${inbound} inbound, ${outbound} outbound) — VPC limit: 200 per ACL`,
       });
     }
   }
   results.push(evaluateCheck(ACL_RULE_ESTIMATE, 'warning', firewalls.length, aclAffected));
 
-  // Security group rule count > 25
+  // Security group rule count > 250
   const sgAffected: AffectedResource[] = [];
   for (const sg of sgs) {
     const rules = sg['rules'] ?? sg['securityGroupRules'] ?? [];
     const ruleCount = Array.isArray(rules) ? rules.length : 0;
-    if (ruleCount > 25) {
+    if (ruleCount > 250) {
       sgAffected.push({
         id: toNum(sg['id']),
         hostname: toStr(sg['name']) || `SG ${toNum(sg['id'])}`,
-        detail: `${ruleCount} rules`,
+        detail: `${ruleCount} rules (VPC limit: 250)`,
       });
     }
   }
@@ -364,6 +452,133 @@ export function runNetworkChecks(collectedData: Record<string, unknown[]>): Chec
 
   // VRF enablement — unknown (not determinable from API, always flag for manual check)
   results.push(unknownCheck(VRF_ENABLEMENT, allServers.length));
+
+  // ── Account/Region Quota Checks ────────────────────────────────────
+
+  const ipsecVpns = (collectedData['ipsecVpn'] ?? []) as Record<string, unknown>[];
+
+  // VPCs per region — estimate from distinct VLANs per region (quota: 10)
+  // Each VLAN could map to a separate VPC depending on network design
+  const vlansByRegion = new Map<string, number>();
+  for (const vlan of vlans) {
+    const dc = toStr(vlan['primaryRouter.datacenter.name'])
+      || toStr((vlan['primaryRouter'] as Record<string, unknown>)?.['datacenter'] as unknown)
+      || toStr(vlan['datacenter'])
+      || '';
+    if (dc) {
+      const mapping = mapDatacenterToVPC(dc);
+      const region = mapping?.vpcRegion ?? 'unknown';
+      vlansByRegion.set(region, (vlansByRegion.get(region) ?? 0) + 1);
+    }
+  }
+  const vpcsAffected: AffectedResource[] = [];
+  for (const [region, count] of vlansByRegion) {
+    if (count > 10) {
+      vpcsAffected.push({
+        id: region,
+        hostname: region,
+        detail: `${count} VLANs → may need >10 VPCs (quota: 10)`,
+      });
+    }
+  }
+  results.push(evaluateCheck(QUOTA_VPCS_PER_REGION, 'warning', vlans.length, vpcsAffected));
+
+  // Subnets per VPC region (quota: 100 per VPC)
+  const subnetsByRegion = new Map<string, number>();
+  for (const subnet of subnets) {
+    const dc = toStr(subnet['datacenter.name'] as unknown)
+      || toStr(subnet['datacenter'] as unknown)
+      || '';
+    if (dc) {
+      const mapping = mapDatacenterToVPC(dc);
+      const region = mapping?.vpcRegion ?? 'unknown';
+      subnetsByRegion.set(region, (subnetsByRegion.get(region) ?? 0) + 1);
+    }
+  }
+  const subnetsAffected: AffectedResource[] = [];
+  for (const [region, count] of subnetsByRegion) {
+    if (count > 100) {
+      subnetsAffected.push({
+        id: region,
+        hostname: region,
+        detail: `${count} subnets (quota: 100 per VPC)`,
+      });
+    }
+  }
+  results.push(evaluateCheck(QUOTA_SUBNETS_PER_VPC, 'warning', subnets.length, subnetsAffected));
+
+  // Security groups per VPC (quota: 100)
+  const sgQuotaAffected: AffectedResource[] = [];
+  if (sgs.length > 100) {
+    sgQuotaAffected.push({
+      id: 'account',
+      hostname: 'Account total',
+      detail: `${sgs.length} security groups (quota: 100 per VPC)`,
+    });
+  }
+  results.push(evaluateCheck(QUOTA_SGS_PER_VPC, 'warning', sgs.length, sgQuotaAffected));
+
+  // ACLs per VPC (quota: 100)
+  const aclQuotaAffected: AffectedResource[] = [];
+  if (firewalls.length > 100) {
+    aclQuotaAffected.push({
+      id: 'account',
+      hostname: 'Account total',
+      detail: `${firewalls.length} firewalls → ACLs (quota: 100 per VPC)`,
+    });
+  }
+  results.push(evaluateCheck(QUOTA_ACLS_PER_VPC, 'info', firewalls.length, aclQuotaAffected));
+
+  // Floating IPs per zone (quota: 40)
+  const publicIpsByZone = new Map<string, number>();
+  for (const server of allServers) {
+    if (server['privateNetworkOnly'] === true) continue;
+    const publicIp = toStr(server['primaryIp'] as unknown)
+      || toStr(server['primaryIpAddress'] as unknown);
+    if (!publicIp) continue;
+    const dc = toStr((server as Record<string, unknown>)['datacenter.name'] as unknown)
+      || toStr((server as Record<string, unknown>)['datacenter'] as unknown)
+      || '';
+    if (dc) {
+      const mapping = mapDatacenterToVPC(dc);
+      // Map to first zone in the region as a conservative estimate
+      const zone = mapping?.vpcZones?.[0] ?? 'unknown';
+      publicIpsByZone.set(zone, (publicIpsByZone.get(zone) ?? 0) + 1);
+    }
+  }
+  const fipAffected: AffectedResource[] = [];
+  for (const [zone, count] of publicIpsByZone) {
+    if (count > 40) {
+      fipAffected.push({
+        id: zone,
+        hostname: zone,
+        detail: `${count} public IPs → floating IPs (quota: 40 per zone)`,
+      });
+    }
+  }
+  results.push(evaluateCheck(QUOTA_FLOATING_IPS_PER_ZONE, 'warning', allServers.length, fipAffected));
+
+  // VPN gateways per region (quota: 9)
+  const vpnsByRegion = new Map<string, number>();
+  for (const vpn of ipsecVpns) {
+    const dc = toStr(vpn['datacenter'] as unknown) || toStr(vpn['datacenter.name'] as unknown) || '';
+    if (dc) {
+      const mapping = mapDatacenterToVPC(dc);
+      const region = mapping?.vpcRegion ?? 'unknown';
+      vpnsByRegion.set(region, (vpnsByRegion.get(region) ?? 0) + 1);
+    }
+  }
+  const vpnAffected: AffectedResource[] = [];
+  for (const [region, count] of vpnsByRegion) {
+    if (count > 9) {
+      vpnAffected.push({
+        id: region,
+        hostname: region,
+        detail: `${count} VPN tunnels → gateways (quota: 9 per region)`,
+      });
+    }
+  }
+  results.push(evaluateCheck(QUOTA_VPN_GATEWAYS_PER_REGION, 'warning', ipsecVpns.length, vpnAffected));
 
   return results;
 }

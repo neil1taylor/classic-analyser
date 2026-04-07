@@ -391,6 +391,63 @@ const BM_NIC_SPEED: PreRequisiteCheck = {
   ],
 };
 
+// ── Account/Region Quota Checks ─────────────────────────────────────────
+
+const QUOTA_VCPU_PER_REGION: PreRequisiteCheck = {
+  id: 'quota-vcpu-per-region',
+  name: 'VPC vCPU Quota per Region (200)',
+  category: 'compute',
+  description: 'VPC accounts have a default quota of 200 vCPUs per region. Migrating all Classic VSIs to a single VPC region may exceed this quota. Quotas can be increased by contacting IBM Cloud Support.',
+  threshold: '200 vCPUs per region (default quota)',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-quotas',
+  remediationSteps: [
+    'Request a vCPU quota increase via IBM Cloud Support before migration.',
+    'Distribute workloads across multiple VPC regions to stay within default quotas.',
+    'Phase migration in waves to manage quota consumption.',
+  ],
+};
+
+const QUOTA_MEMORY_PER_REGION: PreRequisiteCheck = {
+  id: 'quota-memory-per-region',
+  name: 'VPC Memory Quota per Region (5,600 GB)',
+  category: 'compute',
+  description: 'VPC accounts have a default quota of 5,600 GB RAM per region. Migrating all Classic VSIs to a single VPC region may exceed this quota. Quotas can be increased by contacting IBM Cloud Support.',
+  threshold: '5,600 GB per region (default quota)',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-quotas',
+  remediationSteps: [
+    'Request a memory quota increase via IBM Cloud Support before migration.',
+    'Distribute workloads across multiple VPC regions.',
+    'Right-size memory allocations during migration to reduce total demand.',
+  ],
+};
+
+const QUOTA_BM_PER_ACCOUNT: PreRequisiteCheck = {
+  id: 'quota-bm-per-account',
+  name: 'VPC Bare Metal Quota per Account (25)',
+  category: 'compute',
+  description: 'VPC accounts have a default quota of 25 bare metal servers per account. Migrating all Classic bare metal servers may exceed this quota. Quotas can be increased by contacting IBM Cloud Support.',
+  threshold: '25 bare metal servers per account (default quota)',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-quotas',
+  remediationSteps: [
+    'Request a bare metal quota increase via IBM Cloud Support before migration.',
+    'Evaluate if some bare metal workloads can run on VPC VSIs instead.',
+    'Phase bare metal migrations to manage quota consumption.',
+  ],
+};
+
+const QUOTA_PLACEMENT_GROUPS: PreRequisiteCheck = {
+  id: 'quota-placement-groups',
+  name: 'VPC Placement Group Quota per Region (100)',
+  category: 'compute',
+  description: 'VPC accounts have a default quota of 100 placement groups per region. Classic placement groups exceeding this quota need consolidation.',
+  threshold: '100 placement groups per region (default quota)',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-quotas',
+  remediationSteps: [
+    'Request a placement group quota increase via IBM Cloud Support if needed.',
+    'Consolidate placement groups where possible.',
+  ],
+};
+
 // ── Runner ──────────────────────────────────────────────────────────────
 
 export function runComputeChecks(collectedData: Record<string, unknown[]>): CheckResult[] {
@@ -863,6 +920,83 @@ export function runComputeChecks(collectedData: Record<string, unknown[]>): Chec
     });
   }
   results.push(evaluateCheck(RESERVED_CAPACITY_ACTIVE, 'warning', reserved.length, reservedAffected));
+
+  // ── Account/Region Quota Checks ────────────────────────────────────
+
+  // Aggregate vCPU per target VPC region (quota: 200)
+  const vcpuByRegion = new Map<string, number>();
+  for (const vsi of vsis) {
+    const dc = str(vsi, 'datacenter.name') || str(vsi, 'datacenter') || '';
+    const mapping = dc ? mapDatacenterToVPC(dc) : null;
+    const region = mapping?.vpcRegion ?? 'unknown';
+    const cpu = num(vsi, 'maxCpu') || num(vsi, 'startCpus') || 0;
+    vcpuByRegion.set(region, (vcpuByRegion.get(region) ?? 0) + cpu);
+  }
+  const vcpuQuotaAffected: AffectedResource[] = [];
+  for (const [region, total] of vcpuByRegion) {
+    if (total > 200) {
+      vcpuQuotaAffected.push({
+        id: region,
+        hostname: region,
+        detail: `${total} vCPUs (quota: 200)`,
+      });
+    }
+  }
+  results.push(evaluateCheck(QUOTA_VCPU_PER_REGION, 'warning', vsis.length, vcpuQuotaAffected));
+
+  // Aggregate memory per target VPC region (quota: 5600 GB)
+  const memByRegion = new Map<string, number>();
+  for (const vsi of vsis) {
+    const dc = str(vsi, 'datacenter.name') || str(vsi, 'datacenter') || '';
+    const mapping = dc ? mapDatacenterToVPC(dc) : null;
+    const region = mapping?.vpcRegion ?? 'unknown';
+    const memMB = num(vsi, 'maxMemory') || num(vsi, 'maxMemoryCount') || 0;
+    memByRegion.set(region, (memByRegion.get(region) ?? 0) + memMB);
+  }
+  const memQuotaAffected: AffectedResource[] = [];
+  for (const [region, totalMB] of memByRegion) {
+    const totalGB = Math.round(totalMB / 1024);
+    if (totalGB > 5600) {
+      memQuotaAffected.push({
+        id: region,
+        hostname: region,
+        detail: `${totalGB} GB memory (quota: 5,600 GB)`,
+      });
+    }
+  }
+  results.push(evaluateCheck(QUOTA_MEMORY_PER_REGION, 'warning', vsis.length, memQuotaAffected));
+
+  // Bare metal count per account (quota: 25)
+  const bmQuotaAffected: AffectedResource[] = [];
+  if (bms.length > 25) {
+    bmQuotaAffected.push({
+      id: 'account',
+      hostname: 'Account total',
+      detail: `${bms.length} bare metal servers (quota: 25)`,
+    });
+  }
+  results.push(evaluateCheck(QUOTA_BM_PER_ACCOUNT, 'warning', bms.length, bmQuotaAffected));
+
+  // Placement groups per region (quota: 100)
+  const placementGroups = (collectedData['placementGroups'] ?? []) as Record<string, unknown>[];
+  const pgByRegion = new Map<string, number>();
+  for (const pg of placementGroups) {
+    const dc = str(pg, 'datacenter') || str(pg, 'backendRouter.datacenter.name') || '';
+    const mapping = dc ? mapDatacenterToVPC(dc) : null;
+    const region = mapping?.vpcRegion ?? 'unknown';
+    pgByRegion.set(region, (pgByRegion.get(region) ?? 0) + 1);
+  }
+  const pgQuotaAffected: AffectedResource[] = [];
+  for (const [region, count] of pgByRegion) {
+    if (count > 100) {
+      pgQuotaAffected.push({
+        id: region,
+        hostname: region,
+        detail: `${count} placement groups (quota: 100)`,
+      });
+    }
+  }
+  results.push(evaluateCheck(QUOTA_PLACEMENT_GROUPS, 'info', placementGroups.length, pgQuotaAffected));
 
   return results;
 }

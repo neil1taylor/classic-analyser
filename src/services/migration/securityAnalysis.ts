@@ -19,10 +19,10 @@ export function analyzeSecurity(
   if (securityGroups.length > 0) {
     sgNotes.push(`${securityGroups.length} existing security group(s) can be mapped to VPC security groups`);
   }
-  // VPC allows up to 5 security groups per interface and 25 rules per group
+  // VPC allows up to 5 security groups per interface and 250 rules per group
   const vpcGroupsNeeded = Math.max(securityGroups.length, 1);
-  if (existingRules > vpcGroupsNeeded * 25) {
-    sgNotes.push('Rule count exceeds 25 per group — will need to split across multiple security groups');
+  if (existingRules > vpcGroupsNeeded * 250) {
+    sgNotes.push('Rule count exceeds 250 per group — will need to split across multiple security groups');
   }
 
   // Certificate assessment

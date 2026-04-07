@@ -1,5 +1,6 @@
 import type { CheckResult, PreRequisiteCheck, AffectedResource } from '@/types/migration';
 import { evaluateCheck } from './checkUtils';
+import { mapDatacenterToVPC } from '../data/datacenterMapping';
 
 const BLOCK_VOLUME_SIZE: PreRequisiteCheck = {
   id: 'storage-block-size',
@@ -48,7 +49,7 @@ const SDP_REQUIRED: PreRequisiteCheck = {
   id: 'storage-sdp-required',
   name: 'Gen 2 SDP Profile Required',
   category: 'storage',
-  description: 'Volumes that exceed Gen 1 limits (>16 TB capacity or >48K IOPS) require the Gen 2 sdp profile. The sdp profile is not available in all regions and does not support consistency group snapshots or boot volumes.',
+  description: 'Volumes that exceed Gen 1 limits (>16 TB capacity or >48K IOPS) require the Gen 2 sdp profile. The sdp profile is not available in all regions, does not support consistency group snapshots, and is not recommended for boot volumes (GPT detection issue — may boot BIOS instead of UEFI; must not be used with secure boot).',
   docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-block-storage-profiles',
   remediationSteps: [
     'Verify sdp profile is available in your target VPC region.',
@@ -135,6 +136,36 @@ const MULTI_ATTACH_STORAGE: PreRequisiteCheck = {
     'For shared storage needs, consider VPC file shares (NFS) which support multi-mount.',
     'For Bare Metal workloads, evaluate the VPC multi-attach capability (planned Q4 2026).',
     'Redesign application architecture to use individual volumes per host where possible.',
+  ],
+};
+
+// ── Account/Region Quota Checks ─────────────────────────────────────────
+
+const QUOTA_VOLUMES_PER_REGION: PreRequisiteCheck = {
+  id: 'quota-volumes-per-region',
+  name: 'VPC Volume Quota per Region (300)',
+  category: 'storage',
+  description: 'VPC accounts have a default quota of 300 block storage volumes (boot + secondary) per region. Migrating all Classic block and file storage to a single region may exceed this quota. Quotas can be increased by contacting IBM Cloud Support.',
+  threshold: '300 volumes per region (default quota)',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-quotas',
+  remediationSteps: [
+    'Request a volume quota increase via IBM Cloud Support before migration.',
+    'Consolidate small volumes into fewer, larger volumes.',
+    'Distribute storage across multiple VPC regions.',
+  ],
+};
+
+const QUOTA_FILE_SHARES: PreRequisiteCheck = {
+  id: 'quota-file-shares',
+  name: 'VPC File Share Quota per Account (300)',
+  category: 'storage',
+  description: 'VPC accounts have a default quota of 300 file shares per account. Migrating all Classic file storage volumes may exceed this quota. Quotas can be increased by contacting IBM Cloud Support.',
+  threshold: '300 file shares per account (default quota)',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-quotas',
+  remediationSteps: [
+    'Request a file share quota increase via IBM Cloud Support before migration.',
+    'Consolidate file shares where workloads permit.',
+    'Consider IBM Cloud Object Storage for archival data.',
   ],
 };
 
@@ -320,6 +351,41 @@ export function runStorageChecks(collectedData: Record<string, unknown[]>): Chec
     }
   }
   results.push(evaluateCheck(KUBE_STORAGE_DETECTED, 'info', allBlocks.length + allFiles.length, kubeAffected));
+
+  // ── Account/Region Quota Checks ────────────────────────────────────
+
+  // Block + file volumes per region (quota: 300)
+  const volsByRegion = new Map<string, number>();
+  for (const vol of [...blocks, ...files]) {
+    const dc = toStr(vol['datacenter']) || toStr(vol['serviceResource.datacenter.name']);
+    if (dc) {
+      const mapping = mapDatacenterToVPC(dc);
+      const region = mapping?.vpcRegion ?? 'unknown';
+      volsByRegion.set(region, (volsByRegion.get(region) ?? 0) + 1);
+    }
+  }
+  const volQuotaAffected: AffectedResource[] = [];
+  for (const [region, count] of volsByRegion) {
+    if (count > 300) {
+      volQuotaAffected.push({
+        id: region,
+        hostname: region,
+        detail: `${count} storage volumes (quota: 300 per region)`,
+      });
+    }
+  }
+  results.push(evaluateCheck(QUOTA_VOLUMES_PER_REGION, 'warning', blocks.length + files.length, volQuotaAffected));
+
+  // File shares per account (quota: 300)
+  const fileQuotaAffected: AffectedResource[] = [];
+  if (files.length > 300) {
+    fileQuotaAffected.push({
+      id: 'account',
+      hostname: 'Account total',
+      detail: `${files.length} file storage volumes (quota: 300 per account)`,
+    });
+  }
+  results.push(evaluateCheck(QUOTA_FILE_SHARES, 'warning', files.length, fileQuotaAffected));
 
   return results;
 }
