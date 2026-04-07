@@ -7,6 +7,7 @@ import { isAIConfigured } from '@/services/ai/aiProxyClient';
 import { fetchReportNarrative } from '@/services/ai/reportApi';
 import { buildInsightsInput, buildCostInput } from '@/services/ai/contextBuilders';
 import { generateMigrationXlsx, generateMigrationPptx } from '@/services/migration/export';
+import { generateAssessmentTemplate } from '@/services/export/assessment';
 
 const AI_SECTIONS: AIReportSectionType[] = [
   'executive_summary',
@@ -24,6 +25,7 @@ export function useMigrationExport() {
   const [exporting, setExporting] = useState(false);
   const [exportingXlsx, setExportingXlsx] = useState(false);
   const [exportingPptx, setExportingPptx] = useState(false);
+  const [exportingAssessment, setExportingAssessment] = useState(false);
 
   const exportDocx = useCallback(async (
     analysisResult: MigrationAnalysisOutput,
@@ -157,5 +159,34 @@ export function useMigrationExport() {
     }
   }, []);
 
-  return { exportDocx, exportXlsx, exportPptx, exporting, exportingXlsx, exportingPptx };
+  const exportAssessment = useCallback(async (
+    analysisResult: MigrationAnalysisOutput,
+    collectedData?: Record<string, unknown[]>,
+    options?: { accountName?: string; accountInfo?: Record<string, unknown> },
+  ) => {
+    setExportingAssessment(true);
+    try {
+      const blob = await generateAssessmentTemplate(
+        analysisResult,
+        collectedData || {},
+        options?.accountInfo,
+      );
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const date = new Date().toISOString().slice(0, 10);
+      const name = options?.accountName
+        ? options.accountName.replace(/[^a-zA-Z0-9_-]/g, '_')
+        : 'assessment';
+      a.href = url;
+      a.download = `${name}_assessment_template_${date}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } finally {
+      setExportingAssessment(false);
+    }
+  }, []);
+
+  return { exportDocx, exportXlsx, exportPptx, exportAssessment, exporting, exportingXlsx, exportingPptx, exportingAssessment };
 }

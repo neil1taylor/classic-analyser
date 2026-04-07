@@ -6,6 +6,7 @@ import { useMigrationExport } from '@/hooks/useMigrationExport';
 import { useTerraformExport } from '@/hooks/useTerraformExport';
 import { useMigration } from '@/contexts/MigrationContext';
 import { useData } from '@/contexts/DataContext';
+import { useAuth } from '@/contexts/AuthContext';
 import ReportExportDialog from '@/components/common/ReportExportDialog';
 import type { ReportExportOptions } from '@/components/common/ReportExportDialog';
 import MigrationPreferencesPanel from './MigrationPreferencesPanel';
@@ -47,7 +48,8 @@ const MigrationDashboard: React.FC = () => {
 
   const { pricing } = useMigration();
   const { collectedData, dataSource } = useData();
-  const { exportDocx, exportXlsx, exportPptx, exporting, exportingXlsx, exportingPptx } = useMigrationExport();
+  const { accountInfo } = useAuth();
+  const { exportDocx, exportXlsx, exportPptx, exportAssessment, exporting, exportingXlsx, exportingPptx, exportingAssessment } = useMigrationExport();
   const { exportTerraform, exporting: terraformExporting } = useTerraformExport();
   const [exportOpen, setExportOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
@@ -58,6 +60,11 @@ const MigrationDashboard: React.FC = () => {
       await exportXlsx(analysisResult, { accountName: options.clientName });
     } else if (options.format === 'pptx') {
       await exportPptx(analysisResult, { accountName: options.clientName });
+    } else if (options.format === 'assessment') {
+      await exportAssessment(analysisResult, collectedData, {
+        accountName: options.clientName,
+        accountInfo: accountInfo as unknown as Record<string, unknown> | undefined,
+      });
     } else {
       await exportDocx(analysisResult, collectedData, {
         clientName: options.clientName,
@@ -186,7 +193,7 @@ const MigrationDashboard: React.FC = () => {
         open={exportOpen}
         onClose={() => setExportOpen(false)}
         onExport={handleExport}
-        exporting={exporting || exportingXlsx || exportingPptx}
+        exporting={exporting || exportingXlsx || exportingPptx || exportingAssessment}
         hasMigrationData={!!analysisResult}
       />
     </div>

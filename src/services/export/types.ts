@@ -2,7 +2,7 @@
  * Shared types for export services.
  */
 
-export type ExportFormat = 'xlsx' | 'pdf' | 'docx' | 'pptx' | 'handover';
+export type ExportFormat = 'xlsx' | 'pdf' | 'docx' | 'pptx' | 'handover' | 'assessment';
 
 export type InfrastructureDomain = 'classic' | 'vpc' | 'powervs' | 'platform';
 

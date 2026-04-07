@@ -52,6 +52,8 @@ export async function exportAs(
     }
     case 'xlsx':
       throw new Error('XLSX export should use the existing server-side export path');
+    case 'assessment':
+      throw new Error('Assessment export should be called via useMigrationExport');
     default:
       throw new Error(`Unsupported export format: ${format}`);
   }
@@ -72,6 +74,8 @@ export function getFileExtension(format: ExportFormat): string {
       return 'pptx';
     case 'handover':
       return 'zip';
+    case 'assessment':
+      return 'xlsx';
   }
 }
 
@@ -81,6 +85,7 @@ export function getFileExtension(format: ExportFormat): string {
 export function getMimeType(format: ExportFormat): string {
   switch (format) {
     case 'xlsx':
+    case 'assessment':
       return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
     case 'pdf':
       return 'application/pdf';
@@ -108,5 +113,7 @@ export function getFormatLabel(format: ExportFormat): string {
       return 'PowerPoint (.pptx)';
     case 'handover':
       return 'Handover Package (.zip)';
+    case 'assessment':
+      return 'Assessment Template (.xlsx)';
   }
 }

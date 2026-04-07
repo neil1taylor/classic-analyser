@@ -14,7 +14,7 @@ import {
 } from '@carbon/react';
 import { useAI } from '@/contexts/AIContext';
 
-export type ReportFormat = 'docx' | 'xlsx' | 'pptx';
+export type ReportFormat = 'docx' | 'xlsx' | 'pptx' | 'assessment';
 
 interface Props {
   open: boolean;
@@ -70,6 +70,7 @@ const ReportExportDialog: React.FC<Props> = ({
               <RadioButton id="format-docx" value="docx" labelText="Word (.docx)" />
               <RadioButton id="format-xlsx" value="xlsx" labelText="Excel (.xlsx)" />
               <RadioButton id="format-pptx" value="pptx" labelText="PowerPoint (.pptx)" />
+              <RadioButton id="format-assessment" value="assessment" labelText="Assessment Template (.xlsx)" />
             </RadioButtonGroup>
           )}
 
