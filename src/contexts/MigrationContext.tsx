@@ -114,4 +114,3 @@ export function MigrationProvider({ children }: { children: React.ReactNode }) {
   return <MigrationContext.Provider value={value}>{children}</MigrationContext.Provider>;
 }
 
-export default MigrationContext;
