@@ -170,3 +170,19 @@ export function deduplicateBlockStorage(
 
   return result;
 }
+
+/**
+ * Detect whether a storage item's notes field indicates K8s consumption.
+ * IKS/ROKS clusters provision storage via ibm-file-plugin or ibm-block-attacher,
+ * and the notes contain PVC/storageclass metadata as a Python dict-like string.
+ */
+export function isKubeStorage(notes: unknown): boolean {
+  if (typeof notes !== 'string' || !notes) return false;
+  return (
+    notes.includes("'pvc'") ||
+    notes.includes("'storageclass'") ||
+    notes.includes('ibm-file-plugin') ||
+    notes.includes('ibm-block-attacher') ||
+    notes.includes('ibmcloud-block-storage-plugin')
+  );
+}

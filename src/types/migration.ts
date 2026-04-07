@@ -2,7 +2,7 @@
 
 export type MigrationStatus = 'ready' | 'needs-work' | 'blocked' | 'not-applicable';
 export type ComplexityCategory = 'Low' | 'Medium' | 'High' | 'Very High';
-export type ProfileFamily = 'balanced' | 'compute' | 'memory' | 'very-high-memory' | 'ultra-high-memory' | 'gpu';
+export type ProfileFamily = 'balanced' | 'compute' | 'memory' | 'very-high-memory' | 'ultra-high-memory' | 'gpu' | 'storage-optimized';
 export type OSEffort = 'none' | 'minimal' | 'moderate' | 'significant';
 export type ImageType = 'stock' | 'byol' | 'none';
 export type StorageMigrationStrategy = 'snapshot' | 'replication' | 'application-level';
@@ -275,6 +275,12 @@ export interface StorageAssessment {
     totalAccounts: number;
     migrationRequired: boolean;
     notes: string[];
+  };
+  kubeStorage?: {
+    totalVolumes: number;
+    totalCapacityGB: number;
+    blockCount: number;
+    fileCount: number;
   };
   score: number;
   recommendations: string[];

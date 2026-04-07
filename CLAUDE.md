@@ -90,9 +90,12 @@ src/                              # React frontend
                                   complexityScoring.ts, costComparison.ts, wavePlanning.ts,
                                   dependencyMapping.ts
       checks/                     index.ts, computeChecks.ts (28), networkChecks.ts (11),
-                                  storageChecks.ts (8), securityChecks.ts (3), checkUtils.ts
+                                  storageChecks.ts (9), securityChecks.ts (3), checkUtils.ts
       data/                       datacenterMapping.ts, osCompatibility.ts, vpcProfiles.ts,
-                                  vpcCostEstimates.ts, featureGaps.ts, storageTiers.ts
+                                  vpcCostEstimates.ts, featureGaps.ts, storageTiers.ts,
+                                  bmMappingLookup.ts
+        generated/                vpcProfileCatalog.json, bmMappings.json, storageMappings.json
+                                  (produced by scripts/import-migration-mappings.ts)
   types/                          resources.ts, vpc-resources.ts, powervs-resources.ts,
                                   platform-resources.ts, migration.ts
   utils/                          formatters.ts, relationships.ts, logger.ts, retry.ts
@@ -122,6 +125,8 @@ server/src/                       # Express backend
 
 scripts/                          # Utility scripts
   mdl-to-json.py                  Converts IMS .mdl data files to JSON for browser import
+  import-migration-mappings.ts    Imports Classic-to-VPC mapping XLSX → generated JSON
+  fetch-vpc-pricing.ts            Fetches VPC pricing from IBM Global Catalog API
 ```
 
 ## Build Commands
@@ -136,6 +141,7 @@ npm run test:integration # Parser/merger integration tests (alt_input/ data)
 npm run test:roundtrip  # Export roundtrip test
 npm run test:e2e        # Playwright E2E tests (builds + browser)
 npm run lint            # Lint
+npm run import:mappings # Re-import Classic-to-VPC mapping spreadsheets → generated JSON
 ```
 
 ## Key Design Constraints
@@ -173,12 +179,16 @@ npm run lint            # Lint
 
 **IMS NAS Storage Naming & Deduplication:** IMS NAS exports use SoftLayer naming conventions that encode the resource type in the hostname prefix. Block storage volumes appear as two rows with different IDs: `{prefix}SEVC{acct}_{seq}` (NAS_CONTAINER — backend storage container, has datacenter) and `{prefix}SEL{acct}-{seq}` (ISCSI — iSCSI LUN, datacenter "unknown", has K8s PVC notes). The prefix varies by storage platform (e.g., `IBM02`, `DSW02`). File storage uses `IBM02SEV{acct}_{seq}` (NAS, no duplication). Backup vaults use `IBME{acct}-{seq}` (EVAULT). The `deduplicateBlockStorage()` function in `csv-utils.ts` merges SEVC/SEL pairs by matching the suffix number, keeping the SEL record (richer metadata) and backfilling datacenter from the SEVC.
 
+**IMS Kubernetes Storage Detection:** Storage volumes provisioned by IKS/ROKS clusters contain K8s metadata in their `notes` field (PVC name, storageclass, cluster ID, namespace, plugin name). The `isKubeStorage()` function in `csv-utils.ts` detects these by checking for `'pvc'`, `'storageclass'`, `ibm-file-plugin`, `ibm-block-attacher`, or `ibmcloud-block-storage-plugin` in the notes. Detected volumes get `_isKubeStorage: true` set at parse time in `parseNasCsv()`. The flag persists through merge and transform. These volumes are excluded from migration assessment (they migrate with the K8s cluster, not individually) and excluded from storage pre-requisite checks. A dedicated `storage-kube-consumed` info check lists affected volumes with cluster ID and PVC name. The Block Storage and File Storage resource tables show a warning banner when K8s volumes are present, and a hidden "K8s Storage" column can be enabled to identify them.
+
 ## Migration Assessment
 
-**Pre-requisite checks (50 total):** Compute (28), Network (11), Storage (8), Security (3), plus 12 feature gap definitions. Each check produces a severity: blocker, warning, info, unknown, or passed. Check logic lives in `src/services/migration/checks/`. The `runAllPreReqChecks()` function in `checks/index.ts` orchestrates all four check categories.
+**Pre-requisite checks (51 total):** Compute (28), Network (11), Storage (9), Security (3), plus 12 feature gap definitions. Each check produces a severity: blocker, warning, info, unknown, or passed. Check logic lives in `src/services/migration/checks/`. The `runAllPreReqChecks()` function in `checks/index.ts` orchestrates all four check categories.
 
 **Migration approach classification:** Each VSI and Bare Metal server receives a recommended migration approach — `lift-and-shift`, `rebuild`, `re-platform`, or `re-architect` — based on OS compatibility, hypervisor detection, IKS/ROKS presence, and blocker status. The decision tree is in `computeAnalysis.ts` (`classifyMigrationApproach` / `classifyBareMetalApproach`). IBM's official guidance recommends "Rebuild" as the default approach (provision fresh VPC instances with latest OS).
 
 **Analysis services** in `src/services/migration/`: computeAnalysis (profile matching, approach classification), networkAnalysis, storageAnalysis, securityAnalysis, featureGapAnalysis, complexityScoring (5-dimension 0-100), costComparison (3-year projections), wavePlanning (dependency-grouped waves), dependencyMapping (resource graph).
 
-**Reference data** in `src/services/migration/data/`: datacenterMapping (Classic DC → VPC region/zones), osCompatibility (43 OS entries), vpcProfiles (200+ VSI + 20 BM profiles), featureGaps (12 Classic-only features), storageTiers (IOPS mappings).
+**Reference data** in `src/services/migration/data/`: datacenterMapping (Classic DC → VPC region/zones), osCompatibility (43 OS entries), vpcProfiles (266 VSI + 42 BM profiles from generated catalog, with hardcoded fallback), featureGaps (12 Classic-only features), storageTiers (IOPS mappings from generated storage reference), bmMappingLookup (666 explicit Classic BM → VPC profile mappings by processor/cores/RAM).
+
+**Generated mapping data** in `src/services/migration/data/generated/`: Three JSON files produced by `scripts/import-migration-mappings.ts` from two IBM Classic-to-VPC migration spreadsheets in `mappings/`. `vpcProfileCatalog.json` provides 266 VSI + 42 BM profiles with hourly pricing. `bmMappings.json` provides 666 explicit bare metal mappings by processor description, core count, RAM, and storage category. `storageMappings.json` provides block/file storage tier mappings, pricing reference data, and Classic DC → VPC zone mappings. Run `npm run import:mappings` to regenerate after spreadsheet updates. The `mappings/` directory is not committed to git; the generated JSON files are.

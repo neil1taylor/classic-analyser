@@ -1,5 +1,5 @@
 import type { StorageAssessment, BlockVolumeAssessment, FileVolumeAssessment, MigrationPreferences, StorageMigrationStrategy } from '@/types/migration';
-import { mapStorageTier, isSdpAvailable, type StorageTierContext } from './data/storageTiers';
+import { mapStorageTier, isSdpAvailable, getFileStorageProfile, type StorageTierContext } from './data/storageTiers';
 
 function num(item: unknown, key: string): number {
   return Number((item as Record<string, unknown>)[key] ?? 0);
@@ -85,12 +85,13 @@ function assessBlockVolume(
 }
 
 function assessFileVolume(item: unknown): FileVolumeAssessment {
+  const fileProfile = getFileStorageProfile();
   return {
     id: num(item, 'id'),
     username: str(item, 'username'),
     capacityGB: num(item, 'capacityGb'),
     currentFee: num(item, 'recurringFee'),
-    notes: ['Migrate to VPC File Share (NFS v4.1, dp2 profile) — verify application compatibility with NFS version'],
+    notes: [`Migrate to VPC File Share (NFS v4.1, ${fileProfile} profile) — verify application compatibility with NFS version`],
   };
 }
 
@@ -98,9 +99,16 @@ export function analyzeStorage(
   collectedData: Record<string, unknown[]>,
   preferences: MigrationPreferences,
 ): StorageAssessment {
-  const blockStorage = collectedData['blockStorage'] ?? [];
-  const fileStorage = collectedData['fileStorage'] ?? [];
+  const allBlockStorage = collectedData['blockStorage'] ?? [];
+  const allFileStorage = collectedData['fileStorage'] ?? [];
   const objectStorage = collectedData['objectStorage'] ?? [];
+
+  // Separate K8s-consumed storage — migrates with the cluster, not individually
+  const isKube = (item: unknown) => !!(item as Record<string, unknown>)['_isKubeStorage'];
+  const blockStorage = allBlockStorage.filter(item => !isKube(item));
+  const fileStorage = allFileStorage.filter(item => !isKube(item));
+  const kubeBlockStorage = allBlockStorage.filter(isKube);
+  const kubeFileStorage = allFileStorage.filter(isKube);
 
   const context: StorageTierContext = {
     targetRegion: preferences.targetRegion,
@@ -153,6 +161,31 @@ export function analyzeStorage(
     recommendations.push('Object Storage uses the same IBM COS service — no migration needed, update endpoint configuration only');
   }
 
+  // K8s-consumed storage summary
+  const kubeBlockCount = kubeBlockStorage.length;
+  const kubeFileCount = kubeFileStorage.length;
+  const kubeTotal = kubeBlockCount + kubeFileCount;
+  let kubeStorage: StorageAssessment['kubeStorage'];
+
+  if (kubeTotal > 0) {
+    const kubeBlockGB = kubeBlockStorage.reduce((sum, v) => sum + Number((v as Record<string, unknown>)['capacityGb'] ?? 0), 0);
+    const kubeFileGB = kubeFileStorage.reduce((sum, v) => sum + Number((v as Record<string, unknown>)['capacityGb'] ?? 0), 0);
+    const kubeTotalGB = kubeBlockGB + kubeFileGB;
+
+    kubeStorage = {
+      totalVolumes: kubeTotal,
+      totalCapacityGB: kubeTotalGB,
+      blockCount: kubeBlockCount,
+      fileCount: kubeFileCount,
+    };
+
+    recommendations.push(
+      `${kubeTotal} storage volume(s) (${kubeTotalGB} GB) excluded from assessment — consumed by IKS/ROKS clusters. ` +
+      `These volumes migrate with the Kubernetes cluster, not individually. ` +
+      `(${kubeBlockCount} block, ${kubeFileCount} file)`,
+    );
+  }
+
   return {
     blockStorage: {
       totalVolumes: blockStorage.length,
@@ -171,6 +204,7 @@ export function analyzeStorage(
         ? ['Object Storage is the same service in Classic and VPC — update endpoints only']
         : [],
     },
+    kubeStorage,
     score,
     recommendations,
   };

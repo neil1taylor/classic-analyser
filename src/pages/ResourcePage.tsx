@@ -35,6 +35,12 @@ const ResourcePage: React.FC = () => {
   const importMethod = dataSource === 'imported' ? getImportMethod(importFilename) : null;
   const importWarning = getImportWarning(importMethod, type);
 
+  // K8s storage warning for block/file storage tables
+  const isStorageTable = type === 'blockStorage' || type === 'fileStorage';
+  const kubeCount = isStorageTable
+    ? data.filter(item => item._isKubeStorage === true).length
+    : 0;
+
   return (
     <main style={{ padding: '1.5rem', width: '100%' }}>
       <div style={{ marginBottom: '1rem' }}>
@@ -50,6 +56,16 @@ const ResourcePage: React.FC = () => {
           kind="info"
           title="Import data note"
           subtitle={importWarning}
+          lowContrast
+          hideCloseButton
+          style={{ marginBottom: '1rem', maxWidth: 'none' }}
+        />
+      )}
+      {kubeCount > 0 && (
+        <InlineNotification
+          kind="warning"
+          title="Kubernetes storage detected"
+          subtitle={`${kubeCount} volume(s) in this table are consumed by IKS/ROKS clusters. These volumes will migrate with the Kubernetes cluster and are excluded from the migration assessment. Enable the "K8s Storage" column to identify them.`}
           lowContrast
           hideCloseButton
           style={{ marginBottom: '1rem', maxWidth: 'none' }}

@@ -1,10 +1,24 @@
 {
   "releases": [
     {
+      "version": "1.1.1",
+      "date": "2026-04-07",
+      "sections": {
+        "added": [
+          "Kubernetes storage detection — IMS NAS imports now detect storage volumes consumed by IKS/ROKS clusters (via PVC, storageclass, and plugin metadata in notes). Detected volumes are flagged with _isKubeStorage and excluded from migration assessment since they migrate with the cluster. A new storage-kube-consumed pre-requisite check lists affected volumes with cluster ID and PVC name",
+          "K8s storage warning banner on Block Storage and File Storage resource tables when Kubernetes-consumed volumes are present",
+          "Hidden 'K8s Storage' column on block and file storage tables (opt-in via column settings)"
+        ]
+      }
+    },
+    {
       "version": "1.1.0",
       "date": "2026-04-03",
       "sections": {
         "added": [
+          "Curated Classic-to-VPC profile mapping — migration assessment now uses 266 VSI profiles and 42 bare metal profiles (including Gen4: bx4, cx4, mx4) imported from IBM's Classic-to-VPC mapping spreadsheets, with hourly pricing",
+          "Spreadsheet-first bare metal mapping — 666 explicit Classic bare metal configurations (by processor, cores, RAM, and storage category) mapped to recommended VPC VSI or bare metal profiles, with algorithmic fallback for unmatched servers",
+          "Enriched storage tier mappings — block and file storage Classic-to-VPC tier mappings, throughput/IOPS ranges, and per-zone pricing from IBM's storage migration reference data",
           "Disk utilization in XLSX export — the four disk utilization columns (Disk Used %, Disk Used / Total, Disk Util Status, Disk Util Details) are now included in the vVirtualServers and vBareMetal worksheets when exporting to XLSX",
           "PowerVS and Platform Services XLSX import — the Import XLSX feature now recognises PowerVS worksheets (pPvs* prefix) and Platform Services worksheets (sServiceInstances), routing imported data to the correct domain contexts",
           "Disk Utilization Collection (opt-in) — SSH into Classic VSIs and Bare Metal servers via private IP to collect real filesystem usage. New Phase 5 runs after all API collection with 5 concurrent SSH connections and 10s timeout",

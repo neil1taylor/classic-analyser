@@ -76,6 +76,11 @@ const StorageAssessmentPanel: React.FC<Props> = ({ assessment, prereqChecks }) =
         <Tooltip label="Total storage capacity across all volume types" align="bottom">
           <Tag type="outline">{(totalGB / 1024).toFixed(1)} TB Total</Tag>
         </Tooltip>
+        {assessment.kubeStorage && assessment.kubeStorage.totalVolumes > 0 && (
+          <Tooltip label="Storage consumed by IKS/ROKS clusters — excluded from migration assessment" align="bottom">
+            <Tag type="purple">{assessment.kubeStorage.totalVolumes} K8s Volumes Excluded ({assessment.kubeStorage.totalCapacityGB} GB)</Tag>
+          </Tooltip>
+        )}
       </div>
 
       {assessment.recommendations.length > 0 && (

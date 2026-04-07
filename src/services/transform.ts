@@ -581,6 +581,7 @@ function transformBlockStorage(raw: RawItem): RawItem {
     totalBytesUsed: raw.totalBytesUsed,
     nasType: raw.nasType,
     connectedHosts: raw.connectedHosts,
+    _isKubeStorage: raw._isKubeStorage ?? false,
   };
 }
 
@@ -611,6 +612,7 @@ function transformFileStorage(raw: RawItem): RawItem {
     percentUsed: raw.percentUsed,
     nasType: raw.nasType,
     connectedHosts: raw.connectedHosts,
+    _isKubeStorage: raw._isKubeStorage ?? false,
   };
 }
 

@@ -1320,6 +1320,13 @@
         "sortable": false
       },
       {
+        "field": "_isKubeStorage",
+        "header": "K8s Storage",
+        "dataType": "boolean",
+        "defaultVisible": false,
+        "sortable": true
+      },
+      {
         "field": "allowedVirtualGuests",
         "header": "Allowed VSIs",
         "dataType": "string",
@@ -1473,6 +1480,13 @@
         "dataType": "string",
         "defaultVisible": false,
         "sortable": false
+      },
+      {
+        "field": "_isKubeStorage",
+        "header": "K8s Storage",
+        "dataType": "boolean",
+        "defaultVisible": false,
+        "sortable": true
       },
       {
         "field": "allowedVirtualGuests",

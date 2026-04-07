@@ -110,6 +110,20 @@ const STORAGE_UTILIZATION: PreRequisiteCheck = {
   ],
 };
 
+const KUBE_STORAGE_DETECTED: PreRequisiteCheck = {
+  id: 'storage-kube-consumed',
+  name: 'Kubernetes-Consumed Storage (IKS/ROKS)',
+  category: 'storage',
+  description: 'Storage volumes provisioned by IKS/ROKS clusters via ibm-file-plugin or ibm-block-attacher. These volumes are managed by the Kubernetes cluster and should migrate with the cluster, not individually.',
+  docsUrl: 'https://cloud.ibm.com/docs/containers?topic=containers-vpc-migrate',
+  remediationSteps: [
+    'Identify the IKS/ROKS cluster(s) consuming these volumes.',
+    'Plan cluster migration to VPC-based IKS/ROKS using ibmcloud ks cluster create vpc-gen2.',
+    'VPC clusters will provision new storage volumes automatically via the VPC storage CSI driver.',
+    'Migrate persistent data using application-level backup/restore or Velero.',
+  ],
+};
+
 const MULTI_ATTACH_STORAGE: PreRequisiteCheck = {
   id: 'storage-multi-attach',
   name: 'Multi-Attach Block Storage',
@@ -126,8 +140,10 @@ const MULTI_ATTACH_STORAGE: PreRequisiteCheck = {
 
 export function runStorageChecks(collectedData: Record<string, unknown[]>): CheckResult[] {
   const results: CheckResult[] = [];
-  const blocks = (collectedData['blockStorage'] ?? []) as Record<string, unknown>[];
-  const files = (collectedData['fileStorage'] ?? []) as Record<string, unknown>[];
+  const allBlocks = (collectedData['blockStorage'] ?? []) as Record<string, unknown>[];
+  const allFiles = (collectedData['fileStorage'] ?? []) as Record<string, unknown>[];
+  const blocks = allBlocks.filter(v => !v['_isKubeStorage']);
+  const files = allFiles.filter(v => !v['_isKubeStorage']);
   const vsis = (collectedData['virtualServers'] ?? []) as Record<string, unknown>[];
 
   // Block volume size > 32768 GB (absolute blocker)
@@ -284,6 +300,26 @@ export function runStorageChecks(collectedData: Record<string, unknown[]>): Chec
     }
   }
   results.push(evaluateCheck(STORAGE_UTILIZATION, 'info', allVolumes.filter(v => toNum(v['bytesUsed']) > 0).length, utilizationAffected));
+
+  // K8s-consumed storage detection (uses unfiltered arrays)
+  const kubeAffected: AffectedResource[] = [];
+  for (const vol of [...allBlocks, ...allFiles]) {
+    if (vol['_isKubeStorage']) {
+      const notes = toStr(vol['notes']);
+      const clusterMatch = notes.match(/'cluster'\s*:\s*'([^']+)'/);
+      const pvcMatch = notes.match(/'pvc'\s*:\s*'([^']+)'/);
+      const detail = [
+        clusterMatch ? `cluster: ${clusterMatch[1]}` : null,
+        pvcMatch ? `pvc: ${pvcMatch[1]}` : null,
+      ].filter(Boolean).join(', ');
+      kubeAffected.push({
+        id: toNum(vol['id']),
+        hostname: toStr(vol['username']) || toStr(vol['hostname']) || `Volume ${toNum(vol['id'])}`,
+        detail: detail || 'K8s metadata detected in notes',
+      });
+    }
+  }
+  results.push(evaluateCheck(KUBE_STORAGE_DETECTED, 'info', allBlocks.length + allFiles.length, kubeAffected));
 
   return results;
 }

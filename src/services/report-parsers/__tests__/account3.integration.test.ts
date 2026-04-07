@@ -96,6 +96,45 @@ describe('Account 3 (1703429) — Individual Parsers', () => {
       const totalRecords = Object.values(result.data).reduce((sum, arr) => sum + arr.length, 0);
       expect(totalRecords).toBeGreaterThan(0);
     });
+
+    it('flags K8s-consumed file storage volumes', () => {
+      const text = readTestFileText(ACCOUNT3_DIR, '1703429_nas.csv');
+      const result = parseNasCsv(text);
+
+      const file = (result.data.fileStorage ?? []) as Record<string, unknown>[];
+      const kubeFile = file.filter(f => f._isKubeStorage === true);
+      const plainFile = file.filter(f => f._isKubeStorage === false);
+
+      expect(kubeFile.length).toBeGreaterThan(0);
+      expect(plainFile.length).toBeGreaterThan(0);
+      // Total should equal all file storage
+      expect(kubeFile.length + plainFile.length).toBe(file.length);
+    });
+
+    it('flags K8s-consumed block storage volumes', () => {
+      const text = readTestFileText(ACCOUNT3_DIR, '1703429_nas.csv');
+      const result = parseNasCsv(text);
+
+      const block = (result.data.blockStorage ?? []) as Record<string, unknown>[];
+      // After deduplication, K8s flag should survive
+      const kubeBlock = block.filter(b => b._isKubeStorage === true);
+      expect(kubeBlock.length).toBeGreaterThan(0);
+
+      // Every item should have the flag set (not undefined)
+      for (const item of block) {
+        expect(item._isKubeStorage).toBeDefined();
+      }
+    });
+
+    it('sets _isKubeStorage false on storage without K8s notes', () => {
+      const text = readTestFileText(ACCOUNT3_DIR, '1703429_nas.csv');
+      const result = parseNasCsv(text);
+
+      const file = (result.data.fileStorage ?? []) as Record<string, unknown>[];
+      const plainFile = file.filter(f => f._isKubeStorage === false);
+      // Account 3 has non-K8s file storage (e.g., backup vaults, plain NAS)
+      expect(plainFile.length).toBeGreaterThan(0);
+    });
   });
 
   describe('parseDrawio', () => {

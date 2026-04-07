@@ -1,5 +1,5 @@
 import type { ReportParserResult } from './types';
-import { parseCsvText, csvRowsToObjects, deduplicateBlockStorage } from './csv-utils';
+import { parseCsvText, csvRowsToObjects, deduplicateBlockStorage, isKubeStorage } from './csv-utils';
 import { createLogger } from '@/utils/logger';
 
 const log = createLogger('ReportCSV');
@@ -137,11 +137,14 @@ export function parseNasCsv(text: string): ReportParserResult {
     'notes': 'notes',
   };
 
-  const items: Record<string, unknown>[] = csvRowsToObjects(rows, fieldMap).map(item => ({
-    ...item,
-    // Decode URL-encoded notes
-    notes: typeof item.notes === 'string' ? decodeURIComponent(item.notes) : item.notes,
-  }));
+  const items: Record<string, unknown>[] = csvRowsToObjects(rows, fieldMap).map(item => {
+    const decodedNotes = typeof item.notes === 'string' ? decodeURIComponent(item.notes) : item.notes;
+    return {
+      ...item,
+      notes: decodedNotes,
+      _isKubeStorage: isKubeStorage(decodedNotes),
+    };
+  });
 
   // Split by nasType: ISCSI/NAS_CONTAINER → blockStorage, NAS → fileStorage
   const fileStorage: Record<string, unknown>[] = [];
@@ -163,6 +166,12 @@ export function parseNasCsv(text: string): ReportParserResult {
   if (blockStorage.length > 0) data.blockStorage = blockStorage;
 
   log.info(`Parsed ${fileStorage.length} file storage + ${blockStorage.length} block storage (${blockStorageRaw.length} raw, ${blockStorageRaw.length - blockStorage.length} duplicates removed) from NAS CSV`);
+
+  const kubeCount = items.filter(i => i._isKubeStorage).length;
+  if (kubeCount > 0) {
+    log.info(`Detected ${kubeCount} Kubernetes-consumed storage volume(s) in NAS CSV`);
+  }
+
   return { data };
 }
 

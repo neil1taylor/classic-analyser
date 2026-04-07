@@ -165,6 +165,8 @@ interface MigrationAnalysisOutput {
 
 Classic VSIs use flexible configurations, while VPC uses predefined instance profiles. The analysis must map Classic specs to the best-fit VPC profile.
 
+**Profile Data Source:** The VPC profile catalog is generated from IBM's Classic-to-VPC migration spreadsheets via `npm run import:mappings`. The generated `vpcProfileCatalog.json` contains 266 VSI profiles and 42 bare metal profiles (including Gen4 families: bx4, cx4, mx4) with hourly pricing. Hardcoded fallback arrays are used if the generated catalog is empty. See `src/services/migration/data/vpcProfiles.ts`.
+
 **Mapping Algorithm:**
 
 ```typescript
@@ -302,6 +304,8 @@ interface OSAssessment {
 ### 3.3 Bare Metal Assessment
 
 Bare metal servers require special consideration.
+
+**Spreadsheet-First Lookup:** Before algorithmic matching, the assessment looks up the server's processor description, total cores, and RAM in `bmMappings.json` — a curated table of 666 Classic bare metal configurations mapped to specific VPC VSI or bare metal profiles, grouped by storage category (0-10TB through 240+ TB). The lookup is in `src/services/migration/data/bmMappingLookup.ts`. If a match is found, the spreadsheet's recommended profile is used and the note includes "mapped from Classic-to-VPC migration guide". If no match, the algorithmic ratio-based matching is used as fallback.
 
 **VPC Bare Metal Profiles:**
 
@@ -656,14 +660,16 @@ interface NetworkAssessment {
 
 ### 5.1 Block Storage Migration
 
+**Storage Mapping Data Source:** Block and file storage tier mappings are generated from IBM's Classic-to-VPC storage mapping spreadsheet via `npm run import:mappings`. The generated `storageMappings.json` contains block/file storage profiles with throughput and IOPS ranges, tier-to-tier mappings, per-zone Classic pricing, VPC pricing, and SDP pricing components. See `src/services/migration/data/storageTiers.ts`.
+
 **Classic to VPC Block Storage Mapping:**
 
 | Classic Tier | Classic IOPS | VPC Profile | VPC IOPS | Notes |
 |--------------|--------------|-------------|----------|-------|
-| 0.25 IOPS/GB | 250 per 1TB | general-purpose | 3000 base | VPC is better |
-| 2 IOPS/GB | 2000 per 1TB | 5iops-tier | 5000 per 1TB | Similar |
-| 4 IOPS/GB | 4000 per 1TB | 10iops-tier | 10000 per 1TB | VPC is better |
-| 10 IOPS/GB | 10000 per 1TB | 10iops-tier | 10000 per 1TB | Equivalent |
+| 0.25 IOPS/GB | 100–3000 | general-purpose | 3000 base (3 IOPS/GB) | VPC is better |
+| 2 IOPS/GB | 100–24000 | general-purpose | 3000 base (3 IOPS/GB) | Spreadsheet mapping |
+| 4 IOPS/GB | 100–48000 | 5iops-tier | 5000 per 1TB | VPC is better |
+| 10 IOPS/GB | 200–40000 | 10iops-tier | 10000 per 1TB | Equivalent |
 | Custom IOPS | Variable | custom | Up to 48000 | May need adjustment |
 
 **Block Storage Migration Strategy:**
@@ -723,7 +729,23 @@ interface NetworkAssessment {
 | NFS usage (bytesUsed) | Capacity planning | Right-size VPC file shares |
 | Disk utilization (SSH) | Capacity planning | Right-size VPC boot/data volumes (opt-in Phase 5 collection via SSH) |
 
-### 5.3 Storage Assessment Output
+### 5.3 Kubernetes Storage Exclusion
+
+Storage volumes provisioned by IKS/ROKS clusters (detected via K8s metadata in the `notes` field — PVC, storageclass, plugin identifiers) are automatically excluded from migration assessment. These volumes are managed by the Kubernetes cluster and should migrate with the cluster, not individually.
+
+**Detection:** The `isKubeStorage()` function in `csv-utils.ts` checks for `'pvc'`, `'storageclass'`, `ibm-file-plugin`, `ibm-block-attacher`, or `ibmcloud-block-storage-plugin` in the notes field. The `_isKubeStorage` flag is set at NAS CSV parse time and persists through merge and transform.
+
+**Assessment impact:**
+- K8s volumes are filtered out before `analyzeStorage()` processes block/file storage
+- K8s volumes are filtered out before all storage pre-requisite checks
+- A dedicated `storage-kube-consumed` info check lists affected volumes with cluster ID and PVC name
+- A summary recommendation reports the count and total capacity of excluded K8s storage
+- The Storage tab in migration shows a purple "K8s Volumes Excluded" tag
+- The Block/File Storage resource tables show a warning banner when K8s volumes are present
+
+**Remediation:** Plan cluster migration to VPC-based IKS/ROKS. VPC clusters provision new storage volumes automatically via the VPC storage CSI driver. Migrate persistent data using application-level backup/restore or Velero.
+
+### 5.4 Storage Assessment Output
 
 ```typescript
 interface StorageAssessment {
