@@ -187,8 +187,8 @@ export const VPC_BARE_METAL_PROFILES: VPCProfile[] = profileCatalog.bareMetalPro
 
 // ── Profile classification helpers ──────────────────────────────────────────
 
-/** Check if a profile uses burstable/flex (shared) CPUs */
-export function isBurstableProfile(name: string): boolean {
+/** Check if a profile uses flex hardware placement (bxf, cxf, mxf, nxf) */
+export function isFlexProfile(name: string): boolean {
   const prefix = name.split('-')[0];
   return prefix.endsWith('f') && (prefix.startsWith('bx') || prefix.startsWith('cx') || prefix.startsWith('mx') || prefix.startsWith('nx'));
 }
@@ -201,7 +201,7 @@ export function isGen3Profile(name: string): boolean {
 
 /** Check if a profile has NVMe instance storage (d-suffix, excluding flex) */
 export function hasInstanceStorage(name: string): boolean {
-  if (isBurstableProfile(name)) return false;
+  if (isFlexProfile(name)) return false;
   const prefix = name.split('-')[0];
   return prefix.includes('d');
 }

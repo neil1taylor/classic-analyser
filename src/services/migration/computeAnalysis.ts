@@ -1,5 +1,5 @@
 import type { ComputeAssessment, VSIMigration, BareMetalMigration, VPCProfile, MigrationPreferences, MigrationStatus, MigrationApproach, ExecutionStep } from '@/types/migration';
-import { VPC_PROFILES, VPC_BARE_METAL_PROFILES, isBurstableProfile, isGen3Profile, hasInstanceStorage } from './data/vpcProfiles';
+import { VPC_PROFILES, VPC_BARE_METAL_PROFILES, isFlexProfile, isGen3Profile, hasInstanceStorage } from './data/vpcProfiles';
 import { matchOS } from './data/osCompatibility';
 import { mapDatacenterToVPC } from './data/datacenterMapping';
 import { lookupBareMetalMapping } from './data/bmMappingLookup';
@@ -17,8 +17,8 @@ function str(item: unknown, key: string): string {
   return String(field(item, key) ?? '');
 }
 
-// ── Burstable classification ────────────────────────────────────────────────
-// Patterns that indicate a VM should NOT use burstable/flex profiles
+// ── Flex classification ─────────────────────────────────────────────────────
+// Patterns that indicate a VM should NOT use flex profiles
 
 const NETWORK_APPLIANCE_PATTERNS = [
   /firewall/i, /router/i, /loadbalancer/i, /load[-_]?balancer/i,
@@ -35,12 +35,12 @@ const ENTERPRISE_APP_PATTERNS = [
   /active[-_]?directory/i, /dns[-_]?server/i, /dhcp[-_]?server/i,
 ];
 
-interface BurstableClassification {
-  isBurstableSuitable: boolean;
+interface FlexClassification {
+  isFlexSuitable: boolean;
   reasons: string[];
 }
 
-function classifyForBurstable(hostname: string): BurstableClassification {
+function classifyForFlex(hostname: string): FlexClassification {
   const reasons: string[] = [];
 
   for (const pattern of NETWORK_APPLIANCE_PATTERNS) {
@@ -58,7 +58,7 @@ function classifyForBurstable(hostname: string): BurstableClassification {
   }
 
   return {
-    isBurstableSuitable: reasons.length === 0,
+    isFlexSuitable: reasons.length === 0,
     reasons,
   };
 }
@@ -77,9 +77,9 @@ function mapToVPCProfile(cpu: number, memoryMB: number): { primary: VPCProfile |
   else if (ratio <= 14) preferredFamily = 'very-high-memory';
   else preferredFamily = 'ultra-high-memory';
 
-  // Filter to only standard (non-burstable) profiles that meet requirements
+  // Filter to only standard (non-flex) profiles that meet requirements
   const candidates = activeProfiles
-    .filter((p) => !isBurstableProfile(p.name) && p.vcpu >= cpu && p.memory >= memoryGB)
+    .filter((p) => !isFlexProfile(p.name) && p.vcpu >= cpu && p.memory >= memoryGB)
     .sort((a, b) => {
       // 1. Prefer the recommended family
       const aFamilyMatch = a.family === preferredFamily ? 0 : 1;
@@ -260,12 +260,12 @@ function assessVSI(item: unknown, _preferences: MigrationPreferences): VSIMigrat
     notes.push(`VPC minimum: ${primary.name} (${primary.vcpu} vCPU, ${primary.memory} GB) for Classic ${cpu} vCPU, ${memGB} GB`);
   }
 
-  // Burstable classification (informational — no per-VM toggle in fleet assessment)
-  const burstable = classifyForBurstable(hostname);
-  if (!burstable.isBurstableSuitable) {
-    notes.push(`Standard profile recommended — ${burstable.reasons.join(', ')} detected`);
-  } else if (primary && !isBurstableProfile(primary.name)) {
-    notes.push('Burstable (flex) profile may reduce cost for variable workloads');
+  // Flex classification (informational — no per-VM toggle in fleet assessment)
+  const flex = classifyForFlex(hostname);
+  if (!flex.isFlexSuitable) {
+    notes.push(`Standard profile recommended — ${flex.reasons.join(', ')} detected`);
+  } else if (primary && !isFlexProfile(primary.name)) {
+    notes.push('Flex profile may reduce cost — flexible hardware placement, with optional burstable vCPU on select sizes');
   }
 
   // Determine status
@@ -494,14 +494,14 @@ export function analyzeCompute(
     recommendations.push(`${sapSmallCount} bare metal server(s) match SAP-certified profiles (≤768 GB) — use SAP-certified VPC Bare Metal profiles (bx2d-metal-96x384 or mx2d-metal-96x768)`);
   }
 
-  // Burstable savings hint
-  const burstableEligible = vsiMigrations.filter((v) => {
+  // Flex savings hint
+  const flexEligible = vsiMigrations.filter((v) => {
     if (!v.recommendedProfile || v.status === 'blocked') return false;
-    const cls = classifyForBurstable(v.hostname);
-    return cls.isBurstableSuitable;
+    const cls = classifyForFlex(v.hostname);
+    return cls.isFlexSuitable;
   }).length;
-  if (burstableEligible > 0) {
-    recommendations.push(`${burstableEligible} VSI(s) may be suitable for burstable (flex) profiles — consider for cost savings on variable workloads`);
+  if (flexEligible > 0) {
+    recommendations.push(`${flexEligible} VSI(s) may be suitable for flex profiles — lower cost via flexible hardware placement`);
   }
 
   return {

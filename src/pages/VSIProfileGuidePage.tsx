@@ -135,11 +135,11 @@ export default function VSIProfileGuidePage() {
                   <StructuredListCell>gx2-8x64x1v100, gx3-16x80x1l4</StructuredListCell>
                 </StructuredListRow>
                 <StructuredListRow>
-                  <StructuredListCell><strong>Burstable</strong></StructuredListCell>
-                  <StructuredListCell>bxf, cxf, mxf</StructuredListCell>
+                  <StructuredListCell><strong>Flex</strong></StructuredListCell>
+                  <StructuredListCell>bxf, cxf, mxf, nxf</StructuredListCell>
                   <StructuredListCell>Varies</StructuredListCell>
-                  <StructuredListCell>Variable workloads with low avg CPU; dev/test, internal tooling, jump hosts</StructuredListCell>
-                  <StructuredListCell>bxf-2x8, cxf-4x8, mxf-2x16</StructuredListCell>
+                  <StructuredListCell>Lower cost via flexible hardware placement; select sizes support burstable vCPU shares</StructuredListCell>
+                  <StructuredListCell>bxf-2x8, cxf-4x8, mxf-2x16, nxf-2x1</StructuredListCell>
                 </StructuredListRow>
               </StructuredListBody>
             </StructuredListWrapper>
@@ -199,7 +199,7 @@ export default function VSIProfileGuidePage() {
               <ul>
                 <li><strong>d</strong> — NVMe instance storage included (ephemeral on stop/start)</li>
                 <li><strong>dc</strong> — Confidential compute with Intel TDX</li>
-                <li><strong>f</strong> — Flex/burstable profile with shared CPU</li>
+                <li><strong>f</strong> — Flex profile with flexible hardware generation placement (select sizes support burstable vCPU)</li>
               </ul>
             </div>
           </Tile>
@@ -276,11 +276,11 @@ export default function VSIProfileGuidePage() {
               <li><strong>Closest fit</strong> — minimizes wasted vCPU + memory beyond what the Classic VSI uses</li>
             </ol>
 
-            <h4>Burstable Detection</h4>
+            <h4>Flex Profile Detection</h4>
             <p style={{ fontSize: '0.875rem', color: 'var(--cds-text-secondary)', marginBottom: '1rem' }}>
               The assessment scans VSI hostnames for network appliance patterns (firewall, load balancer, VPN) and enterprise
-              app patterns (Oracle, SAP, SQL Server) to flag workloads where burstable profiles are unsuitable.
-              All other VSIs receive an informational note that burstable (flex) profiles may reduce cost.
+              app patterns (Oracle, SAP, SQL Server) to flag workloads where flex profiles are unsuitable.
+              All other VSIs receive an informational note that flex profiles may reduce cost through flexible hardware placement.
             </p>
           </Tile>
         </Column>
@@ -334,12 +334,12 @@ export default function VSIProfileGuidePage() {
           </Tile>
         </Column>
 
-        {/* Burstable rule of thumb */}
+        {/* Flex rule of thumb */}
         <Column lg={16} md={8} sm={4}>
           <InlineNotification
             kind="info"
-            title="Burstable rule of thumb"
-            subtitle="If your Classic VSI typically has low CPU utilization with occasional spikes, a burstable (flex) profile can significantly reduce costs. Network appliances, databases, and enterprise applications should use standard (dedicated) profiles for consistent performance."
+            title="Flex profile rule of thumb"
+            subtitle="Flex profiles offer lower cost through flexible hardware placement. Select sizes also support burstable vCPU shares (10-50% baseline) for variable workloads. Network appliances, databases, and enterprise applications should use standard (dedicated) profiles."
             hideCloseButton
             lowContrast
             style={{ maxWidth: '100%', marginBottom: '1rem' }}
