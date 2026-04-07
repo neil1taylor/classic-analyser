@@ -5,6 +5,7 @@ import {
   Tooltip,
   NumberInput,
   Button,
+  Toggle,
 } from '@carbon/react';
 import { Play } from '@carbon/icons-react';
 import type { MigrationPreferences } from '@/types/migration';
@@ -60,6 +61,19 @@ const MigrationPreferencesPanel: React.FC<Props> = ({
                 update({ budgetConstraint: n > 0 ? n : undefined });
               }}
               allowEmpty
+            />
+          </div>
+        </Tooltip>
+
+        <Tooltip label="Applies IBM Cost Transfer Guidance discount rates. VPC Compute: 80%, Storage: 35%, Network: 35%." align="bottom">
+          <div>
+            <Toggle
+              id="internal-pricing-toggle"
+              labelText="IBM Internal Pricing"
+              labelA="Off"
+              labelB="On"
+              toggled={!!preferences.useInternalPricing}
+              onToggle={(checked: boolean) => update({ useInternalPricing: checked })}
             />
           </div>
         </Tooltip>

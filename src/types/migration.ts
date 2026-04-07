@@ -14,11 +14,13 @@ export interface MigrationPreferences {
   targetRegion: string;
   budgetConstraint?: number;
   excludeResources: string[];
+  useInternalPricing?: boolean;
 }
 
 export const DEFAULT_PREFERENCES: MigrationPreferences = {
   targetRegion: 'us-south',
   excludeResources: [],
+  useInternalPricing: false,
 };
 
 // ── VPC Profile Reference ────────────────────────────────────────────────
@@ -388,6 +390,10 @@ export interface CostAnalysis {
     storage: { classic: number; vpc: number };
     network: { classic: number; vpc: number };
   };
+  discountApplied?: boolean;
+  regionalMultiplier?: number;
+  listPriceVpcMonthlyCost?: number;
+  listPriceClassicMonthlyCost?: number;
 }
 
 // ── Migration Wave ───────────────────────────────────────────────────────

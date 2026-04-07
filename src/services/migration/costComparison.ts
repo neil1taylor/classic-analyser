@@ -1,20 +1,22 @@
 import type { CostAnalysis, ComputeAssessment, StorageAssessment, NetworkAssessment, MigrationPreferences, VPCPricingData } from '@/types/migration';
 import { getVPCStorageCostPerGB, getVPCFileCostPerGB, getVPCLBMonthlyCost, getVPCVPNMonthlyCost } from './data/vpcCostEstimates';
+import { getDiscountRate } from './data/internalDiscounts';
+import { getRegionalMultiplier } from './data/regionalPricing';
 
 export function analyzeCosts(
   compute: ComputeAssessment,
   storage: StorageAssessment,
   network: NetworkAssessment,
-  _preferences: MigrationPreferences,
+  preferences: MigrationPreferences,
   pricing?: VPCPricingData | null,
 ): CostAnalysis {
   // Classic compute costs
-  const classicComputeCost =
+  let classicComputeCost =
     compute.vsiMigrations.reduce((sum, v) => sum + v.currentFee, 0) +
     compute.bareMetalMigrations.reduce((sum, b) => sum + b.currentFee, 0);
 
   // VPC compute costs (from recommended profiles)
-  const vpcComputeCost =
+  let vpcComputeCost =
     compute.vsiMigrations.reduce((sum, v) => sum + (v.recommendedProfile?.estimatedCost ?? 0), 0) +
     compute.bareMetalMigrations.reduce((sum, b) => {
       if (b.migrationPath === 'vpc-vsi') {
@@ -27,7 +29,7 @@ export function analyzeCosts(
     }, 0);
 
   // Classic storage costs
-  const classicStorageCost =
+  let classicStorageCost =
     storage.blockStorage.volumeAssessments.reduce((sum, v) => sum + v.currentFee, 0) +
     storage.fileStorage.volumeAssessments.reduce((sum, v) => sum + v.currentFee, 0);
 
@@ -38,18 +40,46 @@ export function analyzeCosts(
   const vpcFileCost = storage.fileStorage.volumeAssessments.reduce((sum, v) => {
     return sum + (v.capacityGB * getVPCFileCostPerGB(pricing));
   }, 0);
-  const vpcStorageCost = vpcBlockCost + vpcFileCost;
+  let vpcStorageCost = vpcBlockCost + vpcFileCost;
 
   // Classic network costs (firewalls, LBs)
-  const classicNetworkCost =
+  let classicNetworkCost =
     (network.firewallAnalysis.totalFirewalls * 50) + // rough estimate
     (network.loadBalancerAnalysis.totalLBs * 50) +
     (network.vpnAnalysis.totalTunnels * 80);
 
   // VPC network costs
-  const vpcNetworkCost =
+  let vpcNetworkCost =
     (network.loadBalancerAnalysis.totalLBs * getVPCLBMonthlyCost(pricing)) +
     (network.vpnAnalysis.totalTunnels * getVPCVPNMonthlyCost(pricing));
+
+  // Apply regional price uplift to VPC costs
+  const regionalMultiplier = getRegionalMultiplier(preferences.targetRegion);
+  vpcComputeCost *= regionalMultiplier;
+  vpcStorageCost *= regionalMultiplier;
+  vpcNetworkCost *= regionalMultiplier;
+
+  // Store list-price totals before any discount
+  const listPriceClassicMonthlyCost = classicComputeCost + classicStorageCost + classicNetworkCost;
+  const listPriceVpcMonthlyCost = vpcComputeCost + vpcStorageCost + vpcNetworkCost;
+
+  // Apply IBM internal discount rates if enabled
+  const discountApplied = !!preferences.useInternalPricing;
+  if (discountApplied) {
+    const vpcComputeRate = getDiscountRate('Virtual Private Cloud (VPC)');
+    const vpcStorageRate = getDiscountRate('Storage - VPC');
+    const vpcNetworkRate = getDiscountRate('Network - VPC');
+    vpcComputeCost *= (1 - vpcComputeRate);
+    vpcStorageCost *= (1 - vpcStorageRate);
+    vpcNetworkCost *= (1 - vpcNetworkRate);
+
+    const classicComputeRate = getDiscountRate('Classic VSI');
+    const classicStorageRate = getDiscountRate('Classic Block/File Storage');
+    const classicNetworkRate = getDiscountRate('Network (Classic)');
+    classicComputeCost *= (1 - classicComputeRate);
+    classicStorageCost *= (1 - classicStorageRate);
+    classicNetworkCost *= (1 - classicNetworkRate);
+  }
 
   const classicMonthlyCost = classicComputeCost + classicStorageCost + classicNetworkCost;
   const vpcMonthlyCost = vpcComputeCost + vpcStorageCost + vpcNetworkCost;
@@ -87,5 +117,9 @@ export function analyzeCosts(
         vpc: Math.round(vpcNetworkCost * 100) / 100,
       },
     },
+    discountApplied,
+    regionalMultiplier: Math.round(regionalMultiplier * 100) / 100,
+    listPriceVpcMonthlyCost: Math.round(listPriceVpcMonthlyCost * 100) / 100,
+    listPriceClassicMonthlyCost: Math.round(listPriceClassicMonthlyCost * 100) / 100,
   };
 }

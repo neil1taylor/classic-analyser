@@ -2,6 +2,7 @@ import React from 'react';
 import { Tag, Tile, Tooltip as CarbonTooltip } from '@carbon/react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import type { CostAnalysis } from '@/types/migration';
+import { REGION_PRICE_UPLIFT } from '@/services/migration/data/regionalPricing';
 
 interface Props {
   costAnalysis: CostAnalysis;
@@ -9,6 +10,9 @@ interface Props {
 
 const CostComparisonPanel: React.FC<Props> = ({ costAnalysis }) => {
   const fmt = (n: number) => `$${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const hasDiscount = !!costAnalysis.discountApplied;
+  const hasRegionalUplift = (costAnalysis.regionalMultiplier ?? 1) > 1;
+  const regionalPct = hasRegionalUplift ? Math.round(((costAnalysis.regionalMultiplier ?? 1) - 1) * 100) : 0;
 
   const barData = [
     {
@@ -32,6 +36,18 @@ const CostComparisonPanel: React.FC<Props> = ({ costAnalysis }) => {
 
   return (
     <div className="cost-comparison-panel">
+      {/* Pricing annotations */}
+      {(hasDiscount || hasRegionalUplift) && (
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+          {hasDiscount && (
+            <Tag type="cyan" size="sm">IBM internal discount rates applied</Tag>
+          )}
+          {hasRegionalUplift && (
+            <Tag type="teal" size="sm">Regional pricing: +{regionalPct}% ({Object.entries(REGION_PRICE_UPLIFT).find(([, v]) => Math.abs((1 + v) - (costAnalysis.regionalMultiplier ?? 1)) < 0.005)?.[0] ?? ''})</Tag>
+          )}
+        </div>
+      )}
+
       {/* Summary cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
         <Tile style={{ padding: '1rem' }}>
@@ -39,12 +55,22 @@ const CostComparisonPanel: React.FC<Props> = ({ costAnalysis }) => {
             <div style={{ fontSize: '0.75rem', color: 'var(--cds-text-helper)' }}>Classic Monthly</div>
           </CarbonTooltip>
           <div style={{ fontSize: '1.5rem', fontWeight: 300 }}>{fmt(costAnalysis.classicMonthlyCost)}</div>
+          {hasDiscount && costAnalysis.listPriceClassicMonthlyCost !== undefined && costAnalysis.listPriceClassicMonthlyCost !== costAnalysis.classicMonthlyCost && (
+            <div style={{ fontSize: '0.75rem', color: 'var(--cds-text-helper)', textDecoration: 'line-through' }}>
+              {fmt(costAnalysis.listPriceClassicMonthlyCost)}
+            </div>
+          )}
         </Tile>
         <Tile style={{ padding: '1rem' }}>
           <CarbonTooltip label="Estimated monthly cost after migration to VPC" align="bottom">
             <div style={{ fontSize: '0.75rem', color: 'var(--cds-text-helper)' }}>VPC Monthly</div>
           </CarbonTooltip>
           <div style={{ fontSize: '1.5rem', fontWeight: 300 }}>{fmt(costAnalysis.vpcMonthlyCost)}</div>
+          {hasDiscount && costAnalysis.listPriceVpcMonthlyCost !== undefined && costAnalysis.listPriceVpcMonthlyCost !== costAnalysis.vpcMonthlyCost && (
+            <div style={{ fontSize: '0.75rem', color: 'var(--cds-text-helper)', textDecoration: 'line-through' }}>
+              {fmt(costAnalysis.listPriceVpcMonthlyCost)}
+            </div>
+          )}
         </Tile>
         <Tile style={{ padding: '1rem' }}>
           <CarbonTooltip label="Projected monthly cost difference — positive means savings" align="bottom">
