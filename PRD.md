@@ -2939,7 +2939,7 @@ Each migration assessment tab (Compute, Network, Storage, Security) includes a r
 | **VPC Quota: Volumes per Region (300)** | warning | Block + file volumes per target VPC region exceed default quota of 300 |
 | **VPC Quota: File Shares per Account (300)** | warning | Total file storage volumes exceed default account quota of 300 |
 
-**Network checks (17):**
+**Network checks (18):**
 
 | Check | Severity | Logic |
 |---|---|---|
@@ -2948,6 +2948,7 @@ Each migration assessment tab (Compute, Network, Storage, Security) includes a r
 | Security Group Rule Count | warning | Rules per SG > 250 (VPC SG limit) |
 | Load Balancer Type | info | All LBs listed with type mapping |
 | Gateway Appliance | warning | Gateways requiring appliance migration |
+| Gateway Providing VPN Services Only | info | Gateways with all inside VLANs in bypass mode — likely VPN/firewall only, replaceable with VPC VPN Gateway |
 | VLAN Subnet Mapping | info | VLANs in DCs without VPC region |
 | Public IP Address | blocker | VSI/Bare Metal has a public IP (public subnets cannot migrate to VPC) |
 | VPC Reserved IP Conflict | warning | Private IP falls on a VPC reserved address (network, gateway, DNS, future, broadcast) |

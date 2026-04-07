@@ -22,7 +22,7 @@ The migration assessment is organized into nine tabs:
 
 ## Pre-Requisite Checks
 
-The assessment runs **64 pre-requisite checks** across four categories:
+The assessment runs **65 pre-requisite checks** across four categories:
 
 ### Compute Checks (32)
 
@@ -44,13 +44,14 @@ Key checks include:
 - **VPC quota: bare metal servers per account** (25 default)
 - **VPC quota: placement groups per region** (100 default)
 
-### Network Checks (17)
+### Network Checks (18)
 
 - VLAN spanning and VRF requirements
 - Firewall rule compatibility (200 rules per ACL)
 - Security group rule count (250 rules per SG)
 - Load balancer configuration
 - Gateway appliance migration paths
+- Gateway VPN-only detection (identifies appliances with all VLANs in bypass — likely VPN/firewall only)
 - IPv6 usage detection
 - **VPC quota: VPCs per region** (10 default)
 - **VPC quota: subnets per VPC** (100 default)

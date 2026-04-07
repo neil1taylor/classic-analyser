@@ -89,7 +89,7 @@ src/                              # React frontend
                                   storageAnalysis.ts, securityAnalysis.ts, featureGapAnalysis.ts,
                                   complexityScoring.ts, costComparison.ts, wavePlanning.ts,
                                   dependencyMapping.ts
-      checks/                     index.ts, computeChecks.ts (32), networkChecks.ts (17),
+      checks/                     index.ts, computeChecks.ts (32), networkChecks.ts (18),
                                   storageChecks.ts (12), securityChecks.ts (3), checkUtils.ts
       data/                       datacenterMapping.ts, osCompatibility.ts, vpcProfiles.ts,
                                   vpcCostEstimates.ts, featureGaps.ts, storageTiers.ts,
@@ -183,7 +183,7 @@ npm run import:mappings # Re-import Classic-to-VPC mapping spreadsheets → gene
 
 ## Migration Assessment
 
-**Pre-requisite checks (64 total):** Compute (32), Network (17), Storage (12), Security (3), plus 12 feature gap definitions. Each check produces a severity: blocker, warning, info, unknown, or passed. Check logic lives in `src/services/migration/checks/`. The `runAllPreReqChecks()` function in `checks/index.ts` orchestrates all four check categories. Account/region-level quota checks (`quota-*` prefix) validate whether the aggregate Classic estate would exceed default VPC quotas. VPC quotas reference: `docs/vpc-quotas-and-limits.md`.
+**Pre-requisite checks (65 total):** Compute (32), Network (18), Storage (12), Security (3), plus 12 feature gap definitions. Each check produces a severity: blocker, warning, info, unknown, or passed. Check logic lives in `src/services/migration/checks/`. The `runAllPreReqChecks()` function in `checks/index.ts` orchestrates all four check categories. Account/region-level quota checks (`quota-*` prefix) validate whether the aggregate Classic estate would exceed default VPC quotas. VPC quotas reference: `docs/vpc-quotas-and-limits.md`.
 
 **Migration approach classification:** Each VSI and Bare Metal server receives a recommended migration approach — `lift-and-shift`, `rebuild`, `re-platform`, or `re-architect` — based on OS compatibility, hypervisor detection, IKS/ROKS presence, and blocker status. The decision tree is in `computeAnalysis.ts` (`classifyMigrationApproach` / `classifyBareMetalApproach`). IBM's official guidance recommends "Rebuild" as the default approach (provision fresh VPC instances with latest OS).
 
