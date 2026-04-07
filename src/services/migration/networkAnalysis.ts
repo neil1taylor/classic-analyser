@@ -141,6 +141,10 @@ export function analyzeNetwork(
   const loadBalancers = collectedData['loadBalancers'] ?? [];
   const vpnTunnels = collectedData['vpnTunnels'] ?? [];
 
+  const virtualServers = collectedData['virtualServers'] ?? [];
+  const bareMetal = collectedData['bareMetal'] ?? [];
+  const bandwidthPooling = collectedData['bandwidthPooling'] ?? [];
+
   const publicVlans = vlans.filter((v) => str(v, 'networkSpace').toUpperCase() === 'PUBLIC');
   const privateVlans = vlans.filter((v) => str(v, 'networkSpace').toUpperCase() !== 'PUBLIC');
 
@@ -170,11 +174,28 @@ export function analyzeNetwork(
   if (loadBalancers.length > 0) factors.push(85);
   const score = factors.length > 0 ? Math.round(factors.reduce((a, b) => a + b, 0) / factors.length) : 100;
 
+  // Bandwidth analysis
+  const bmEgressGb: number = bareMetal.reduce((sum: number, d) => sum + num(d, 'publicBandwidthAvgOutGb'), 0);
+  const vsiEgressGb: number = virtualServers.reduce((sum: number, d) => sum + num(d, 'publicBandwidthAvgOutGb'), 0);
+  const totalPublicEgressGb = bmEgressGb + vsiEgressGb;
+  const hasBandwidthData = bareMetal.some(d => num(d, 'publicBandwidthAvgOutGb') > 0)
+    || virtualServers.some(d => num(d, 'publicBandwidthAvgOutGb') > 0);
+  const poolIds = new Set(bandwidthPooling.map(r => String((r as Record<string, unknown>)['poolId'])).filter(Boolean));
+  const bandwidthAnalysis = {
+    dataAvailable: hasBandwidthData || bandwidthPooling.length > 0,
+    totalPublicEgressGb,
+    bmEgressGb,
+    vsiEgressGb,
+    poolCount: poolIds.size,
+    estimatedVpcBmEgressCostMonthly: Math.round(bmEgressGb * 0.09),
+  };
+
   const recommendations: string[] = [];
   if (gwRequiringAppliance > 0) recommendations.push(`${gwRequiringAppliance} gateway(s) require third-party appliances on VPC`);
   if (manualReview > 0) recommendations.push(`${manualReview} firewall rule(s) require manual review for VPC translation`);
   if (vlans.length > 10) recommendations.push('Consider consolidating VLANs into fewer VPC subnets');
   if (vpnTunnels.length > 0) recommendations.push('Recreate IPsec VPN tunnels using VPC VPN Gateway');
+  if (bmEgressGb > 0) recommendations.push(`Bare metal egress (~${Math.round(bmEgressGb)} GB/month) will incur new costs on VPC — Classic includes up to 20 TB/month free`);
 
   return {
     vlanAnalysis: {
@@ -205,6 +226,7 @@ export function analyzeNetwork(
       canMigrate: vpnAssessments.filter((v) => v.canMigrateToVPCVPN).length,
       assessments: vpnAssessments,
     },
+    bandwidthAnalysis,
     score,
     complexity,
     recommendations,

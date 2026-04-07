@@ -231,6 +231,14 @@ export interface NetworkAssessment {
     canMigrate: number;
     assessments: VPNAssessment[];
   };
+  bandwidthAnalysis: {
+    dataAvailable: boolean;
+    totalPublicEgressGb: number;
+    bmEgressGb: number;
+    vsiEgressGb: number;
+    poolCount: number;
+    estimatedVpcBmEgressCostMonthly: number;
+  };
   score: number;
   complexity: NetworkComplexity;
   recommendations: string[];

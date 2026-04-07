@@ -172,6 +172,35 @@ const ACL_RULE_ESTIMATE: PreRequisiteCheck = {
 
 // ── Account/Region Quota Checks ─────────────────────────────────────────
 
+const BANDWIDTH_EGRESS_RISK: PreRequisiteCheck = {
+  id: 'net-bandwidth-egress-risk',
+  name: 'Bandwidth Egress Cost Risk',
+  category: 'network',
+  description:
+    'Classic Bare Metal servers include up to 20 TB/month free public egress (NA/EU). VPC Bare Metal has no equivalent free allowance — all public egress is billed per GB. VSIs have the same 250 GB/month free allowance on both platforms, but high-egress VSIs are flagged for awareness.',
+  docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-pricing-for-vpc',
+  remediationSteps: [
+    'Review public egress patterns for each bare metal server.',
+    'Evaluate whether workloads can use private connectivity (VPE, private endpoints) to reduce public egress.',
+    'Factor bandwidth cost into the VPC migration cost estimate — BM egress at ~$0.09/GB (NA).',
+    'Consider VPC Network Load Balancer or CDN for high-egress workloads.',
+  ],
+};
+
+const BANDWIDTH_POOL: PreRequisiteCheck = {
+  id: 'net-bandwidth-pool',
+  name: 'Bandwidth Pool',
+  category: 'network',
+  description:
+    'Classic bandwidth pools allow devices to share their aggregate bandwidth allotments, reducing overage risk. VPC does not have explicit bandwidth pooling — bandwidth is aggregated at the account level instead. Review pool utilisation to assess the impact of this change.',
+  docsUrl: 'https://cloud.ibm.com/docs/bandwidth-metering?topic=bandwidth-metering-bp-create',
+  remediationSteps: [
+    'Review pool utilisation — identify devices that depend on pooled bandwidth from underutilised devices.',
+    'VPC uses account-level bandwidth aggregation; explicit pool management is not available.',
+    'Factor any potential overage costs into the migration cost estimate.',
+  ],
+};
+
 const QUOTA_VPCS_PER_REGION: PreRequisiteCheck = {
   id: 'quota-vpcs-per-region',
   name: 'VPC Quota per Region (10)',
@@ -483,6 +512,62 @@ export function runNetworkChecks(collectedData: Record<string, unknown[]>): Chec
 
   // VRF enablement — unknown (not determinable from API, always flag for manual check)
   results.push(unknownCheck(VRF_ENABLEMENT, allServers.length));
+
+  // ── Bandwidth Egress Risk ─────────────────────────────────────────
+  const bwAffected: AffectedResource[] = [];
+  for (const bm of bareMetal) {
+    const egressGb = toNum(bm['publicBandwidthAvgOutGb']);
+    if (egressGb > 0) {
+      const estCost = Math.round(egressGb * 0.09);
+      bwAffected.push({
+        id: toNum(bm['id']),
+        hostname: toStr(bm['hostname'] as unknown) || toStr(bm['fullyQualifiedDomainName'] as unknown) || `BM ${toNum(bm['id'])}`,
+        detail: `BM: ${egressGb} GB/month avg public egress — est. ~$${estCost}/month on VPC (free on Classic)`,
+      });
+    }
+  }
+  for (const vsi of virtualServers) {
+    const egressGb = toNum(vsi['publicBandwidthAvgOutGb']);
+    if (egressGb > 250) {
+      bwAffected.push({
+        id: toNum(vsi['id']),
+        hostname: toStr(vsi['hostname'] as unknown) || toStr(vsi['fullyQualifiedDomainName'] as unknown) || `VSI ${toNum(vsi['id'])}`,
+        detail: `VSI: ${egressGb} GB/month avg public egress (exceeds 250 GB free allowance)`,
+      });
+    }
+  }
+  const bwTotalChecked = bareMetal.filter(d => toNum(d['publicBandwidthAvgOutGb']) > 0).length
+    + virtualServers.filter(d => toNum(d['publicBandwidthAvgOutGb']) > 0).length;
+  results.push(evaluateCheck(BANDWIDTH_EGRESS_RISK, 'warning', bwTotalChecked, bwAffected));
+
+  // ── Bandwidth Pool ──────────────────────────────────────────────────
+  const poolRecords = (collectedData['bandwidthPooling'] ?? []) as Record<string, unknown>[];
+  const poolMap = new Map<string | number, { name: string; deviceCount: number; allocatedGb: number; usageGb: number }>();
+  for (const rec of poolRecords) {
+    const pid = rec['poolId'];
+    if (pid === undefined) continue;
+    const key = String(pid);
+    const existing = poolMap.get(key);
+    if (existing) {
+      existing.deviceCount++;
+    } else {
+      poolMap.set(key, {
+        name: toStr(rec['poolName'] as unknown) || `Pool ${key}`,
+        deviceCount: 1,
+        allocatedGb: toNum(rec['totalAllocatedGb']),
+        usageGb: toNum(rec['billingCycleUsageGb']),
+      });
+    }
+  }
+  const poolAffected: AffectedResource[] = [];
+  for (const [pid, pool] of poolMap) {
+    poolAffected.push({
+      id: pid,
+      hostname: pool.name,
+      detail: `${pool.name}: ${pool.deviceCount} device(s), ${pool.allocatedGb} GB allocated, ${pool.usageGb} GB used — no VPC equivalent`,
+    });
+  }
+  results.push(evaluateCheck(BANDWIDTH_POOL, 'info', poolRecords.length, poolAffected));
 
   // ── Account/Region Quota Checks ────────────────────────────────────
 

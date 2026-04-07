@@ -29,7 +29,7 @@ const subnetColumns: MigrationColumnDef[] = [
 ];
 
 const NetworkAssessmentPanel: React.FC<Props> = ({ assessment, prereqChecks }) => {
-  const { vlanAnalysis, gatewayAnalysis, firewallAnalysis, loadBalancerAnalysis, vpnAnalysis } = assessment;
+  const { vlanAnalysis, gatewayAnalysis, firewallAnalysis, loadBalancerAnalysis, vpnAnalysis, bandwidthAnalysis } = assessment;
 
   const subnetRows = vlanAnalysis.recommendedVPCSubnets.map((s, i) => ({
     id: String(i),
@@ -137,6 +137,39 @@ const NetworkAssessmentPanel: React.FC<Props> = ({ assessment, prereqChecks }) =
               </Tile>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Bandwidth assessment */}
+      {bandwidthAnalysis?.dataAvailable && (
+        <div style={{ marginTop: '1.5rem' }}>
+          <h5 style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+            Bandwidth Assessment
+          </h5>
+          <div style={{ fontSize: '0.875rem', marginBottom: '0.5rem' }}>
+            <span>Public egress (3-month avg): </span>
+            <Tooltip label="Bare metal egress is free on Classic (up to 20 TB/month) but billed per GB on VPC" align="bottom">
+              <Tag type={bandwidthAnalysis.bmEgressGb > 0 ? 'red' : 'green'} size="sm">
+                {Math.round(bandwidthAnalysis.bmEgressGb)} GB BM
+              </Tag>
+            </Tooltip>{' '}
+            <Tooltip label="VSI egress has the same 250 GB/month free allowance on both Classic and VPC" align="bottom">
+              <Tag type="green" size="sm">
+                {Math.round(bandwidthAnalysis.vsiEgressGb)} GB VSI
+              </Tag>
+            </Tooltip>
+          </div>
+          {bandwidthAnalysis.bmEgressGb > 0 && (
+            <div style={{ fontSize: '0.8125rem', color: 'var(--cds-text-secondary)', marginBottom: '0.5rem' }}>
+              Estimated new VPC cost for BM egress: ~${bandwidthAnalysis.estimatedVpcBmEgressCostMonthly.toLocaleString()}/month
+              (Classic includes up to 20 TB/month free)
+            </div>
+          )}
+          {bandwidthAnalysis.poolCount > 0 && (
+            <div style={{ fontSize: '0.8125rem', color: 'var(--cds-text-secondary)' }}>
+              {bandwidthAnalysis.poolCount} bandwidth pool(s) in use — VPC has no explicit pooling equivalent
+            </div>
+          )}
         </div>
       )}
 
