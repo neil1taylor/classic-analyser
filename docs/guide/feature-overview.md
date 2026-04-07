@@ -42,6 +42,7 @@ IBM Cloud Infrastructure Explorer is a web-based inventory and analysis tool for
 | PDF | Formatted tables with summary metrics and charts |
 | DOCX | Editable migration report with optional AI narratives |
 | PPTX | Presentation slides with metrics and distribution charts |
+| Assessment Template | Official IBM assessment XLSX with VPC mappings and costs |
 | Terraform HCL | VPC infrastructure-as-code from Classic resources |
 | draw.io XML | Topology diagrams for editing in diagrams.net |
 

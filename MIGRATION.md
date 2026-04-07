@@ -250,7 +250,7 @@ function mapToVPCProfile(classic: ClassicVSI): VPCProfileRecommendation {
 
 ### 3.2 Operating System Compatibility
 
-**OS Availability Matrix (43 entries — see `osCompatibility.ts` for full data):**
+**OS Availability Matrix (57 entries — see `osCompatibility.ts` for full data):**
 
 | Classic OS | VPC Image Type | VPC Image | Migration Notes |
 |------------|---------------|-----------|-----------------|

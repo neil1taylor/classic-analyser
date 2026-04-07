@@ -22,16 +22,16 @@ The migration assessment is organized into nine tabs:
 
 ## Pre-Requisite Checks
 
-The assessment runs **66 pre-requisite checks** across four categories:
+The assessment runs **69 pre-requisite checks** across four categories:
 
-### Compute Checks (33)
+### Compute Checks (34)
 
 Key checks include:
 
 - Boot disk size within VPC limits (250 GB max)
 - vCPU count within VPC profile maximums
 - Memory within VPC profile maximums
-- OS compatibility against 43 entries (stock, BYOL, unsupported)
+- OS compatibility against 57 entries (stock, BYOL, unsupported)
 - Unsupported OS blockers: Windows Server 2003/2008, Solaris, AIX, HP-UX, FreeBSD
 - End-of-life OS warnings: RHEL 7, CentOS 7, Windows Server 2012
 - 32-bit OS detection
@@ -44,8 +44,9 @@ Key checks include:
 - **VPC quota: memory per region** (5,600 GB default)
 - **VPC quota: bare metal servers per account** (25 default)
 - **VPC quota: placement groups per region** (100 default)
+- **Bandwidth vs VPC profile cap** — flags servers with >500 GB/month average egress that may exceed the VPC profile bandwidth allocation
 
-### Network Checks (18)
+### Network Checks (20)
 
 - VLAN spanning and VRF requirements
 - Firewall rule compatibility (200 rules per ACL)
@@ -131,9 +132,37 @@ Resources with blocker-level findings include a remediation checklist with speci
 The cost analysis compares Classic and VPC infrastructure costs:
 
 - **Monthly comparison** — side-by-side Classic vs VPC costs for compute, storage, and network
+- **IBM internal discount rates** — optional toggle applies Cost Transfer Guidance discounts (VPC Compute 80%, Storage 35%, Network 35%, Classic BM/VSI 50%, etc.)
+- **Regional price uplift** — VPC costs adjusted by target region premium (e.g., +13% London, +32% São Paulo)
+- **Egress cost** — tiered VPC public internet egress pricing included when IMS bandwidth data is available
 - **3-year projections** — total cost of ownership over 36 months
 - **Break-even analysis** — identifies when VPC savings offset migration costs
 - **Bar charts** — visual comparison by compute, storage, and network categories
+
+## IKS/ROKS Cluster Analysis
+
+When IKS or ROKS worker nodes are detected (via `kube-*` hostname pattern), they are:
+
+- **Grouped by cluster ID** extracted from the hostname
+- **Mapped to IKS flavours** — each worker is matched to the closest IKS worker node flavour (bx2, bx3, cx2, mx2 families)
+- **Costed with 55% IKS discount** — IKS/ROKS worker pricing reflects IBM's IKS discount rate
+- **Excluded from VSI assessment** — workers are separated into their own cluster-level view rather than assessed as individual VSIs
+- **Exported to PaaS sheet** — the Assessment Template export places cluster data in the dedicated PaaS tab
+
+## Assessment Template Export
+
+The Assessment Template export produces an XLSX file matching IBM's official "Template for Assessment" format with six sheets:
+
+| Sheet | Content |
+|-------|---------|
+| **Account** | Company name, support type, VRF status, datacenter list, resource counts |
+| **BMs** | Bare metal servers with VPC profile mappings, EoS dates, bandwidth, costs |
+| **VSI** | Virtual servers (excluding IKS workers) with VPC profiles and costs |
+| **PaaS** | IKS/ROKS cluster workers with IKS flavour mapping and discounted costs |
+| **Storage** | Block and file volumes with VPC profile mapping and cost estimates |
+| **Networking** | Gateway devices with HA status, VLAN counts, and VPC mapping |
+
+Available from the migration report export dialog when migration analysis has been run.
 
 ## Migration Waves
 

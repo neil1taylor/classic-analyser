@@ -1,6 +1,28 @@
 {
   "releases": [
     {
+      "version": "1.2.0",
+      "date": "2026-04-07",
+      "sections": {
+        "added": [
+          "Assessment Template export — generates the official IBM 'Template for Assessment' XLSX with 6 sheets (Account, BMs, VSI, PaaS, Storage, Networking) including VPC profile mappings, EoS colour coding, and cost estimates",
+          "IBM internal discount rates — toggle in migration preferences applies Cost Transfer Guidance discounts (VPC Compute 80%, Storage 35%, Network 35%, etc.) to both Classic and VPC cost estimates",
+          "Regional price uplift — VPC cost estimates now include location-based premiums (e.g., +13% London, +32% São Paulo) based on target migration region",
+          "IKS/ROKS cluster analysis — detects Kubernetes worker nodes, groups by cluster ID, maps to IKS flavours with 55% IKS discount, and populates the PaaS sheet in assessment export",
+          "Bandwidth-vs-profile migration check — flags servers with >500 GB/month average egress that may exceed VPC profile bandwidth caps",
+          "VPC egress cost calculation — tiered public internet egress pricing ($0.09-$0.03/GB) included in cost comparison when IMS bandwidth data is available",
+          "IMS Reporter version warning — import banner warns when IMS Reporter version is below 4.5.0"
+        ],
+        "changed": [
+          "OS compatibility expanded from 43 to 57 entries — added CentOS Stream 8/9, Debian 9/10/13, RHEL 8.8-9.6 minor versions, SLES 12 SP5 through 16, Rocky Linux 10, Windows Server 2012 R2 and 2025",
+          "Migration check count increased from 68 to 69 (new compute-bandwidth-exceeds-profile check)"
+        ],
+        "fixed": [
+          "VRF detection now resolves from IMS HTML data — check shows passed/blocker when VRF status is known instead of always showing unknown"
+        ]
+      }
+    },
+    {
       "version": "1.1.2",
       "date": "2026-04-07",
       "sections": {

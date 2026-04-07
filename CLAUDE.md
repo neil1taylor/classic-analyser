@@ -88,12 +88,13 @@ src/                              # React frontend
     migration/                    index.ts, computeAnalysis.ts, networkAnalysis.ts,
                                   storageAnalysis.ts, securityAnalysis.ts, featureGapAnalysis.ts,
                                   complexityScoring.ts, costComparison.ts, wavePlanning.ts,
-                                  dependencyMapping.ts
-      checks/                     index.ts, computeChecks.ts (33), networkChecks.ts (18),
+                                  dependencyMapping.ts, iksAnalysis.ts
+      checks/                     index.ts, computeChecks.ts (34), networkChecks.ts (20),
                                   storageChecks.ts (12), securityChecks.ts (3), checkUtils.ts
       data/                       datacenterMapping.ts, osCompatibility.ts, vpcProfiles.ts,
                                   vpcCostEstimates.ts, featureGaps.ts, storageTiers.ts,
-                                  bmMappingLookup.ts
+                                  bmMappingLookup.ts, internalDiscounts.ts, regionalPricing.ts,
+                                  iksFlavours.ts
         generated/                vpcProfileCatalog.json, bmMappings.json, storageMappings.json
                                   (produced by scripts/import-migration-mappings.ts)
   types/                          resources.ts, vpc-resources.ts, powervs-resources.ts,
@@ -183,12 +184,12 @@ npm run import:mappings # Re-import Classic-to-VPC mapping spreadsheets → gene
 
 ## Migration Assessment
 
-**Pre-requisite checks (68 total):** Compute (33), Network (20), Storage (12), Security (3), plus 12 feature gap definitions. Each check produces a severity: blocker, warning, info, unknown, or passed. Check logic lives in `src/services/migration/checks/`. The `runAllPreReqChecks()` function in `checks/index.ts` orchestrates all four check categories. Account/region-level quota checks (`quota-*` prefix) validate whether the aggregate Classic estate would exceed default VPC quotas. VPC quotas reference: `docs/vpc-quotas-and-limits.md`.
+**Pre-requisite checks (69 total):** Compute (34), Network (20), Storage (12), Security (3), plus 12 feature gap definitions. Each check produces a severity: blocker, warning, info, unknown, or passed. Check logic lives in `src/services/migration/checks/`. The `runAllPreReqChecks()` function in `checks/index.ts` orchestrates all four check categories. Account/region-level quota checks (`quota-*` prefix) validate whether the aggregate Classic estate would exceed default VPC quotas. VPC quotas reference: `docs/vpc-quotas-and-limits.md`.
 
 **Migration approach classification:** Each VSI and Bare Metal server receives a recommended migration approach — `lift-and-shift`, `rebuild`, `re-platform`, or `re-architect` — based on OS compatibility, hypervisor detection, IKS/ROKS presence, and blocker status. The decision tree is in `computeAnalysis.ts` (`classifyMigrationApproach` / `classifyBareMetalApproach`). IBM's official guidance recommends "Rebuild" as the default approach (provision fresh VPC instances with latest OS).
 
-**Analysis services** in `src/services/migration/`: computeAnalysis (profile matching, approach classification), networkAnalysis, storageAnalysis, securityAnalysis, featureGapAnalysis, complexityScoring (5-dimension 0-100), costComparison (3-year projections), wavePlanning (dependency-grouped waves), dependencyMapping (resource graph).
+**Analysis services** in `src/services/migration/`: computeAnalysis (profile matching, approach classification), networkAnalysis, storageAnalysis, securityAnalysis, featureGapAnalysis, complexityScoring (5-dimension 0-100), costComparison (3-year projections with internal discounts, regional uplift, and egress cost), wavePlanning (dependency-grouped waves), dependencyMapping (resource graph), iksAnalysis (IKS/ROKS cluster detection, worker-to-flavour mapping, cluster-level costing with 55% IKS discount).
 
-**Reference data** in `src/services/migration/data/`: datacenterMapping (Classic DC → VPC region/zones), osCompatibility (43 OS entries), vpcProfiles (266 VSI + 42 BM profiles from generated catalog, with hardcoded fallback), featureGaps (12 Classic-only features), storageTiers (block IOPS tier mappings + file storage per-volume profile selection via `mapFileStorageProfile`: rfs ≤35K IOPS, dp2 >35K), bmMappingLookup (666 explicit Classic BM → VPC profile mappings by processor/cores/RAM).
+**Reference data** in `src/services/migration/data/`: datacenterMapping (Classic DC → VPC region/zones), osCompatibility (57 OS entries), vpcProfiles (266 VSI + 42 BM profiles from generated catalog, with hardcoded fallback), featureGaps (12 Classic-only features), storageTiers (block IOPS tier mappings + file storage per-volume profile selection via `mapFileStorageProfile`: rfs ≤35K IOPS, dp2 >35K), bmMappingLookup (666 explicit Classic BM → VPC profile mappings by processor/cores/RAM), internalDiscounts (IBM Cost Transfer Guidance discount rates for 27 service categories), regionalPricing (VPC region price uplift for 10 regions, 0-32%), iksFlavours (21 IKS worker node flavours with hourly pricing).
 
 **Generated mapping data** in `src/services/migration/data/generated/`: Three JSON files produced by `scripts/import-migration-mappings.ts` from two IBM Classic-to-VPC migration spreadsheets in `mappings/`. `vpcProfileCatalog.json` provides 266 VSI + 42 BM profiles with hourly pricing. `bmMappings.json` provides 666 explicit bare metal mappings by processor description, core count, RAM, and storage category. `storageMappings.json` provides block/file storage tier mappings, pricing reference data, and Classic DC → VPC zone mappings. Run `npm run import:mappings` to regenerate after spreadsheet updates. The `mappings/` directory is not committed to git; the generated JSON files are.

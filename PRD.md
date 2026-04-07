@@ -1175,7 +1175,7 @@ Groups are expanded by default, collapsible via group header buttons. Active sec
 3. **VPC Infrastructure** — VPC dashboard, multi-region collection, Transit Gateways (global endpoint), Direct Link gateways/virtual connections, VPN gateway connections, 24 resource types, regional `_region` field
 4. **Data Tables** — Sorting, global search, column filtering, column visibility/resizing, row selection/expansion, pagination, virtualization, advanced filtering, toolbar actions
 5. **Visualizations** — Topology diagrams (Classic + VPC), Geography maps, Cost Analysis (treemap, donut/bar charts, cost data sources)
-6. **Migration Analysis** — 9 assessment tabs, readiness scoring (43 checks, 5 dimensions), migration waves, Terraform export, DOCX reports, IBM migration resource links (Virtualization Solutions Guide, RackWare, Wanclouds, open-source tools)
+6. **Migration Analysis** — 9 assessment tabs, readiness scoring (69 checks, 5 dimensions), IKS/ROKS cluster analysis, cost comparison with internal discounts and regional uplift, migration waves, Assessment Template export, Terraform export, DOCX reports, IBM migration resource links (Virtualization Solutions Guide, RackWare, Wanclouds, open-source tools)
 7. **AI Features** — Chat assistant (context-aware), migration insights (executive summary, risks, recommendations), cost optimization (narrative, savings), report narratives. Requires AI proxy configuration.
 8. **Import & Export** — XLSX export (3 modes, includes disk utilization columns), XLSX import (Classic, VPC, PowerVS, Platform Services), unified DOCX report (with branding, TOC, pie charts, headers/footers), draw.io topology export, Terraform HCL export
 9. **Settings** — AI configuration (enable/disable, test connection), report branding (client/company/author), theme toggle
@@ -2886,7 +2886,7 @@ The VPC Migration Analysis feature provides rule-based analysis capabilities to 
 
 Each migration assessment tab (Compute, Network, Storage, Security) includes a remediation checklist panel that evaluates per-resource-type pre-requisite checks against the collected Classic data. Checks produce one of five severity levels: **blocker**, **warning**, **info**, **unknown** (cannot determine from API), or **passed**.
 
-**Compute checks (32):**
+**Compute checks (34):**
 
 | Check | Severity | Logic |
 |---|---|---|
@@ -2939,7 +2939,7 @@ Each migration assessment tab (Compute, Network, Storage, Security) includes a r
 | **VPC Quota: Volumes per Region (300)** | warning | Block + file volumes per target VPC region exceed default quota of 300 |
 | **VPC Quota: File Shares per Account (300)** | warning | Total file storage volumes exceed default account quota of 300 |
 
-**Network checks (18):**
+**Network checks (20):**
 
 | Check | Severity | Logic |
 |---|---|---|

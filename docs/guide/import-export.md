@@ -112,6 +112,10 @@ Presentation slides including:
 
 Topology diagrams exported as XML files compatible with [diagrams.net](https://www.diagrams.net/) for further editing and annotation.
 
+### Assessment Template (.xlsx)
+
+Official IBM "Template for Assessment" format with six sheets: Account, BMs, VSI, PaaS, Storage, Networking. Includes VPC profile mappings, EoS colour-coded dates, and cost estimates with optional internal discount rates. Available from the migration report export dialog when migration analysis has been run.
+
 ### Terraform HCL
 
 VPC infrastructure-as-code generated from Classic resources:
