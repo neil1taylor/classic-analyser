@@ -135,7 +135,10 @@ export interface FileProfileResult {
   notes: string;
 }
 
-/** Map a Classic file volume to a VPC file share profile based on its IOPS. */
+/** Map a Classic file volume to a VPC file share profile based on its IOPS.
+ *  Note: the spreadsheet tier mappings (file.tierMappings) map all Classic tiers
+ *  to dp2, but rfs is cheaper and sufficient for most workloads (≤35K IOPS).
+ *  We use IOPS-based selection instead. */
 export function mapFileStorageProfile(tierLevel: string, iops: number): FileProfileResult {
   const specs = getFileProfileSpecs();
   const rfs = specs.find((s) => s.name === 'rfs')!;
