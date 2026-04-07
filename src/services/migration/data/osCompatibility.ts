@@ -4,8 +4,19 @@ export const OS_COMPATIBILITY: OSCompatibility[] = [
   // ── Red Hat Enterprise Linux ───────────────────────────────────────────
   { classicOS: 'RHEL 6', pattern: /red\s*hat.*6/i, vpcAvailable: false, vpcImage: null, upgradeRequired: true, upgradeTarget: 'RHEL 8 or 9', effort: 'significant', notes: 'RHEL 6 is EOL — no VPC image available. Upgrade to RHEL 8/9 required.', eolDate: '2020-11-30', imageType: 'none' },
   { classicOS: 'RHEL 7', pattern: /red\s*hat.*7/i, vpcAvailable: true, vpcImage: null, upgradeRequired: false, effort: 'moderate', notes: 'RHEL 7 EOL June 2024 — BYOL custom image only on VPC. Upgrade to RHEL 8/9 recommended.', eolDate: '2024-06-30', imageType: 'byol' },
+  // RHEL 8 minor versions (specific before generic)
+  { classicOS: 'RHEL 8.10', pattern: /red\s*hat.*8\.10/i, vpcAvailable: true, vpcImage: 'ibm-redhat-8-10-minimal-amd64-1', upgradeRequired: false, effort: 'none', notes: 'Latest RHEL 8 minor release. Direct migration supported.', eolDate: '2029-05-31', imageType: 'stock' },
+  { classicOS: 'RHEL 8.8', pattern: /red\s*hat.*8\.8/i, vpcAvailable: true, vpcImage: 'ibm-redhat-8-8-minimal-amd64-1', upgradeRequired: false, effort: 'minimal', notes: 'Nearing end of support. Consider upgrading to RHEL 8.10.', eolDate: '2025-05-31', imageType: 'stock' },
   { classicOS: 'RHEL 8', pattern: /red\s*hat.*8/i, vpcAvailable: true, vpcImage: 'ibm-redhat-8-8-minimal-amd64', upgradeRequired: false, effort: 'none', notes: 'Direct migration', imageType: 'stock' },
+  // RHEL 9 minor versions (specific before generic)
+  { classicOS: 'RHEL 9.6', pattern: /red\s*hat.*9\.6/i, vpcAvailable: true, vpcImage: 'ibm-redhat-9-6-minimal-amd64-1', upgradeRequired: false, effort: 'none', notes: 'Latest RHEL 9 minor release. Direct migration supported.', eolDate: '2027-05-31', imageType: 'stock' },
+  { classicOS: 'RHEL 9.4', pattern: /red\s*hat.*9\.4/i, vpcAvailable: true, vpcImage: 'ibm-redhat-9-4-minimal-amd64-1', upgradeRequired: false, effort: 'none', notes: 'Direct migration supported.', eolDate: '2026-04-30', imageType: 'stock' },
+  { classicOS: 'RHEL 9.2', pattern: /red\s*hat.*9\.2/i, vpcAvailable: true, vpcImage: 'ibm-redhat-9-2-minimal-amd64-1', upgradeRequired: false, effort: 'minimal', notes: 'Nearing end of support. Consider upgrading to latest RHEL 9 minor.', eolDate: '2025-05-31', imageType: 'stock' },
   { classicOS: 'RHEL 9', pattern: /red\s*hat.*9/i, vpcAvailable: true, vpcImage: 'ibm-redhat-9-2-minimal-amd64', upgradeRequired: false, effort: 'none', notes: 'Direct migration', imageType: 'stock' },
+
+  // ── CentOS Stream ──────────────────────────────────────────────────────
+  { classicOS: 'CentOS Stream 9', pattern: /centos\s*stream.*9/i, vpcAvailable: false, vpcImage: null, upgradeRequired: true, upgradeTarget: 'RHEL 9 or Rocky Linux 9', effort: 'moderate', notes: 'CentOS Stream 9 not available as VPC stock image. Migrate to RHEL 9 or Rocky Linux 9.', eolDate: '2027-05-31', imageType: 'none' },
+  { classicOS: 'CentOS Stream 8', pattern: /centos\s*stream.*8/i, vpcAvailable: false, vpcImage: null, upgradeRequired: true, upgradeTarget: 'RHEL 8 or Rocky Linux 8', effort: 'moderate', notes: 'CentOS Stream 8 is EOL. Migrate to RHEL 8/9 or Rocky Linux 8/9.', eolDate: '2024-05-31', imageType: 'none' },
 
   // ── CentOS ─────────────────────────────────────────────────────────────
   { classicOS: 'CentOS 5', pattern: /centos.*5/i, vpcAvailable: false, vpcImage: null, upgradeRequired: true, upgradeTarget: 'RHEL 8/9 or Rocky Linux 8/9', effort: 'significant', notes: 'CentOS 5 is long EOL — no VPC image available.', eolDate: '2017-03-31', imageType: 'none' },
@@ -22,19 +33,28 @@ export const OS_COMPATIBILITY: OSCompatibility[] = [
   { classicOS: 'Ubuntu 24.04', pattern: /ubuntu.*24/i, vpcAvailable: true, vpcImage: 'ibm-ubuntu-24-04-minimal-amd64', upgradeRequired: false, effort: 'none', notes: 'Direct migration', imageType: 'stock' },
 
   // ── Debian ─────────────────────────────────────────────────────────────
+  { classicOS: 'Debian 13', pattern: /debian.*13/i, vpcAvailable: true, vpcImage: 'ibm-debian-13-0-minimal-amd64-1', upgradeRequired: false, effort: 'none', notes: 'Direct migration supported.', eolDate: '2030-06-30', imageType: 'stock' },
   { classicOS: 'Debian 9', pattern: /debian.*9/i, vpcAvailable: false, vpcImage: null, upgradeRequired: true, upgradeTarget: 'Debian 11 or 12', effort: 'significant', notes: 'Debian 9 is EOL (Jun 2022) — no VPC image available.', eolDate: '2022-06-30', imageType: 'none' },
   { classicOS: 'Debian 10', pattern: /debian.*10/i, vpcAvailable: true, vpcImage: 'ibm-debian-10-13-minimal-amd64', upgradeRequired: false, effort: 'none', notes: 'Direct migration — consider upgrading to Debian 11/12', imageType: 'stock' },
   { classicOS: 'Debian 11', pattern: /debian.*11/i, vpcAvailable: true, vpcImage: 'ibm-debian-11-7-minimal-amd64', upgradeRequired: false, effort: 'none', notes: 'Direct migration', imageType: 'stock' },
   { classicOS: 'Debian 12', pattern: /debian.*12/i, vpcAvailable: true, vpcImage: 'ibm-debian-12-minimal-amd64', upgradeRequired: false, effort: 'none', notes: 'Direct migration', imageType: 'stock' },
 
   // ── SUSE Linux Enterprise Server ───────────────────────────────────────
+  { classicOS: 'SLES 16', pattern: /s(?:use|les).*16/i, vpcAvailable: true, vpcImage: null, upgradeRequired: false, effort: 'minimal', notes: 'SLES 16 supported on VPC via BYOL.', eolDate: '2027-11-30', imageType: 'byol' },
   { classicOS: 'SLES 11', pattern: /sles?\s*11|suse.*11/i, vpcAvailable: false, vpcImage: null, upgradeRequired: true, upgradeTarget: 'SLES 15', effort: 'significant', notes: 'SLES 11 is EOL (Mar 2022) — no VPC image available.', eolDate: '2022-03-31', imageType: 'none' },
+  // SLES 12 SP versions (specific before generic)
+  { classicOS: 'SLES 12 SP5', pattern: /s(?:use|les).*12\s*sp\s*5/i, vpcAvailable: false, vpcImage: null, upgradeRequired: true, upgradeTarget: 'SLES 15 SP7', effort: 'significant', notes: 'SLES 12 SP5 is EOL. Major version upgrade to SLES 15 required.', eolDate: '2024-10-31', imageType: 'none' },
   { classicOS: 'SLES 12', pattern: /sles?\s*12|suse.*12/i, vpcAvailable: true, vpcImage: 'ibm-sles-12-sp5-amd64', upgradeRequired: false, effort: 'none', notes: 'Direct migration — consider upgrading to SLES 15', imageType: 'stock' },
+  // SLES 15 SP versions (specific before generic)
+  { classicOS: 'SLES 15 SP7', pattern: /s(?:use|les).*15\s*sp\s*7/i, vpcAvailable: true, vpcImage: 'ibm-sles-15-sp7-amd64-1', upgradeRequired: false, effort: 'none', notes: 'Latest SLES 15 service pack. Direct migration supported.', eolDate: '2031-07-31', imageType: 'stock' },
+  { classicOS: 'SLES 15 SP6', pattern: /s(?:use|les).*15\s*sp\s*6/i, vpcAvailable: true, vpcImage: 'ibm-sles-15-sp6-amd64-1', upgradeRequired: false, effort: 'minimal', notes: 'Nearing end of support. Consider upgrading to SLES 15 SP7.', eolDate: '2025-12-31', imageType: 'stock' },
+  { classicOS: 'SLES 15 SP5', pattern: /s(?:use|les).*15\s*sp\s*5/i, vpcAvailable: false, vpcImage: null, upgradeRequired: true, upgradeTarget: 'SLES 15 SP7', effort: 'moderate', notes: 'SLES 15 SP5 is EOL. Upgrade to SLES 15 SP7 required.', eolDate: '2024-12-31', imageType: 'none' },
   { classicOS: 'SLES 15', pattern: /sles?\s*15|suse.*15/i, vpcAvailable: true, vpcImage: 'ibm-sles-15-sp5-amd64', upgradeRequired: false, effort: 'none', notes: 'Direct migration', imageType: 'stock' },
 
   // ── Rocky Linux ────────────────────────────────────────────────────────
   { classicOS: 'Rocky Linux 8', pattern: /rocky.*8/i, vpcAvailable: true, vpcImage: 'ibm-rocky-linux-8-amd64', upgradeRequired: false, effort: 'none', notes: 'Direct migration', imageType: 'stock' },
   { classicOS: 'Rocky Linux 9', pattern: /rocky.*9/i, vpcAvailable: true, vpcImage: 'ibm-rocky-linux-9-amd64', upgradeRequired: false, effort: 'none', notes: 'Direct migration', imageType: 'stock' },
+  { classicOS: 'Rocky Linux 10', pattern: /rocky.*10/i, vpcAvailable: true, vpcImage: null, upgradeRequired: false, effort: 'minimal', notes: 'Rocky Linux 10 supported on VPC via BYOL.', eolDate: '2035-05-31', imageType: 'byol' },
 
   // ── AlmaLinux ──────────────────────────────────────────────────────────
   { classicOS: 'AlmaLinux 8', pattern: /alma.*8/i, vpcAvailable: true, vpcImage: null, upgradeRequired: false, effort: 'minimal', notes: 'BYOL custom image — RHEL-compatible distribution', imageType: 'byol' },
@@ -52,10 +72,12 @@ export const OS_COMPATIBILITY: OSCompatibility[] = [
   // Order matters: specific versions before general patterns
   { classicOS: 'Windows Server 2003', pattern: /windows.*2003/i, vpcAvailable: false, vpcImage: null, upgradeRequired: true, upgradeTarget: 'Windows Server 2019 or 2022', effort: 'significant', notes: 'No VirtIO drivers exist for Windows Server 2003 — VMs cannot boot on IBM Cloud VPC. Requires application modernization or re-platforming.', eolDate: '2015-07-14', imageType: 'none', docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-create-windows-custom-image' },
   { classicOS: 'Windows Server 2008', pattern: /windows.*(2008|2008\s*r2)/i, vpcAvailable: false, vpcImage: null, upgradeRequired: true, upgradeTarget: 'Windows Server 2019 or 2022', effort: 'significant', notes: 'VirtIO drivers dropped after virtio-win 0.1.173 (Dec 2021). IBM Cloud VPC requires virtio-win 1.9.24+ which has no 2008 drivers — VMs will not boot.', eolDate: '2020-01-14', imageType: 'none', docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-create-windows-custom-image' },
+  { classicOS: 'Windows Server 2012 R2', pattern: /windows.*2012\s*r2/i, vpcAvailable: false, vpcImage: null, upgradeRequired: true, upgradeTarget: 'Windows Server 2022', effort: 'significant', notes: 'Windows Server 2012 R2 is EOL. Upgrade to Windows Server 2022 required.', eolDate: '2023-10-10', imageType: 'none' },
   { classicOS: 'Windows Server 2012', pattern: /windows.*2012/i, vpcAvailable: true, vpcImage: null, upgradeRequired: true, upgradeTarget: 'Windows Server 2019 or 2022', effort: 'significant', notes: 'BYOL custom image only — extended support ended Oct 2023. Upgrade to Windows Server 2019/2022 recommended.', eolDate: '2023-10-10', imageType: 'byol', docsUrl: 'https://cloud.ibm.com/docs/vpc?topic=vpc-planning-custom-images' },
   { classicOS: 'Windows Server 2016', pattern: /windows.*2016/i, vpcAvailable: true, vpcImage: 'ibm-windows-server-2016-full-standard-amd64', upgradeRequired: false, effort: 'none', notes: 'Direct migration — consider upgrading to Windows Server 2019/2022', imageType: 'stock' },
   { classicOS: 'Windows Server 2019', pattern: /windows.*2019/i, vpcAvailable: true, vpcImage: 'ibm-windows-server-2019-full-standard-amd64', upgradeRequired: false, effort: 'none', notes: 'Direct migration', imageType: 'stock' },
   { classicOS: 'Windows Server 2022', pattern: /windows.*2022/i, vpcAvailable: true, vpcImage: 'ibm-windows-server-2022-full-standard-amd64', upgradeRequired: false, effort: 'none', notes: 'Direct migration', imageType: 'stock' },
+  { classicOS: 'Windows Server 2025', pattern: /windows.*2025/i, vpcAvailable: true, vpcImage: 'ibm-windows-server-2025-full-standard-amd64-1', upgradeRequired: false, effort: 'none', notes: 'Latest Windows Server. Direct migration supported.', eolDate: '2034-10-10', imageType: 'stock' },
 
   // ── Non-x86 / Unsupported platforms ────────────────────────────────────
   { classicOS: 'FreeBSD', pattern: /freebsd/i, vpcAvailable: false, vpcImage: null, upgradeRequired: true, upgradeTarget: 'Linux (RHEL, Ubuntu, or Debian)', effort: 'significant', notes: 'FreeBSD is not supported on IBM Cloud VPC.', imageType: 'none' },
