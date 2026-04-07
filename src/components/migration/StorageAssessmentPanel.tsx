@@ -34,8 +34,10 @@ const fileColumnGroups: ColumnGroup[] = [
 const fileColumns: MigrationColumnDef[] = [
   { key: 'username', header: 'Volume', group: 'classic' },
   { key: 'capacityGB', header: 'Capacity (GB)', group: 'classic' },
+  { key: 'iops', header: 'IOPS', group: 'classic', headerTooltip: 'Input/Output Operations Per Second — storage performance metric' },
+  { key: 'tier', header: 'Classic Tier', group: 'classic' },
   { key: 'fee', header: 'Classic Monthly', group: 'classic' },
-  { key: 'vpcTarget', header: 'VPC Target', group: 'vpc', headerTooltip: 'VPC File Share with dp2 profile (NFS v4.1)' },
+  { key: 'vpcProfile', header: 'VPC Profile', group: 'vpc', headerTooltip: 'Recommended VPC File Share profile. rfs (Regional File Service) for ≤35K IOPS, dp2 for higher IOPS workloads.' },
 ];
 
 const StorageAssessmentPanel: React.FC<Props> = ({ assessment, prereqChecks }) => {
@@ -55,8 +57,10 @@ const StorageAssessmentPanel: React.FC<Props> = ({ assessment, prereqChecks }) =
     id: String(v.id),
     username: v.username || `File ${v.id}`,
     capacityGB: String(v.capacityGB),
+    iops: String(v.iops),
+    tier: v.tier || 'N/A',
     fee: `$${v.currentFee.toFixed(2)}`,
-    vpcTarget: 'File Share (dp2, NFS v4.1)',
+    vpcProfile: v.vpcProfile,
   }));
 
   const totalGB = assessment.blockStorage.totalCapacityGB + assessment.fileStorage.totalCapacityGB;
