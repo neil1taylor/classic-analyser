@@ -256,6 +256,11 @@ export interface FileVolumeAssessment {
   id: number;
   username: string;
   capacityGB: number;
+  iops: number;
+  tier: string;
+  vpcProfile: string;
+  vpcIOPS: string;
+  profileNotes: string[];
   currentFee: number;
   notes: string[];
 }
