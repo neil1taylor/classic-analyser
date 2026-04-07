@@ -124,6 +124,7 @@ export interface VSIMigration {
   osUpgradeTarget?: string;
   migrationApproach?: MigrationApproach;
   executionSteps?: ExecutionStep[];
+  iksClusterId?: string;
   notes: string[];
 }
 
@@ -418,6 +419,42 @@ export interface MigrationWave {
   validationSteps: string[];
 }
 
+// ── IKS Cluster Analysis ─────────────────────────────────────────────────
+
+export interface IKSFlavour {
+  name: string;
+  cores: number;
+  memoryGB: number;
+  category: 'balanced' | 'compute' | 'memory' | 'gpu';
+  hourlyRate: number;
+}
+
+export interface IKSWorkerMapping {
+  hostname: string;
+  cores: number;
+  memoryGB: number;
+  datacenter: string;
+  mappedFlavour: IKSFlavour | null;
+  monthlyCost: number;
+}
+
+export interface IKSCluster {
+  clusterId: string;
+  workers: IKSWorkerMapping[];
+  totalWorkers: number;
+  totalMonthlyCost: number;
+  datacenters: string[];
+  targetRegion: string;
+}
+
+export interface IKSClusterAnalysis {
+  clusters: IKSCluster[];
+  totalWorkers: number;
+  totalClusters: number;
+  totalMonthlyCost: number;
+  unmappedWorkers: number;
+}
+
 // ── Full Analysis Output ─────────────────────────────────────────────────
 
 export interface MigrationAnalysisOutput {
@@ -433,6 +470,7 @@ export interface MigrationAnalysisOutput {
   costAnalysis: CostAnalysis;
   migrationWaves: MigrationWave[];
   prereqChecks: PreReqCheckResults;
+  iksAnalysis?: IKSClusterAnalysis;
 }
 
 // ── Context State ────────────────────────────────────────────────────────

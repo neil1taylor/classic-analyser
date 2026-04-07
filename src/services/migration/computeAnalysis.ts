@@ -281,6 +281,9 @@ function assessVSI(item: unknown, _preferences: MigrationPreferences): VSIMigrat
   const migrationApproach = classifyMigrationApproach(hostname, os, status, osCompatible, osUpgradeTarget);
   const executionSteps = EXECUTION_STEP_TEMPLATES[migrationApproach];
 
+  const clusterMatch = hostname.match(/kube-([^-]+)/i);
+  const iksClusterId = clusterMatch ? clusterMatch[1] : undefined;
+
   return {
     id,
     hostname,
@@ -298,6 +301,7 @@ function assessVSI(item: unknown, _preferences: MigrationPreferences): VSIMigrat
     osUpgradeTarget,
     migrationApproach,
     executionSteps,
+    iksClusterId,
     notes,
   };
 }

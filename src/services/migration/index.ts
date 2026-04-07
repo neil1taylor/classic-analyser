@@ -10,6 +10,7 @@ import { calculateComplexityScore } from './complexityScoring';
 import { analyzeCosts } from './costComparison';
 import { planWaves } from './wavePlanning';
 import { runAllPreReqChecks } from './checks';
+import { analyzeIKSWorkers } from './iksAnalysis';
 
 export function runMigrationAnalysis(
   collectedData: Record<string, unknown[]>,
@@ -35,6 +36,7 @@ export function runMigrationAnalysis(
   const costAnalysis = analyzeCosts(computeAssessment, storageAssessment, networkAssessment, preferences, pricing, collectedData);
   const migrationWaves = planWaves(computeAssessment, networkAssessment, storageAssessment, securityAssessment);
   const prereqChecks = runAllPreReqChecks(collectedData, accountInfo);
+  const iksAnalysis = analyzeIKSWorkers(computeAssessment.vsiMigrations);
 
   return {
     timestamp: new Date().toISOString(),
@@ -49,5 +51,6 @@ export function runMigrationAnalysis(
     costAnalysis,
     migrationWaves,
     prereqChecks,
+    iksAnalysis,
   };
 }
