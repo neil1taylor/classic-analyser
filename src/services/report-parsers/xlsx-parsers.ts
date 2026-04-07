@@ -1,6 +1,7 @@
 import ExcelJS from 'exceljs';
 import type { ReportParserResult } from './types';
 import type { AccountInfo } from '@/types/resources';
+import { deduplicateBlockStorage } from './csv-utils';
 import { createLogger } from '@/utils/logger';
 
 const log = createLogger('ReportXLSX');
@@ -303,18 +304,20 @@ export async function parseConsolidatedXlsx(file: File): Promise<ReportParserRes
     const items = parseWorksheetFromHeader(nasSheet, 'ID', fieldMap);
     // Split by nasType: ISCSI/NAS_CONTAINER → blockStorage, NAS → fileStorage
     const fileItems: Record<string, unknown>[] = [];
-    const blockItems: Record<string, unknown>[] = [];
+    const blockItemsRaw: Record<string, unknown>[] = [];
     for (const item of items) {
       const nasType = String(item.nasType ?? '').toUpperCase();
       if (nasType === 'ISCSI' || nasType === 'NAS_CONTAINER') {
-        blockItems.push(item);
+        blockItemsRaw.push(item);
       } else {
         fileItems.push(item);
       }
     }
+    // Deduplicate SEVC/SEL pairs — see deduplicateBlockStorage for details
+    const blockItems = deduplicateBlockStorage(blockItemsRaw);
     if (fileItems.length > 0) data.fileStorage = fileItems;
     if (blockItems.length > 0) data.blockStorage = blockItems;
-    log.info(`Consolidated: ${fileItems.length} file storage + ${blockItems.length} block storage items`);
+    log.info(`Consolidated: ${fileItems.length} file storage + ${blockItems.length} block storage (${blockItemsRaw.length} raw, ${blockItemsRaw.length - blockItems.length} duplicates removed)`);
   }
 
   // Gateways sheet — Direct Link 2 Tenants

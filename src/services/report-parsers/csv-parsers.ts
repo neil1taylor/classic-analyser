@@ -1,5 +1,5 @@
 import type { ReportParserResult } from './types';
-import { parseCsvText, csvRowsToObjects } from './csv-utils';
+import { parseCsvText, csvRowsToObjects, deduplicateBlockStorage } from './csv-utils';
 import { createLogger } from '@/utils/logger';
 
 const log = createLogger('ReportCSV');
@@ -145,21 +145,24 @@ export function parseNasCsv(text: string): ReportParserResult {
 
   // Split by nasType: ISCSI/NAS_CONTAINER → blockStorage, NAS → fileStorage
   const fileStorage: Record<string, unknown>[] = [];
-  const blockStorage: Record<string, unknown>[] = [];
+  const blockStorageRaw: Record<string, unknown>[] = [];
   for (const item of items) {
     const nasType = String(item.nasType ?? '').toUpperCase();
     if (nasType === 'ISCSI' || nasType === 'NAS_CONTAINER') {
-      blockStorage.push(item);
+      blockStorageRaw.push(item);
     } else {
       fileStorage.push(item);
     }
   }
 
+  // Deduplicate SEVC/SEL pairs — see deduplicateBlockStorage for details
+  const blockStorage = deduplicateBlockStorage(blockStorageRaw);
+
   const data: Record<string, unknown[]> = {};
   if (fileStorage.length > 0) data.fileStorage = fileStorage;
   if (blockStorage.length > 0) data.blockStorage = blockStorage;
 
-  log.info(`Parsed ${fileStorage.length} file storage + ${blockStorage.length} block storage items from NAS CSV`);
+  log.info(`Parsed ${fileStorage.length} file storage + ${blockStorage.length} block storage (${blockStorageRaw.length} raw, ${blockStorageRaw.length - blockStorage.length} duplicates removed) from NAS CSV`);
   return { data };
 }
 
