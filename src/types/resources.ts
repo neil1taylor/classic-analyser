@@ -28,6 +28,8 @@ export interface AccountInfo {
   lastName: string;
   ibmCloudAccountId?: string;
   ibmCloudAccountName?: string;
+  vrfEnabled?: boolean;
+  reporterVersion?: string;
 }
 
 export const RESOURCE_TYPES: ResourceType[] = classicResourceTypesData as ResourceType[];

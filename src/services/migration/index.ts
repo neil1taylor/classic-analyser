@@ -1,4 +1,5 @@
 import type { MigrationPreferences, MigrationAnalysisOutput, VPCPricingData, VPCProfile } from '@/types/migration';
+import type { AccountInfo } from '@/types/resources';
 import { analyzeCompute } from './computeAnalysis';
 import { analyzeNetwork } from './networkAnalysis';
 import { analyzeStorage } from './storageAnalysis';
@@ -16,6 +17,7 @@ export function runMigrationAnalysis(
   pricedProfiles?: VPCProfile[],
   pricing?: VPCPricingData | null,
   pricedBareMetalProfiles?: VPCProfile[],
+  accountInfo?: AccountInfo,
 ): MigrationAnalysisOutput {
   const computeAssessment = analyzeCompute(collectedData, preferences, pricedProfiles, pricedBareMetalProfiles);
   const networkAssessment = analyzeNetwork(collectedData, preferences);
@@ -32,7 +34,7 @@ export function runMigrationAnalysis(
   );
   const costAnalysis = analyzeCosts(computeAssessment, storageAssessment, networkAssessment, preferences, pricing);
   const migrationWaves = planWaves(computeAssessment, networkAssessment, storageAssessment, securityAssessment);
-  const prereqChecks = runAllPreReqChecks(collectedData);
+  const prereqChecks = runAllPreReqChecks(collectedData, accountInfo);
 
   return {
     timestamp: new Date().toISOString(),

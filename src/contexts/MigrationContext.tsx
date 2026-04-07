@@ -10,6 +10,7 @@ import { runMigrationAnalysis } from '@/services/migration/index';
 import { VPC_PROFILES, VPC_BARE_METAL_PROFILES, applyPricing, applyBareMetalPricing } from '@/services/migration/data/vpcProfiles';
 import { fetchVPCPricing } from '@/services/api';
 import { useData } from '@/contexts/DataContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface MigrationContextValue {
   preferences: MigrationPreferences;
@@ -35,6 +36,7 @@ export function useMigration(): MigrationContextValue {
 
 export function MigrationProvider({ children }: { children: React.ReactNode }) {
   const { collectedData } = useData();
+  const { accountInfo } = useAuth();
   const [preferences, setPreferencesState] = useState<MigrationPreferences>(DEFAULT_PREFERENCES);
   const [analysisResult, setAnalysisResult] = useState<MigrationAnalysisOutput | null>(null);
   const [status, setStatus] = useState<MigrationAnalysisStatus>('idle');
@@ -83,7 +85,7 @@ export function MigrationProvider({ children }: { children: React.ReactNode }) {
         const targetRegion = preferences.targetRegion;
         const pricedProfiles = applyPricing(VPC_PROFILES, pricing, targetRegion);
         const pricedBareMetalProfiles = applyBareMetalPricing(VPC_BARE_METAL_PROFILES, pricing, targetRegion);
-        const result = runMigrationAnalysis(collectedData, preferences, pricedProfiles, pricing, pricedBareMetalProfiles);
+        const result = runMigrationAnalysis(collectedData, preferences, pricedProfiles, pricing, pricedBareMetalProfiles, accountInfo ?? undefined);
         setAnalysisResult(result);
         setStatus('complete');
       } catch (err) {
@@ -91,7 +93,7 @@ export function MigrationProvider({ children }: { children: React.ReactNode }) {
         setStatus('error');
       }
     });
-  }, [collectedData, preferences, pricing]);
+  }, [collectedData, preferences, pricing, accountInfo]);
 
   const clearAnalysis = useCallback(() => {
     setAnalysisResult(null);

@@ -210,6 +210,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       lastName: info.lastName ?? '',
       ...(info.ibmCloudAccountId && { ibmCloudAccountId: info.ibmCloudAccountId }),
       ...(info.ibmCloudAccountName && { ibmCloudAccountName: info.ibmCloudAccountName }),
+      ...(info.vrfEnabled !== undefined && { vrfEnabled: info.vrfEnabled }),
+      ...(info.reporterVersion && { reporterVersion: info.reporterVersion }),
     });
     setInfrastructureMode(mode);
     log.info('Set imported account info:', info.companyName ?? 'unknown', 'mode:', mode);

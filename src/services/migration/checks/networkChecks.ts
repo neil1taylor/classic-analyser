@@ -1,4 +1,5 @@
 import type { CheckResult, PreRequisiteCheck, AffectedResource } from '@/types/migration';
+import type { AccountInfo } from '@/types/resources';
 import { evaluateCheck, unknownCheck } from './checkUtils';
 import { mapDatacenterToVPC } from '../data/datacenterMapping';
 
@@ -306,7 +307,7 @@ function getReservedIPs(networkIdentifier: string, cidr: number): Map<number, st
   return reserved;
 }
 
-export function runNetworkChecks(collectedData: Record<string, unknown[]>): CheckResult[] {
+export function runNetworkChecks(collectedData: Record<string, unknown[]>, accountInfo?: AccountInfo): CheckResult[] {
   const results: CheckResult[] = [];
   const firewalls = (collectedData['firewalls'] ?? []) as Record<string, unknown>[];
   const sgs = (collectedData['securityGroups'] ?? []) as Record<string, unknown>[];
@@ -510,8 +511,22 @@ export function runNetworkChecks(collectedData: Record<string, unknown[]>): Chec
   // VRRP HA pattern — unknown (not determinable from API)
   results.push(unknownCheck(VRRP_HA_PATTERN, allServers.length));
 
-  // VRF enablement — unknown (not determinable from API, always flag for manual check)
-  results.push(unknownCheck(VRF_ENABLEMENT, allServers.length));
+  // VRF enablement — check IMS report data if available
+  if (accountInfo?.vrfEnabled === true) {
+    results.push({
+      check: VRF_ENABLEMENT,
+      severity: 'passed',
+      affectedCount: 0,
+      totalChecked: allServers.length,
+      affectedResources: [],
+    });
+  } else if (accountInfo?.vrfEnabled === false) {
+    results.push(evaluateCheck(VRF_ENABLEMENT, 'blocker', allServers.length, [
+      { id: 0, hostname: 'Account', detail: 'VRF is not enabled — required for Classic-to-VPC connectivity via Transit Gateway' },
+    ]));
+  } else {
+    results.push(unknownCheck(VRF_ENABLEMENT, allServers.length));
+  }
 
   // ── Bandwidth Egress Risk ─────────────────────────────────────────
   const bwAffected: AffectedResource[] = [];

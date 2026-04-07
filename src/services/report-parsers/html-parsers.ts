@@ -117,9 +117,17 @@ export function parseSummaryHtml(text: string): ReportParserResult {
   const data: Record<string, unknown[]> = {};
   const accountInfo = extractAccountInfoFromHeader(text);
 
-  // Extract VRF status
-  if (text.includes('VRF enabled') && accountInfo) {
-    (accountInfo as Record<string, unknown>).vrfEnabled = true;
+  // Extract VRF status — IMS summary reports VRF when enabled; absence means not enabled
+  if (accountInfo) {
+    (accountInfo as Record<string, unknown>).vrfEnabled = text.includes('VRF enabled');
+  }
+
+  // Extract reporter version
+  if (accountInfo) {
+    const versionMatch = text.match(/(?:Reporter|IMS\s+Report(?:\s+Generator)?)\s*[v:]?\s*([\d.]+)/i);
+    if (versionMatch) {
+      (accountInfo as Record<string, unknown>).reporterVersion = versionMatch[1];
+    }
   }
 
   const tables = doc.querySelectorAll('table');
@@ -276,6 +284,12 @@ function extractAccountInfoFromHeader(text: string): Partial<AccountInfo> | unde
     if (ownerParts[1]) {
       info.email = ownerParts[1].trim();
     }
+  }
+
+  // Reporter version
+  const versionMatch = text.match(/(?:Reporter|IMS\s+Report(?:\s+Generator)?)\s*[v:]?\s*([\d.]+)/i);
+  if (versionMatch) {
+    (info as Record<string, unknown>).reporterVersion = versionMatch[1];
   }
 
   return Object.keys(info).length > 0 ? info : undefined;
