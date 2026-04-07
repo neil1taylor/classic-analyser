@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { analyzeStorage } from '../storageAnalysis';
+import { mapFileStorageProfile } from '../data/storageTiers';
 import type { MigrationPreferences } from '@/types/migration';
 
 const prefs: MigrationPreferences = {
@@ -113,5 +114,34 @@ describe('analyzeStorage — K8s filtering', () => {
     const result = analyzeStorage(data, prefs);
 
     expect(result.kubeStorage).toBeUndefined();
+  });
+});
+
+describe('mapFileStorageProfile', () => {
+  it('recommends rfs for volumes within rfs IOPS limits', () => {
+    const result = mapFileStorageProfile('2 IOPS/GB', 2000);
+    expect(result.vpcProfile).toBe('rfs');
+    expect(result.alternative).toBe('dp2');
+  });
+
+  it('recommends dp2 for volumes exceeding rfs max IOPS (35000)', () => {
+    const result = mapFileStorageProfile('10 IOPS/GB', 40000);
+    expect(result.vpcProfile).toBe('dp2');
+    expect(result.alternative).toBeUndefined();
+  });
+
+  it('recommends rfs at the rfs IOPS boundary (35000)', () => {
+    const result = mapFileStorageProfile('4 IOPS/GB', 35000);
+    expect(result.vpcProfile).toBe('rfs');
+  });
+
+  it('handles zero/unknown IOPS by defaulting to rfs', () => {
+    const result = mapFileStorageProfile('', 0);
+    expect(result.vpcProfile).toBe('rfs');
+  });
+
+  it('includes Classic tier in notes', () => {
+    const result = mapFileStorageProfile('4 IOPS/GB', 4000);
+    expect(result.notes).toContain('Classic tier: 4 IOPS/GB → VPC profile: rfs');
   });
 });

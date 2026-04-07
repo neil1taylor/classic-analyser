@@ -111,13 +111,52 @@ export function isSdpAvailable(targetRegion: string): boolean {
   return SDP_SUPPORTED_REGIONS.includes(targetRegion);
 }
 
-// ── File storage profile recommendation ─────────────────────────────────────
+// ── File storage profile specs from spreadsheet ─────────────────────────────
 
-/** Get the recommended VPC file storage profile from the spreadsheet mappings.
- *  The spreadsheet recommends rfs (Regional File Service) as the primary/SDS target
- *  and dp2 as the traditional fallback. */
-export function getFileStorageProfile(): { primary: string; traditional: string } {
-  return { primary: 'rfs', traditional: 'dp2' };
+interface FileProfileSpec {
+  name: string;
+  maxIOPS: number;
+}
+
+function getFileProfileSpecs(): FileProfileSpec[] {
+  const profiles = storageMappingData?.file?.profiles ?? [];
+  const rfs = profiles.find((p) => p.name === 'rfs');
+  const dp2 = profiles.find((p) => p.name === 'dp2');
+  return [
+    { name: 'rfs', maxIOPS: rfs?.maxIOPS ?? 35000 },
+    { name: 'dp2', maxIOPS: dp2?.maxIOPS ?? 96000 },
+  ];
+}
+
+export interface FileProfileResult {
+  vpcProfile: string;
+  vpcIOPS: string;
+  alternative?: string;
+  notes: string;
+}
+
+/** Map a Classic file volume to a VPC file share profile based on its IOPS. */
+export function mapFileStorageProfile(tierLevel: string, iops: number): FileProfileResult {
+  const specs = getFileProfileSpecs();
+  const rfs = specs.find((s) => s.name === 'rfs')!;
+  const dp2 = specs.find((s) => s.name === 'dp2')!;
+
+  const tierDisplay = tierLevel || 'unknown';
+
+  if (iops > rfs.maxIOPS) {
+    return {
+      vpcProfile: 'dp2',
+      vpcIOPS: `Up to ${dp2.maxIOPS.toLocaleString()}`,
+      notes: `Classic tier: ${tierDisplay} → VPC profile: dp2`,
+    };
+  }
+
+  return {
+    vpcProfile: 'rfs',
+    vpcIOPS: `Up to ${rfs.maxIOPS.toLocaleString()}`,
+    alternative: 'dp2',
+    notes: `Classic tier: ${tierDisplay} → VPC profile: rfs`,
+  };
 }
 
 // ── Mapping Context ──────────────────────────────────────────────────────
